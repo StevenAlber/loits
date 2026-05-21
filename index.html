@@ -347,6 +347,45 @@
     width: 100%;
     margin: 0 auto;
   }
+  .verdict-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--dim2);
+    z-index: 250;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .verdict-back {
+    background: transparent;
+    border: 1px solid var(--dim2);
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .verdict-back:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+  .verdict-topbar .logo {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0.4em;
+    color: var(--fg);
+    text-transform: uppercase;
+  }
   .verdict-stamp {
     font-size: 10px;
     color: var(--dim);
@@ -587,6 +626,11 @@
 </div>
 
 <div id="verdictScreen">
+  <div class="verdict-topbar">
+    <button class="verdict-back" onclick="backToInput()">← BACK</button>
+    <div class="logo">LOITS</div>
+    <button class="verdict-back" onclick="resetApp()">↻ NEW</button>
+  </div>
   <div class="verdict-content">
     <div class="verdict-stamp" id="verdictStamp">SESSION 0001 / 00:00:00 UTC</div>
     <h2 class="verdict-title">The Reading</h2>
@@ -785,26 +829,41 @@ async function runScanSequence() {
   setStatus('Scan complete', '');
   await sleep(400);
 
-  // AGGRESSIVE camera shutdown — required for iOS LED to actually turn off
+  // AGGRESSIVE camera shutdown — iOS Safari requires multiple steps
   const videoEl = document.getElementById('video');
 
-  // 1. Stop all tracks on the stream
+  // 1. Pause and detach video element from any source
+  videoEl.pause();
+  videoEl.srcObject = null;
+  videoEl.removeAttribute('src');
+
+  // 2. Stop all tracks on the stream and remove from stream
   if (state.videoStream) {
     state.videoStream.getTracks().forEach(t => {
-      t.stop();
-      state.videoStream.removeTrack(t);
+      try {
+        t.enabled = false;
+        t.stop();
+      } catch (e) {}
+      try {
+        state.videoStream.removeTrack(t);
+      } catch (e) {}
     });
     state.videoStream = null;
   }
 
-  // 2. Detach the video element from any source
-  videoEl.pause();
-  videoEl.srcObject = null;
-  videoEl.removeAttribute('src');
-  videoEl.load(); // forces browser to release the media element
+  // 3. Force video element to release its hold by calling load()
+  try { videoEl.load(); } catch (e) {}
 
-  // 3. Stop the face landmarker
+  // 4. Replace the video element with a fresh clone — this severs any internal references
+  const newVideo = videoEl.cloneNode(false);
+  videoEl.parentNode.replaceChild(newVideo, videoEl);
+  newVideo.id = 'video';
+
+  // 5. Mark the model as unready
   state.faceLandmarkerReady = false;
+
+  // 6. Tell garbage collector to clean up if possible
+  if (window.gc) try { window.gc(); } catch (e) {}
 
   setStatus('Analyzing', '');
   await sleep(800);
@@ -1133,6 +1192,28 @@ function handlePayment() {
 }
 function handleLifetime() {
   alert('Connect Stripe Payment Link here. Replace alert with: window.location = STRIPE_LIFETIME_URL');
+}
+
+function backToInput() {
+  // Keep the A/B options so user can edit them
+  if (state.recordedUrl) {
+    URL.revokeObjectURL(state.recordedUrl);
+    state.recordedUrl = null;
+  }
+  state.recordedBlob = null;
+  state.recordedChunks = [];
+  state.rgbHistory = [];
+  state.pulseHistory = [];
+  state.eyeOpennessHistory = [];
+  state.mouthAsymmetryHistory = [];
+  state.baselineBpm = 0;
+  document.getElementById('hudBpm').textContent = '— BPM';
+  document.getElementById('verdictScreen').classList.remove('active');
+  document.querySelector('.topbar').style.display = 'flex';
+  goTo('screen-input');
+  // Restore the previous options
+  document.getElementById('optionA').value = state.optionA;
+  document.getElementById('optionB').value = state.optionB;
 }
 
 function resetApp() {
