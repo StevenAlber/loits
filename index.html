@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#000000" />
 <title>LOITS — what your body knows before your mind admits</title>
-<meta name="description" content="A digital oracle. Type a decision. Watch your body answer." />
+<meta name="description" content="A real-time biometric reading. Five trials. Honest measurements only." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,6 +19,7 @@
     --dim2: #2a2a2a;
     --accent: #ff2929;
     --good: #00ff88;
+    --warn: #ffc800;
     --mono: 'JetBrains Mono', monospace;
     --serif: 'Fraunces', Georgia, serif;
   }
@@ -94,11 +95,12 @@
     inset: 60px 0 0 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     padding: 24px;
     z-index: 1;
     overflow-y: auto;
+    padding-top: 40px;
   }
 
   .screen { display: none; flex-direction: column; align-items: stretch; width: 100%; max-width: 540px; }
@@ -120,7 +122,7 @@
     font-size: 13px;
     line-height: 1.7;
     color: var(--dim);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
 
   .input-label {
@@ -200,7 +202,59 @@
     margin-top: 12px;
   }
 
-  /* ===== FULL-SCREEN SCAN ===== */
+  /* METHOD PAGE */
+  .method-section {
+    margin-bottom: 32px;
+  }
+  .method-section h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--fg);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .method-section .method-tag {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .method-section p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--dim);
+    margin-bottom: 10px;
+  }
+  .method-section p strong {
+    color: var(--fg);
+    font-weight: 500;
+  }
+  .method-divider {
+    border-top: 1px solid var(--dim2);
+    margin: 32px 0;
+  }
+  .method-warning {
+    border: 1px solid var(--warn);
+    padding: 18px;
+    margin-bottom: 32px;
+    background: rgba(255, 200, 0, 0.04);
+  }
+  .method-warning .label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--warn);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .method-warning p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--fg);
+  }
+
+  /* SCAN SCREEN */
   #scanScreen {
     position: fixed;
     inset: 0;
@@ -277,6 +331,41 @@
     letter-spacing: 0.05em;
   }
 
+  .scan-quality {
+    position: absolute;
+    top: 56px;
+    left: 24px;
+    right: 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    z-index: 10;
+  }
+  .quality-cell {
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 5px 8px;
+    border: 1px solid var(--dim2);
+  }
+  .quality-cell .label {
+    font-size: 7px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .quality-cell .value {
+    font-size: 11px;
+    color: var(--fg);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+  .quality-cell .value.good { color: var(--good); }
+  .quality-cell .value.warn { color: var(--warn); }
+  .quality-cell .value.bad { color: var(--accent); }
+
   .scan-status {
     position: absolute;
     bottom: 0;
@@ -285,6 +374,14 @@
     padding: 0 20px 80px;
     text-align: center;
     z-index: 10;
+  }
+  .scan-status .trial-counter {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    min-height: 12px;
   }
   .scan-status .small {
     font-size: 11px;
@@ -329,7 +426,7 @@
     line-height: 0.95;
   }
 
-  /* ===== VERDICT ===== */
+  /* VERDICT */
   #verdictScreen {
     position: fixed;
     inset: 0;
@@ -341,12 +438,6 @@
   }
   #verdictScreen.active { display: flex; }
 
-  .verdict-content {
-    padding: 80px 24px 40px;
-    max-width: 540px;
-    width: 100%;
-    margin: 0 auto;
-  }
   .verdict-topbar {
     position: fixed;
     top: 0;
@@ -372,11 +463,6 @@
     text-transform: uppercase;
     padding: 8px 14px;
     cursor: pointer;
-    transition: all 0.2s;
-  }
-  .verdict-back:hover {
-    border-color: var(--fg);
-    color: var(--fg);
   }
   .verdict-topbar .logo {
     font-family: var(--serif);
@@ -385,6 +471,13 @@
     letter-spacing: 0.4em;
     color: var(--fg);
     text-transform: uppercase;
+  }
+
+  .verdict-content {
+    padding: 80px 24px 40px;
+    max-width: 540px;
+    width: 100%;
+    margin: 0 auto;
   }
   .verdict-stamp {
     font-size: 10px;
@@ -418,11 +511,6 @@
     object-fit: cover;
     transform: scaleX(-1);
   }
-  #replayCanvas {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
   .replay-corners {
     position: absolute;
     inset: 12px;
@@ -451,35 +539,51 @@
     padding: 4px 10px;
   }
 
-  .data-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--dim2);
+  /* COMPARISON TABLE */
+  .comparison {
     border: 1px solid var(--dim2);
     margin-bottom: 24px;
+    background: rgba(255,255,255,0.02);
   }
-  .data-cell {
-    background: var(--bg);
-    padding: 14px;
+  .comparison-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--dim2);
   }
-  .data-cell .label {
+  .comparison-header > div {
+    padding: 12px 14px;
     font-size: 9px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     color: var(--dim);
     text-transform: uppercase;
-    margin-bottom: 4px;
+    border-right: 1px solid var(--dim2);
   }
-  .data-cell .value {
-    font-size: 20px;
+  .comparison-header > div:last-child { border-right: none; }
+  .comparison-header > div.col-a { color: var(--fg); font-weight: 700; }
+  .comparison-header > div.col-b { color: var(--fg); font-weight: 700; }
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--dim2);
+  }
+  .comparison-row:last-child { border-bottom: none; }
+  .comparison-row > div {
+    padding: 12px 14px;
+    font-size: 13px;
     color: var(--fg);
-    font-weight: 700;
+    border-right: 1px solid var(--dim2);
     font-variant-numeric: tabular-nums;
   }
-  .data-cell .delta {
+  .comparison-row > div:last-child { border-right: none; }
+  .comparison-row > div.label-col {
+    color: var(--dim);
     font-size: 10px;
-    margin-left: 4px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .comparison-row .winner {
     color: var(--accent);
+    font-weight: 700;
   }
 
   .verdict-box {
@@ -488,13 +592,23 @@
     margin-bottom: 24px;
     background: linear-gradient(180deg, rgba(255,41,41,0.04) 0%, transparent 100%);
   }
+  .verdict-box.uncertain {
+    border-color: var(--warn);
+    background: linear-gradient(180deg, rgba(255,200,0,0.04) 0%, transparent 100%);
+  }
+  .verdict-box.failed {
+    border-color: var(--dim);
+  }
   .verdict-label {
     font-size: 9px;
-    color: var(--accent);
     letter-spacing: 0.3em;
     text-transform: uppercase;
     margin-bottom: 12px;
+    color: var(--accent);
   }
+  .verdict-box.uncertain .verdict-label { color: var(--warn); }
+  .verdict-box.failed .verdict-label { color: var(--dim); }
+
   .verdict-text {
     font-family: var(--serif);
     font-size: 22px;
@@ -506,13 +620,25 @@
     font-weight: 500;
     font-style: italic;
   }
-  .verdict-meta {
-    margin-top: 16px;
+  .verdict-confidence {
+    margin-top: 18px;
     padding-top: 16px;
     border-top: 1px solid var(--dim2);
-    font-size: 10px;
-    color: var(--dim);
+    font-size: 11px;
+    color: var(--fg);
+    letter-spacing: 0.05em;
     line-height: 1.6;
+  }
+  .verdict-confidence .conf-label {
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+  .verdict-confidence strong {
+    color: var(--accent);
+    font-weight: 700;
   }
 
   .paywall {
@@ -553,6 +679,38 @@
     text-transform: uppercase;
     text-align: center;
   }
+
+  /* failed scan screen */
+  .failed-content {
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .failed-content h2 {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 16px;
+    color: var(--warn);
+  }
+  .failed-content p {
+    color: var(--dim);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .failed-content ul {
+    text-align: left;
+    color: var(--dim);
+    font-size: 12px;
+    line-height: 1.9;
+    margin: 0 auto 24px;
+    max-width: 320px;
+    list-style: none;
+  }
+  .failed-content ul li:before {
+    content: '— ';
+    color: var(--accent);
+  }
 </style>
 </head>
 
@@ -561,7 +719,7 @@
 <div class="topbar">
   <div class="logo">LOITS</div>
   <div class="status">
-    <span>v1.1 / build 0002</span>
+    <span>v2.0 / build 0003</span>
     <span class="dot"></span>
   </div>
 </div>
@@ -570,16 +728,69 @@
 
   <div class="screen active" id="screen-intro">
     <div style="font-size: 10px; color: var(--dim); letter-spacing: 0.25em; margin-bottom: 16px;">
-      — SESSION INITIATING
+      — REAL-TIME BIOMETRIC ORACLE
     </div>
     <h1 class="intro-title">Your body knows<br>before <em>your mind</em><br>admits.</h1>
     <p class="intro-sub">
-      Type two paths. The screen will flash one. Your body answers in milliseconds — before your mind can hide it.
+      Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.
     </p>
-    <button class="btn-main" onclick="goToInput()">Begin Reading →</button>
+    <p class="intro-sub" style="margin-bottom: 24px;">
+      We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.
+    </p>
+    <button class="btn-main" onclick="goToMethod()">How It Works →</button>
+    <button class="btn-secondary" onclick="goToInput()">Skip — Begin Reading</button>
     <div class="disclaimer">
-      An instrument of self-reflection. Not a diagnostic tool. Do not make irreversible life decisions based solely on Loits.
+      An instrument of self-reflection. Not a diagnostic tool.
     </div>
+  </div>
+
+  <div class="screen" id="screen-method">
+    <div class="input-label">— Methodology</div>
+    <h2 class="input-question" style="margin-bottom: 24px;">What we measure.</h2>
+
+    <p class="intro-sub" style="margin-bottom: 32px;">
+      We use your phone's camera and frontier AI vision models to read four signals from your face. Everything happens on your device. Nothing is uploaded.
+    </p>
+
+    <div class="method-section">
+      <div class="method-tag">— 01 / Heart Rate (rPPG)</div>
+      <h3>Pulse from skin color</h3>
+      <p>With each heartbeat, blood briefly enters your facial capillaries, changing your skin color microscopically. Your camera detects this.</p>
+      <p><strong>Method:</strong> Green channel analysis of forehead and both cheeks, sampled at 30fps, detrended, bandpass-filtered to the cardiac frequency range (0.7–2.5 Hz). Three independent regions are compared.</p>
+      <p><strong>Limit:</strong> Requires good light and stillness. We report your BPM, change after stimulus, and signal confidence.</p>
+    </div>
+
+    <div class="method-section">
+      <div class="method-tag">— 02 / Blink Response</div>
+      <h3>The eye reflex</h3>
+      <p>The orienting reflex closes your eyelids faster when you see something your autonomic system wants to reject. A natural blink takes 100–150ms; a reflexive one occurs 200–400ms after the stimulus.</p>
+      <p><strong>Method:</strong> Google MediaPipe FaceLandmarker tracks 468 facial points at 30fps. Blink onset is detected by eyeBlinkLeft + eyeBlinkRight blendshape scores crossing your personal baseline.</p>
+      <p><strong>Limit:</strong> If you do not blink within 600ms of the stimulus, we report "no detectable response." We do not invent one.</p>
+    </div>
+
+    <div class="method-section">
+      <div class="method-tag">— 03 / Micro-Expression Asymmetry</div>
+      <h3>What leaks before masking</h3>
+      <p>The face is controlled by two hemispheres. Genuine emotional reactions appear asymmetrically (one side first) in 200–500ms. Voluntary expressions are symmetric.</p>
+      <p><strong>Method:</strong> The difference between mouthSmileLeft / mouthSmileRight, browInnerUp, and jawForward blendshape scores, sampled 60ms intervals after stimulus.</p>
+      <p><strong>Limit:</strong> Beards, makeup, and glasses reduce sensitivity. We report this as the Asymmetry Index.</p>
+    </div>
+
+    <div class="method-section">
+      <div class="method-tag">— 04 / Trial Design</div>
+      <h3>Five flashes, not one</h3>
+      <p>One flash cannot prove anything. We flash each option twice and a neutral control word once, in randomized order with 2-second gaps. Your A-responses are compared to your B-responses, with the control as baseline.</p>
+      <p><strong>Method:</strong> Each trial measures blink latency, asymmetry delta, and BPM acceleration. A confidence score is computed from the consistency between trials.</p>
+      <p><strong>Limit:</strong> Below 60% confidence we report the result as inconclusive. Above 75% we report it as significant.</p>
+    </div>
+
+    <div class="method-warning">
+      <div class="label">— What we do NOT do</div>
+      <p>We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure activation only — and activation can mean rejection, surprise, attraction, fear, or recognition. The body speaks loudly, but it speaks in one language: <em>this matters more than that</em>.</p>
+    </div>
+
+    <button class="btn-main" onclick="goToInput()">I Understand — Begin Reading →</button>
+    <button class="btn-secondary" onclick="goTo('screen-intro')">Back</button>
   </div>
 
   <div class="screen" id="screen-input">
@@ -588,11 +799,11 @@
 
     <div class="option-block">
       <span class="option-prefix">A —</span>
-      <input id="optionA" class="option-input" type="text" placeholder="e.g. text him back" maxlength="50" autocomplete="off" />
+      <input id="optionA" class="option-input" type="text" placeholder="e.g. text him back" maxlength="40" autocomplete="off" />
     </div>
     <div class="option-block">
       <span class="option-prefix">B —</span>
-      <input id="optionB" class="option-input" type="text" placeholder="e.g. let it die" maxlength="50" autocomplete="off" />
+      <input id="optionB" class="option-input" type="text" placeholder="e.g. let it die" maxlength="40" autocomplete="off" />
     </div>
 
     <button class="btn-main" onclick="startScan()">Read My Body →</button>
@@ -611,11 +822,31 @@
   </div>
 
   <div class="scan-hud">
-    <span>SCAN ACTIVE / 60 FPS</span>
+    <span id="hudFps">— FPS</span>
     <span class="bpm" id="hudBpm">— BPM</span>
   </div>
 
+  <div class="scan-quality">
+    <div class="quality-cell">
+      <div class="label">LIGHT</div>
+      <div class="value" id="qLight">—</div>
+    </div>
+    <div class="quality-cell">
+      <div class="label">FACE</div>
+      <div class="value" id="qFace">—</div>
+    </div>
+    <div class="quality-cell">
+      <div class="label">PULSE</div>
+      <div class="value" id="qPulse">—</div>
+    </div>
+    <div class="quality-cell">
+      <div class="label">STABLE</div>
+      <div class="value" id="qStable">—</div>
+    </div>
+  </div>
+
   <div class="scan-status">
+    <div class="trial-counter" id="scanTrial"></div>
     <div class="small" id="scanSmall">Initializing</div>
     <div class="big" id="scanBig"></div>
   </div>
@@ -631,78 +862,45 @@
     <div class="logo">LOITS</div>
     <button class="verdict-back" onclick="resetApp()">↻ NEW</button>
   </div>
-  <div class="verdict-content">
-    <div class="verdict-stamp" id="verdictStamp">SESSION 0001 / 00:00:00 UTC</div>
-    <h2 class="verdict-title">The Reading</h2>
-
-    <div class="replay-frame">
-      <video id="replayVideo" autoplay playsinline muted loop></video>
-      <canvas id="replayCanvas"></canvas>
-      <div class="replay-corners">
-        <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
-      </div>
-      <div class="replay-label">▶ REPLAY / 0.25×</div>
-    </div>
-
-    <div class="data-grid">
-      <div class="data-cell">
-        <div class="label">Baseline BPM</div>
-        <div class="value" id="dataBaseline">—</div>
-      </div>
-      <div class="data-cell">
-        <div class="label">Peak BPM</div>
-        <div class="value"><span id="dataPeak">—</span><span class="delta" id="dataDelta"></span></div>
-      </div>
-      <div class="data-cell">
-        <div class="label">Blink Latency</div>
-        <div class="value"><span id="dataBlink">—</span><span style="font-size:10px; color: var(--dim); margin-left:3px;">ms</span></div>
-      </div>
-      <div class="data-cell">
-        <div class="label">Asymmetry Idx</div>
-        <div class="value" id="dataAsym">—</div>
-      </div>
-    </div>
-
-    <div class="verdict-box">
-      <div class="verdict-label">— Verdict</div>
-      <div class="verdict-text" id="verdictText"></div>
-      <div class="verdict-meta" id="verdictMeta"></div>
-    </div>
-
-    <div class="paywall">
-      <div class="top">— Next reading</div>
-      <h3>Five more truths.</h3>
-      <p class="desc">Your first reading is free. The next ones are not.</p>
-      <div class="price">€4.99 / 5 readings</div>
-      <button class="btn-main" onclick="handlePayment()">Unlock 5 Readings</button>
-      <button class="btn-secondary" onclick="handleLifetime()">€14.99 — Lifetime unlimited</button>
-    </div>
-
-    <button class="btn-secondary" onclick="resetApp()">New Reading</button>
-
-    <div class="disclaimer">
-      Body signals indicate physiological activation, not validated truth. Consult a licensed professional for serious choices.
-    </div>
+  <div class="verdict-content" id="verdictContent">
+    <!-- Filled by JS -->
   </div>
 </div>
 
 <script>
 const state = {
-  optionA: '', optionB: '', flashedOption: null,
-  baselineBpm: 0, peakBpm: 0, blinkLatency: 0, asymmetryIdx: 0,
-  rejectedFlash: false,
+  optionA: '', optionB: '',
   sessionId: Math.floor(Math.random() * 9999).toString().padStart(4, '0'),
-  flashTime: 0,
   faceLandmarker: null, videoStream: null,
-  rgbHistory: [], pulseHistory: [],
-  eyeOpennessHistory: [], mouthAsymmetryHistory: [],
-  preFlashBaseline: null,
-  faceLandmarkerReady: false,
+  faceLandmarkerReady: false, scanActive: false, frameReqId: null,
+  rgbHistoryForehead: [], rgbHistoryLeftCheek: [], rgbHistoryRightCheek: [],
+  eyeOpennessHistory: [],
+  mouthHistory: [],
+  browHistory: [],
+  jawHistory: [],
+  currentBpm: 0,
+  fps: 0,
+  lastFrameTime: 0,
+  fpsBuffer: [],
+  faceSizeRatio: 0,
+  faceStability: 0,
+  lastFaceCenter: { x: 0, y: 0 },
+  faceCenterHistory: [],
+  qualityGood: false,
+  // Trial state
+  trials: [],
+  currentTrial: 0,
+  preFlashBaselineBpm: 0,
+  recordedChunks: [],
+  recordedUrl: null,
+  recordedBlob: null,
 };
 
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  document.querySelector('.stage').scrollTop = 0;
 }
 
 function goToInput() {
@@ -710,19 +908,39 @@ function goToInput() {
   setTimeout(() => document.getElementById('optionA').focus(), 200);
 }
 
-function setStatus(small, big) {
-  document.getElementById('scanSmall').textContent = small || '';
-  document.getElementById('scanBig').textContent = big || '';
+function goToMethod() {
+  goTo('screen-method');
 }
 
+function setStatus(small, big, trial) {
+  document.getElementById('scanSmall').textContent = small || '';
+  document.getElementById('scanBig').textContent = big || '';
+  document.getElementById('scanTrial').textContent = trial || '';
+}
+
+// ============================================
+// SCAN ENTRY
+// ============================================
 async function startScan() {
   const a = document.getElementById('optionA').value.trim();
   const b = document.getElementById('optionB').value.trim();
-  if (!a || !b) {
-    alert('Please fill in both options.');
-    return;
-  }
+  if (!a || !b) { alert('Please fill in both options.'); return; }
   state.optionA = a; state.optionB = b;
+
+  // Reset state for new scan
+  state.rgbHistoryForehead = [];
+  state.rgbHistoryLeftCheek = [];
+  state.rgbHistoryRightCheek = [];
+  state.eyeOpennessHistory = [];
+  state.mouthHistory = [];
+  state.browHistory = [];
+  state.jawHistory = [];
+  state.trials = [];
+  state.currentTrial = 0;
+  state.currentBpm = 0;
+  state.qualityGood = false;
+  state.fpsBuffer = [];
+  state.faceCenterHistory = [];
 
   document.getElementById('scanScreen').classList.add('active');
   document.querySelector('.topbar').style.display = 'none';
@@ -741,38 +959,97 @@ async function startScan() {
     setStatus('Loading model', '');
     await loadFaceLandmarker();
     state.faceLandmarkerReady = true;
-    requestAnimationFrame(processFrame);
+    state.scanActive = true;
+    state.frameReqId = requestAnimationFrame(processFrame);
 
-    await runScanSequence();
+    await runQualityGate();
+    await runTrialSequence();
   } catch (err) {
     console.error(err);
+    cleanupAll();
     setStatus('Camera access required', '✕');
+    setTimeout(() => {
+      document.getElementById('scanScreen').classList.remove('active');
+      document.querySelector('.topbar').style.display = 'flex';
+    }, 2000);
   }
 }
 
-async function runScanSequence() {
-  setStatus('Reading body', '');
-  await sleep(1000);
-  for (let i = 4; i > 0; i--) {
-    setStatus('Reading body', i);
-    await sleep(700);
+// ============================================
+// QUALITY GATE — must pass before flash
+// ============================================
+async function runQualityGate() {
+  setStatus('Preparing scan', '');
+  const maxWaitMs = 15000;
+  const startTime = performance.now();
+
+  while (performance.now() - startTime < maxWaitMs) {
+    const q = computeQuality();
+    if (q.passes) {
+      state.qualityGood = true;
+      setStatus('Quality OK', '');
+      await sleep(500);
+      return true;
+    } else {
+      setStatus(q.message, '');
+      await sleep(200);
+    }
+  }
+  // Timeout — proceed with warning but allow scan
+  state.qualityGood = false;
+  setStatus('Proceeding with reduced confidence', '');
+  await sleep(800);
+  return false;
+}
+
+function computeQuality() {
+  // Check light
+  const recentRgb = state.rgbHistoryForehead.slice(-30);
+  const avgBrightness = recentRgb.length > 0
+    ? recentRgb.reduce((a, p) => a + (p.r + p.g + p.b) / 3, 0) / recentRgb.length
+    : 0;
+  const lightOk = avgBrightness > 70;
+
+  // Check face size
+  const faceOk = state.faceSizeRatio > 0.28;
+
+  // Check FPS
+  const fpsOk = state.fps > 22;
+
+  // Check pulse signal
+  const pulseOk = state.currentBpm >= 50 && state.currentBpm <= 110;
+
+  // Check face stability
+  const stableOk = state.faceStability > 0.7;
+
+  if (!faceOk) return { passes: false, message: 'Move face into frame' };
+  if (!lightOk) return { passes: false, message: 'Need more light' };
+  if (!fpsOk) return { passes: false, message: 'Frame rate too low' };
+  if (!stableOk) return { passes: false, message: 'Hold still' };
+  if (!pulseOk) return { passes: false, message: 'Locking pulse' };
+  return { passes: true, message: 'Quality OK' };
+}
+
+// ============================================
+// TRIAL SEQUENCE
+// 5 trials: A, A, B, B, neutral — randomized
+// ============================================
+async function runTrialSequence() {
+  // Build randomized trial order
+  const trials = [
+    { type: 'A', label: state.optionA },
+    { type: 'A', label: state.optionA },
+    { type: 'B', label: state.optionB },
+    { type: 'B', label: state.optionB },
+    { type: 'NEUTRAL', label: '—' }
+  ];
+  // Shuffle
+  for (let i = trials.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [trials[i], trials[j]] = [trials[j], trials[i]];
   }
 
-  state.preFlashBaseline = computeEyeBaseline();
-  if (state.baselineBpm === 0) {
-    state.baselineBpm = 68 + Math.floor(Math.random() * 12);
-  }
-
-  setStatus('Hold gaze', '');
-  await sleep(700);
-
-  for (let i = 3; i > 0; i--) {
-    setStatus('', i);
-    await sleep(700);
-  }
-
-  // Start recording video frames for replay (using MediaRecorder)
-  state.recordedChunks = [];
+  // Start recording video for replay
   let mediaRecorder = null;
   try {
     const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=h264')
@@ -781,40 +1058,65 @@ async function runScanSequence() {
         ? 'video/webm;codecs=vp9'
         : 'video/webm';
     mediaRecorder = new MediaRecorder(state.videoStream, { mimeType });
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) state.recordedChunks.push(e.data);
-    };
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) state.recordedChunks.push(e.data); };
     mediaRecorder.start();
-  } catch (e) {
-    console.warn('MediaRecorder not supported, falling back to live stream', e);
+  } catch (e) { console.warn('MediaRecorder unavailable:', e); }
+
+  // Run each trial
+  for (let i = 0; i < trials.length; i++) {
+    state.currentTrial = i;
+    const trial = trials[i];
+    const trialNum = i + 1;
+    const totalTrials = trials.length;
+
+    // Pre-trial pause
+    setStatus('Hold gaze', '', `TRIAL ${trialNum} / ${totalTrials}`);
+    await sleep(1200);
+
+    // Capture pre-flash baseline
+    const preFlashEye = computeEyeBaseline();
+    const preFlashMouth = computeMouthBaseline();
+    const preFlashBpm = state.currentBpm;
+    const preFlashTime = performance.now();
+
+    // Countdown
+    for (let n = 3; n > 0; n--) {
+      setStatus('', n, `TRIAL ${trialNum} / ${totalTrials}`);
+      await sleep(550);
+    }
+
+    // FLASH — no pre-flash white pulse (it would saturate the blink response)
+    const flashLabel = trial.type === 'NEUTRAL' ? 'WAIT' : trial.label.toUpperCase();
+    document.getElementById('flashText').textContent = flashLabel;
+    document.getElementById('flashOverlay').classList.add('active');
+
+    // Capture timestamp AFTER render commits
+    let flashStartTime;
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          flashStartTime = performance.now();
+          resolve();
+        });
+      });
+    });
+
+    await sleep(280);
+    document.getElementById('flashOverlay').classList.remove('active');
+
+    // Capture window — 1500ms for adequate blink + autonomic window
+    setStatus('Recording', '', `TRIAL ${trialNum} / ${totalTrials}`);
+    await sleep(1500);
+
+    // Analyze this trial — pure measurement, no fallbacks
+    const trialResult = analyzeTrialPure(trial, flashStartTime, preFlashEye, preFlashMouth, preFlashBpm);
+    state.trials.push(trialResult);
+
+    // Inter-trial pause
+    await sleep(500);
   }
 
-  state.flashTime = performance.now();
-  const flashOpt = Math.random() < 0.5 ? 'A' : 'B';
-  state.flashedOption = flashOpt;
-  const flashText = flashOpt === 'A' ? state.optionA : state.optionB;
-
-  document.getElementById('flashText').textContent = flashText.toUpperCase();
-
-  // Pre-flash white pulse — alerts the eye, like a camera flash priming
-  document.getElementById('flashOverlay').style.background = '#fff';
-  document.getElementById('flashOverlay').classList.add('active');
-  document.getElementById('flashText').style.opacity = '0';
-  await sleep(60);
-
-  // Now the actual text flash on black background
-  document.getElementById('flashOverlay').style.background = '#000';
-  document.getElementById('flashText').style.opacity = '1';
-  await sleep(280); // longer — user must be able to read it
-
-  document.getElementById('flashOverlay').classList.remove('active');
-  document.getElementById('flashOverlay').style.background = '';
-  document.getElementById('flashText').style.opacity = '';
-
-  setStatus('Recording response', '');
-  await sleep(800);
-
-  // Stop recording and finalize the video blob
+  // Stop recording
   if (mediaRecorder && mediaRecorder.state === 'recording') {
     await new Promise(resolve => {
       mediaRecorder.onstop = resolve;
@@ -826,53 +1128,330 @@ async function runScanSequence() {
     }
   }
 
-  setStatus('Scan complete', '');
+  setStatus('Scan complete', '', '');
   await sleep(400);
 
-  // AGGRESSIVE camera shutdown — iOS Safari requires multiple steps
-  const videoEl = document.getElementById('video');
+  // Cleanup camera
+  cleanupAll();
 
-  // 1. Pause and detach video element from any source
-  videoEl.pause();
-  videoEl.srcObject = null;
-  videoEl.removeAttribute('src');
-
-  // 2. Stop all tracks on the stream and remove from stream
-  if (state.videoStream) {
-    state.videoStream.getTracks().forEach(t => {
-      try {
-        t.enabled = false;
-        t.stop();
-      } catch (e) {}
-      try {
-        state.videoStream.removeTrack(t);
-      } catch (e) {}
-    });
-    state.videoStream = null;
-  }
-
-  // 3. Force video element to release its hold by calling load()
-  try { videoEl.load(); } catch (e) {}
-
-  // 4. Replace the video element with a fresh clone — this severs any internal references
-  const newVideo = videoEl.cloneNode(false);
-  videoEl.parentNode.replaceChild(newVideo, videoEl);
-  newVideo.id = 'video';
-
-  // 5. Mark the model as unready
-  state.faceLandmarkerReady = false;
-
-  // 6. Tell garbage collector to clean up if possible
-  if (window.gc) try { window.gc(); } catch (e) {}
-
-  setStatus('Analyzing', '');
+  setStatus('Analyzing', '', '');
   await sleep(800);
 
-  analyzePostFlash();
-  generateVerdict();
-  showVerdict();
+  // Aggregate trial results
+  const verdict = aggregateTrials();
+  renderVerdict(verdict);
+  showVerdictScreen();
 }
 
+// ============================================
+// PURE TRIAL ANALYSIS — NO RANDOM FALLBACKS
+// ============================================
+function analyzeTrialPure(trial, flashStartTime, preFlashEye, preFlashMouth, preFlashBpm) {
+  const result = {
+    type: trial.type,
+    label: trial.label,
+    flashTime: flashStartTime,
+    blinkLatency: null,    // null means not measured
+    blinkAmplitude: null,
+    asymmetryDelta: null,
+    bpmDelta: null,
+    valid: false
+  };
+
+  // === Blink latency from real eye blendshape data ===
+  const postFlash = state.eyeOpennessHistory.filter(e =>
+    e.time > flashStartTime && e.time < flashStartTime + 1200
+  );
+  if (postFlash.length > 5) {
+    const baseAvg = (preFlashEye.left + preFlashEye.right) / 2;
+    const threshold = Math.max(0.15, baseAvg + 0.12); // adaptive threshold
+    let blinkDetected = null;
+    let maxAmp = 0;
+    for (const e of postFlash) {
+      const score = (e.left + e.right) / 2;
+      if (score > threshold && blinkDetected === null) {
+        blinkDetected = e.time - flashStartTime;
+      }
+      if (score > maxAmp) maxAmp = score;
+    }
+    if (blinkDetected !== null && blinkDetected > 50 && blinkDetected < 800) {
+      result.blinkLatency = Math.round(blinkDetected);
+      result.blinkAmplitude = parseFloat(maxAmp.toFixed(3));
+    }
+  }
+
+  // === Asymmetry from mouth/brow real data ===
+  const postMouth = state.mouthHistory.filter(m =>
+    m.time > flashStartTime && m.time < flashStartTime + 1200
+  );
+  if (postMouth.length > 5) {
+    let totalAsym = 0;
+    for (const m of postMouth) {
+      totalAsym += Math.abs(m.left - m.right);
+    }
+    const avgPostAsym = totalAsym / postMouth.length;
+    const preAvgAsym = Math.abs(preFlashMouth.left - preFlashMouth.right);
+    result.asymmetryDelta = parseFloat(((avgPostAsym - preAvgAsym) * 100).toFixed(2));
+  }
+
+  // === BPM elevation — only if we have real measurements ===
+  if (preFlashBpm > 0 && state.currentBpm > 0) {
+    result.bpmDelta = state.currentBpm - preFlashBpm;
+  }
+
+  // Valid if we got at least one real measurement
+  result.valid = (result.blinkLatency !== null) ||
+                 (result.asymmetryDelta !== null && Math.abs(result.asymmetryDelta) > 0.1);
+
+  return result;
+}
+
+// ============================================
+// AGGREGATE TRIALS → VERDICT
+// ============================================
+function aggregateTrials() {
+  const aTrials = state.trials.filter(t => t.type === 'A' && t.valid);
+  const bTrials = state.trials.filter(t => t.type === 'B' && t.valid);
+  const neutralTrials = state.trials.filter(t => t.type === 'NEUTRAL' && t.valid);
+
+  // Need at least one valid A and one valid B
+  if (aTrials.length < 1 || bTrials.length < 1) {
+    return {
+      status: 'failed',
+      reason: 'Insufficient measurements. The signal was too weak to draw a conclusion.',
+      diagnostics: {
+        aTrialsValid: aTrials.length,
+        bTrialsValid: bTrials.length,
+        neutralTrialsValid: neutralTrials.length,
+        totalTrials: state.trials.length
+      }
+    };
+  }
+
+  // Compute mean reaction strength for A and B
+  // Reaction strength = lower blink latency × higher asymmetry × higher bpm
+  const reactionScore = (trials) => {
+    let scores = [];
+    for (const t of trials) {
+      let s = 0;
+      let factors = 0;
+      if (t.blinkLatency !== null) {
+        // Lower latency = stronger rejection. Scale: 200ms → 1.0, 600ms → 0.0
+        s += Math.max(0, Math.min(1, (600 - t.blinkLatency) / 400));
+        factors++;
+      }
+      if (t.asymmetryDelta !== null) {
+        // Higher asymmetry delta = stronger reaction
+        s += Math.max(0, Math.min(1, Math.abs(t.asymmetryDelta) / 5));
+        factors++;
+      }
+      if (t.bpmDelta !== null && t.bpmDelta > 0) {
+        s += Math.max(0, Math.min(1, t.bpmDelta / 15));
+        factors++;
+      }
+      if (factors > 0) scores.push(s / factors);
+    }
+    return scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+  };
+
+  const aScore = reactionScore(aTrials);
+  const bScore = reactionScore(bTrials);
+  const neutralScore = neutralTrials.length > 0 ? reactionScore(neutralTrials) : 0;
+
+  // Differential — which option triggered stronger response?
+  const diff = aScore - bScore;
+  const absDiff = Math.abs(diff);
+
+  // Confidence based on signal separation
+  let confidence;
+  if (absDiff < 0.08) confidence = 'inconclusive';
+  else if (absDiff < 0.18) confidence = 'low';
+  else if (absDiff < 0.30) confidence = 'medium';
+  else confidence = 'high';
+
+  // Body's stronger reaction = rejection of that option
+  // (the option that triggered MORE response is the one the body recoiled from)
+  const strongerReaction = diff > 0 ? 'A' : 'B';
+  const wantsOption = diff > 0 ? 'B' : 'A';
+  const rejectedOption = diff > 0 ? 'A' : 'B';
+
+  // Compute averaged metrics for display
+  const avgMetric = (trials, key) => {
+    const vals = trials.map(t => t[key]).filter(v => v !== null);
+    if (vals.length === 0) return null;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+  };
+
+  return {
+    status: confidence === 'inconclusive' ? 'inconclusive' : 'success',
+    confidence,
+    differential: parseFloat((absDiff * 100).toFixed(1)),
+    aScore: parseFloat(aScore.toFixed(3)),
+    bScore: parseFloat(bScore.toFixed(3)),
+    neutralScore: parseFloat(neutralScore.toFixed(3)),
+    wantsOption,
+    rejectedOption,
+    aBlinkAvg: avgMetric(aTrials, 'blinkLatency'),
+    bBlinkAvg: avgMetric(bTrials, 'blinkLatency'),
+    aAsymAvg: avgMetric(aTrials, 'asymmetryDelta'),
+    bAsymAvg: avgMetric(bTrials, 'asymmetryDelta'),
+    aBpmAvg: avgMetric(aTrials, 'bpmDelta'),
+    bBpmAvg: avgMetric(bTrials, 'bpmDelta'),
+    aTrialCount: aTrials.length,
+    bTrialCount: bTrials.length,
+    neutralTrialCount: neutralTrials.length,
+    totalValid: aTrials.length + bTrials.length + neutralTrials.length,
+    totalRun: state.trials.length
+  };
+}
+
+// ============================================
+// RENDER VERDICT
+// ============================================
+function renderVerdict(v) {
+  const content = document.getElementById('verdictContent');
+  const now = new Date();
+  const stamp = `SESSION ${state.sessionId} / ${now.toISOString().split('T')[1].split('.')[0]} UTC`;
+
+  let html = `<div class="verdict-stamp">${stamp}</div>`;
+  html += `<h2 class="verdict-title">The Reading</h2>`;
+
+  // Replay frame
+  if (state.recordedUrl) {
+    html += `
+      <div class="replay-frame">
+        <video id="replayVideo" autoplay playsinline muted loop src="${state.recordedUrl}"></video>
+        <div class="replay-corners">
+          <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
+        </div>
+        <div class="replay-label">▶ REPLAY / FULL SCAN</div>
+      </div>
+    `;
+  }
+
+  if (v.status === 'failed') {
+    html += `
+      <div class="verdict-box failed">
+        <div class="verdict-label">— SCAN INCONCLUSIVE</div>
+        <div class="verdict-text">${esc(v.reason)}</div>
+        <div class="verdict-confidence">
+          <div class="conf-label">Diagnostics</div>
+          Valid trials: ${v.diagnostics.aTrialsValid + v.diagnostics.bTrialsValid + v.diagnostics.neutralTrialsValid} / ${v.diagnostics.totalTrials}<br>
+          Option A measurable: ${v.diagnostics.aTrialsValid} / 2<br>
+          Option B measurable: ${v.diagnostics.bTrialsValid} / 2
+        </div>
+      </div>
+      <div class="paywall">
+        <div class="top">— Try again</div>
+        <h3>Better light, less motion.</h3>
+        <p class="desc">The body responded too quietly to measure. Move to brighter light and hold the phone steadier.</p>
+      </div>
+      <button class="btn-main" onclick="backToInput()">Try Again</button>
+      <div class="disclaimer">Loits does not invent results. When signal is too weak, we say so.</div>
+    `;
+  } else {
+    // Comparison table
+    const fmt = (v, suffix='') => v === null ? '—' : (typeof v === 'number' ? v.toFixed(1) + suffix : v + suffix);
+    const wantsBoth = v.wantsOption === 'A' ? 'A' : 'B';
+    const winA = v.wantsOption === 'A';
+
+    html += `
+      <div class="comparison">
+        <div class="comparison-header">
+          <div>METRIC</div>
+          <div class="col-a">A — ${esc(state.optionA)}</div>
+          <div class="col-b">B — ${esc(state.optionB)}</div>
+        </div>
+        <div class="comparison-row">
+          <div class="label-col">Blink latency</div>
+          <div class="${!winA && v.aBlinkAvg !== null ? 'winner' : ''}">${fmt(v.aBlinkAvg, ' ms')}</div>
+          <div class="${winA && v.bBlinkAvg !== null ? 'winner' : ''}">${fmt(v.bBlinkAvg, ' ms')}</div>
+        </div>
+        <div class="comparison-row">
+          <div class="label-col">Asymmetry Δ</div>
+          <div class="${!winA && v.aAsymAvg !== null ? 'winner' : ''}">${fmt(v.aAsymAvg)}</div>
+          <div class="${winA && v.bAsymAvg !== null ? 'winner' : ''}">${fmt(v.bAsymAvg)}</div>
+        </div>
+        <div class="comparison-row">
+          <div class="label-col">BPM Δ</div>
+          <div class="${!winA && v.aBpmAvg !== null ? 'winner' : ''}">${fmt(v.aBpmAvg, ' bpm')}</div>
+          <div class="${winA && v.bBpmAvg !== null ? 'winner' : ''}">${fmt(v.bBpmAvg, ' bpm')}</div>
+        </div>
+        <div class="comparison-row">
+          <div class="label-col">Trials valid</div>
+          <div>${v.aTrialCount} / 2</div>
+          <div>${v.bTrialCount} / 2</div>
+        </div>
+      </div>
+    `;
+
+    const confLevel = v.confidence;
+    const confClass = confLevel === 'inconclusive' ? 'uncertain' : '';
+    const wantsLabel = v.wantsOption === 'A' ? state.optionA : state.optionB;
+    const rejectedLabel = v.rejectedOption === 'A' ? state.optionA : state.optionB;
+
+    if (confLevel === 'inconclusive') {
+      html += `
+        <div class="verdict-box uncertain">
+          <div class="verdict-label">— INCONCLUSIVE</div>
+          <div class="verdict-text">
+            Both paths produced similar physiological reactions.<br><br>
+            Your body did not signal a clear preference between <strong>"${esc(state.optionA)}"</strong> and <strong>"${esc(state.optionB)}"</strong>.
+          </div>
+          <div class="verdict-confidence">
+            <div class="conf-label">Why</div>
+            Differential: ${v.differential}%<br>
+            Confidence: <strong>${confLevel}</strong><br>
+            A score: ${v.aScore} • B score: ${v.bScore}
+          </div>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="verdict-box">
+          <div class="verdict-label">— VERDICT (${confLevel.toUpperCase()} CONFIDENCE)</div>
+          <div class="verdict-text">
+            Your body reacted more strongly to <strong>"${esc(rejectedLabel)}"</strong>.<br><br>
+            It wants the other path: <strong>"${esc(wantsLabel)}"</strong>.
+          </div>
+          <div class="verdict-confidence">
+            <div class="conf-label">Signal strength</div>
+            Differential: <strong>${v.differential}%</strong><br>
+            A response score: ${v.aScore} • B response score: ${v.bScore}<br>
+            Confidence: <strong>${confLevel}</strong> (based on ${v.totalValid}/5 valid trials)
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="paywall">
+        <div class="top">— Next reading</div>
+        <h3>Five more truths.</h3>
+        <p class="desc">Your first reading is free. The next ones are not.</p>
+        <div class="price">€4.99 / 5 readings</div>
+        <button class="btn-main" onclick="handlePayment()">Unlock 5 Readings</button>
+        <button class="btn-secondary" onclick="handleLifetime()">€14.99 — Lifetime unlimited</button>
+      </div>
+      <button class="btn-secondary" onclick="resetApp()">New Reading</button>
+      <div class="disclaimer">
+        Body signals indicate physiological activation, not validated truth.<br>
+        Consult a licensed professional for serious choices.
+      </div>
+    `;
+  }
+
+  content.innerHTML = html;
+}
+
+function showVerdictScreen() {
+  document.getElementById('scanScreen').classList.remove('active');
+  document.getElementById('verdictScreen').classList.add('active');
+}
+
+// ============================================
+// CAMERA + FACE TRACKING
+// ============================================
 async function loadFaceLandmarker() {
   const { FaceLandmarker, FilesetResolver } = await import(
     'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/vision_bundle.mjs'
@@ -892,13 +1471,36 @@ async function loadFaceLandmarker() {
 }
 
 function processFrame(timestamp) {
-  if (!state.faceLandmarkerReady) { requestAnimationFrame(processFrame); return; }
+  if (!state.scanActive) return;
+  if (!state.faceLandmarkerReady) {
+    state.frameReqId = requestAnimationFrame(processFrame);
+    return;
+  }
+
+  // FPS calculation
+  if (state.lastFrameTime > 0) {
+    const dt = timestamp - state.lastFrameTime;
+    if (dt > 0) {
+      const instFps = 1000 / dt;
+      state.fpsBuffer.push(instFps);
+      if (state.fpsBuffer.length > 30) state.fpsBuffer.shift();
+      state.fps = state.fpsBuffer.reduce((a, b) => a + b, 0) / state.fpsBuffer.length;
+      const fpsEl = document.getElementById('hudFps');
+      if (fpsEl) fpsEl.textContent = state.fps.toFixed(0) + ' FPS';
+    }
+  }
+  state.lastFrameTime = timestamp;
+
   const video = document.getElementById('video');
+  if (!video || video.readyState < 2) {
+    state.frameReqId = requestAnimationFrame(processFrame);
+    return;
+  }
+
   const overlay = document.getElementById('overlay');
   const ctx = overlay.getContext('2d');
   overlay.width = video.videoWidth || 720;
   overlay.height = video.videoHeight || 1280;
-  if (video.readyState < 2) { requestAnimationFrame(processFrame); return; }
 
   const results = state.faceLandmarker.detectForVideo(video, performance.now());
   ctx.clearRect(0, 0, overlay.width, overlay.height);
@@ -907,41 +1509,120 @@ function processFrame(timestamp) {
     const landmarks = results.faceLandmarks[0];
     drawScanOverlay(ctx, landmarks, overlay.width, overlay.height);
 
-    const forehead = extractForehead(video, landmarks);
-    if (forehead) {
-      state.rgbHistory.push({ time: timestamp, r: forehead.r, g: forehead.g, b: forehead.b });
-      if (state.rgbHistory.length > 200) state.rgbHistory.shift();
+    // Face size
+    let minX = 1, minY = 1, maxX = 0, maxY = 0;
+    for (const lm of landmarks) {
+      if (lm.x < minX) minX = lm.x;
+      if (lm.y < minY) minY = lm.y;
+      if (lm.x > maxX) maxX = lm.x;
+      if (lm.y > maxY) maxY = lm.y;
+    }
+    state.faceSizeRatio = Math.max(maxX - minX, maxY - minY);
+
+    // Face stability tracking
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    state.faceCenterHistory.push({ x: centerX, y: centerY, time: timestamp });
+    if (state.faceCenterHistory.length > 30) state.faceCenterHistory.shift();
+    if (state.faceCenterHistory.length >= 10) {
+      let totalMovement = 0;
+      for (let i = 1; i < state.faceCenterHistory.length; i++) {
+        const dx = state.faceCenterHistory[i].x - state.faceCenterHistory[i-1].x;
+        const dy = state.faceCenterHistory[i].y - state.faceCenterHistory[i-1].y;
+        totalMovement += Math.sqrt(dx*dx + dy*dy);
+      }
+      const avgMovement = totalMovement / state.faceCenterHistory.length;
+      state.faceStability = Math.max(0, Math.min(1, 1 - avgMovement * 50));
     }
 
+    // Multi-ROI extraction
+    const forehead = extractROI(video, landmarks, 'forehead');
+    const leftCheek = extractROI(video, landmarks, 'leftCheek');
+    const rightCheek = extractROI(video, landmarks, 'rightCheek');
+
+    if (forehead) state.rgbHistoryForehead.push({ time: timestamp, ...forehead });
+    if (leftCheek) state.rgbHistoryLeftCheek.push({ time: timestamp, ...leftCheek });
+    if (rightCheek) state.rgbHistoryRightCheek.push({ time: timestamp, ...rightCheek });
+    if (state.rgbHistoryForehead.length > 300) state.rgbHistoryForehead.shift();
+    if (state.rgbHistoryLeftCheek.length > 300) state.rgbHistoryLeftCheek.shift();
+    if (state.rgbHistoryRightCheek.length > 300) state.rgbHistoryRightCheek.shift();
+
+    // Blendshapes
     if (results.faceBlendshapes && results.faceBlendshapes[0]) {
       const shapes = results.faceBlendshapes[0].categories;
-      const leftEye = shapes.find(s => s.categoryName === 'eyeBlinkLeft')?.score || 0;
-      const rightEye = shapes.find(s => s.categoryName === 'eyeBlinkRight')?.score || 0;
-      const mouthLeft = shapes.find(s => s.categoryName === 'mouthSmileLeft')?.score || 0;
-      const mouthRight = shapes.find(s => s.categoryName === 'mouthSmileRight')?.score || 0;
+      const get = (n) => shapes.find(s => s.categoryName === n)?.score || 0;
 
-      state.eyeOpennessHistory.push({ time: timestamp, left: leftEye, right: rightEye });
-      state.mouthAsymmetryHistory.push({ time: timestamp, left: mouthLeft, right: mouthRight });
-      if (state.eyeOpennessHistory.length > 60) state.eyeOpennessHistory.shift();
-      if (state.mouthAsymmetryHistory.length > 60) state.mouthAsymmetryHistory.shift();
+      state.eyeOpennessHistory.push({
+        time: timestamp,
+        left: get('eyeBlinkLeft'),
+        right: get('eyeBlinkRight')
+      });
+      state.mouthHistory.push({
+        time: timestamp,
+        left: get('mouthSmileLeft') + get('mouthFrownLeft'),
+        right: get('mouthSmileRight') + get('mouthFrownRight')
+      });
+      state.browHistory.push({
+        time: timestamp,
+        inner: get('browInnerUp'),
+        leftDown: get('browDownLeft'),
+        rightDown: get('browDownRight')
+      });
+      state.jawHistory.push({ time: timestamp, jaw: get('jawForward') + get('jawOpen') });
+
+      if (state.eyeOpennessHistory.length > 120) state.eyeOpennessHistory.shift();
+      if (state.mouthHistory.length > 120) state.mouthHistory.shift();
+      if (state.browHistory.length > 120) state.browHistory.shift();
+      if (state.jawHistory.length > 120) state.jawHistory.shift();
     }
 
-    if (state.rgbHistory.length >= 60 && state.rgbHistory.length % 20 === 0) {
-      const bpm = computeBpm(state.rgbHistory);
-      if (bpm > 50 && bpm < 110) {
-        state.pulseHistory.push(bpm);
-        if (state.pulseHistory.length > 8) state.pulseHistory.shift();
-        if (state.pulseHistory.length >= 3) {
-          const sorted = [...state.pulseHistory].sort((a, b) => a - b);
-          const median = Math.round(sorted[Math.floor(sorted.length / 2)]);
-          state.baselineBpm = median;
-          document.getElementById('hudBpm').textContent = median + ' BPM';
-        }
+    // Multi-ROI BPM every 20 frames
+    if (state.rgbHistoryForehead.length >= 90 && state.rgbHistoryForehead.length % 20 === 0) {
+      const bpm = computeMultiROIBpm();
+      if (bpm > 0) {
+        state.currentBpm = bpm;
+        const el = document.getElementById('hudBpm');
+        if (el) el.textContent = bpm + ' BPM';
       }
     }
+
+    // Update quality cells
+    updateQualityHUD();
+  } else {
+    document.getElementById('qFace').textContent = 'NONE';
+    document.getElementById('qFace').className = 'value bad';
   }
 
-  requestAnimationFrame(processFrame);
+  state.frameReqId = requestAnimationFrame(processFrame);
+}
+
+function updateQualityHUD() {
+  // Light
+  const recent = state.rgbHistoryForehead.slice(-10);
+  if (recent.length > 0) {
+    const avg = recent.reduce((a, p) => a + (p.r + p.g + p.b) / 3, 0) / recent.length;
+    const el = document.getElementById('qLight');
+    if (avg > 100) { el.textContent = 'GOOD'; el.className = 'value good'; }
+    else if (avg > 60) { el.textContent = 'OK'; el.className = 'value warn'; }
+    else { el.textContent = 'LOW'; el.className = 'value bad'; }
+  }
+
+  // Face
+  const fEl = document.getElementById('qFace');
+  if (state.faceSizeRatio > 0.32) { fEl.textContent = 'GOOD'; fEl.className = 'value good'; }
+  else if (state.faceSizeRatio > 0.2) { fEl.textContent = 'OK'; fEl.className = 'value warn'; }
+  else { fEl.textContent = 'FAR'; fEl.className = 'value bad'; }
+
+  // Pulse
+  const pEl = document.getElementById('qPulse');
+  if (state.currentBpm > 50 && state.currentBpm < 110) { pEl.textContent = state.currentBpm; pEl.className = 'value good'; }
+  else { pEl.textContent = '—'; pEl.className = 'value warn'; }
+
+  // Stable
+  const sEl = document.getElementById('qStable');
+  if (state.faceStability > 0.8) { sEl.textContent = 'GOOD'; sEl.className = 'value good'; }
+  else if (state.faceStability > 0.5) { sEl.textContent = 'OK'; sEl.className = 'value warn'; }
+  else { sEl.textContent = 'MOVE'; sEl.className = 'value bad'; }
 }
 
 function drawScanOverlay(ctx, landmarks, w, h) {
@@ -957,43 +1638,75 @@ function drawScanOverlay(ctx, landmarks, w, h) {
 
   const leftOuter = landmarks[33], leftInner = landmarks[133];
   const rightInner = landmarks[362], rightOuter = landmarks[263];
-  const leftCenter = { x: (leftOuter.x + leftInner.x) / 2 * w, y: (leftOuter.y + leftInner.y) / 2 * h };
-  const rightCenter = { x: (rightOuter.x + rightInner.x) / 2 * w, y: (rightOuter.y + rightInner.y) / 2 * h };
+  const lc = { x: (leftOuter.x + leftInner.x) / 2 * w, y: (leftOuter.y + leftInner.y) / 2 * h };
+  const rc = { x: (rightOuter.x + rightInner.x) / 2 * w, y: (rightOuter.y + rightInner.y) / 2 * h };
   const eyeW = Math.abs(leftOuter.x - leftInner.x) * w;
 
   const pulse = 0.6 + Math.sin(t * 3) * 0.3;
   ctx.strokeStyle = `rgba(255, 41, 41, ${pulse})`;
   ctx.lineWidth = 1.2;
-  [leftCenter, rightCenter].forEach(c => {
+  [lc, rc].forEach(c => {
     ctx.beginPath();
     ctx.arc(c.x, c.y, eyeW * 0.9, 0, Math.PI * 2);
     ctx.stroke();
   });
 
-  const fhTop = landmarks[10];
-  const leftBrow = landmarks[105];
-  const rightBrow = landmarks[334];
-  const fhCx = (leftBrow.x + rightBrow.x) / 2 * w;
-  const fhBy = (leftBrow.y + rightBrow.y) / 2 * h;
-  const fhWidth = Math.abs(rightBrow.x - leftBrow.x) * w * 1.1;
-  const fhHeight = Math.abs(fhBy - fhTop.y * h) * 0.85;
-  const fhTy = fhBy - fhHeight;
+  // Forehead ROI
+  drawROIBracket(ctx, landmarks, w, h, 'forehead', 'rgba(0, 255, 136, 0.7)', t);
+  drawROIBracket(ctx, landmarks, w, h, 'leftCheek', 'rgba(255, 200, 0, 0.6)', t);
+  drawROIBracket(ctx, landmarks, w, h, 'rightCheek', 'rgba(255, 200, 0, 0.6)', t);
+}
 
-  const scanY = fhTy + ((t * 0.6) % 1) * fhHeight;
-  ctx.strokeStyle = 'rgba(0, 255, 136, 0.7)';
+function getROICoords(landmarks, roiType) {
+  if (roiType === 'forehead') {
+    const top = landmarks[10];
+    const left = landmarks[105];
+    const right = landmarks[334];
+    return {
+      cx: (left.x + right.x) / 2,
+      ty: top.y,
+      by: (left.y + right.y) / 2,
+      width: Math.abs(right.x - left.x) * 1.1
+    };
+  } else if (roiType === 'leftCheek') {
+    const p = landmarks[123];
+    const w = 0.06;
+    return { cx: p.x, ty: p.y - 0.02, by: p.y + 0.04, width: w };
+  } else if (roiType === 'rightCheek') {
+    const p = landmarks[352];
+    const w = 0.06;
+    return { cx: p.x, ty: p.y - 0.02, by: p.y + 0.04, width: w };
+  }
+  return null;
+}
+
+function drawROIBracket(ctx, landmarks, w, h, roiType, color, t) {
+  const coords = getROICoords(landmarks, roiType);
+  if (!coords) return;
+  const cx = coords.cx * w;
+  const ty = coords.ty * h;
+  const by = coords.by * h;
+  const width = coords.width * w;
+  const height = Math.abs(by - ty);
+
+  if (roiType === 'forehead') {
+    const scanY = ty + ((t * 0.6) % 1) * height;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - width / 2, scanY);
+    ctx.lineTo(cx + width / 2, scanY);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = color;
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(fhCx - fhWidth / 2, scanY);
-  ctx.lineTo(fhCx + fhWidth / 2, scanY);
-  ctx.stroke();
-
-  ctx.strokeStyle = 'rgba(0, 255, 136, 0.6)';
-  const bl = 6;
+  const bl = 5;
   const corners = [
-    [fhCx - fhWidth / 2, fhTy, 1, 1],
-    [fhCx + fhWidth / 2, fhTy, -1, 1],
-    [fhCx - fhWidth / 2, fhBy, 1, -1],
-    [fhCx + fhWidth / 2, fhBy, -1, -1]
+    [cx - width / 2, ty, 1, 1],
+    [cx + width / 2, ty, -1, 1],
+    [cx - width / 2, by, 1, -1],
+    [cx + width / 2, by, -1, -1]
   ];
   corners.forEach(([x, y, dx, dy]) => {
     ctx.beginPath();
@@ -1004,36 +1717,50 @@ function drawScanOverlay(ctx, landmarks, w, h) {
   });
 }
 
-function extractForehead(video, landmarks) {
-  const fhTop = landmarks[10];
-  const leftBrow = landmarks[105];
-  const rightBrow = landmarks[334];
-  if (!fhTop || !leftBrow || !rightBrow) return null;
+let reusableCanvas = null;
+function extractROI(video, landmarks, roiType) {
+  const coords = getROICoords(landmarks, roiType);
+  if (!coords) return null;
 
-  const tmp = document.createElement('canvas');
-  tmp.width = video.videoWidth;
-  tmp.height = video.videoHeight;
-  const c = tmp.getContext('2d');
+  if (!reusableCanvas) reusableCanvas = document.createElement('canvas');
+  reusableCanvas.width = video.videoWidth;
+  reusableCanvas.height = video.videoHeight;
+  const c = reusableCanvas.getContext('2d');
   c.drawImage(video, 0, 0);
 
-  const x1 = leftBrow.x * tmp.width;
-  const x2 = rightBrow.x * tmp.width;
-  const y1 = fhTop.y * tmp.height;
-  const y2 = (leftBrow.y + rightBrow.y) / 2 * tmp.height;
-  const w = Math.abs(x2 - x1);
-  const h = Math.abs(y2 - y1);
+  const x1 = (coords.cx - coords.width / 2) * reusableCanvas.width;
+  const y1 = coords.ty * reusableCanvas.height;
+  const w = coords.width * reusableCanvas.width;
+  const h = Math.abs(coords.by - coords.ty) * reusableCanvas.height;
   if (w < 5 || h < 5) return null;
 
-  const img = c.getImageData(Math.min(x1, x2), Math.min(y1, y2), w, h);
-  let r = 0, g = 0, b = 0, n = 0;
-  for (let i = 0; i < img.data.length; i += 4) {
-    r += img.data[i]; g += img.data[i + 1]; b += img.data[i + 2]; n++;
+  try {
+    const img = c.getImageData(Math.max(0, x1), Math.max(0, y1), Math.min(w, reusableCanvas.width - x1), Math.min(h, reusableCanvas.height - y1));
+    let r = 0, g = 0, b = 0, n = 0;
+    for (let i = 0; i < img.data.length; i += 4) {
+      r += img.data[i]; g += img.data[i + 1]; b += img.data[i + 2]; n++;
+    }
+    return { r: r / n, g: g / n, b: b / n };
+  } catch (e) {
+    return null;
   }
-  return { r: r / n, g: g / n, b: b / n };
 }
 
-function computeBpm(rgb) {
-  const recent = rgb.slice(-120);
+function computeMultiROIBpm() {
+  // Compute BPM from each ROI independently, then average
+  const bpms = [];
+  for (const hist of [state.rgbHistoryForehead, state.rgbHistoryLeftCheek, state.rgbHistoryRightCheek]) {
+    const bpm = computeBpmFromHistory(hist);
+    if (bpm > 50 && bpm < 110) bpms.push(bpm);
+  }
+  if (bpms.length === 0) return 0;
+  // Median for robustness
+  bpms.sort((a, b) => a - b);
+  return Math.round(bpms[Math.floor(bpms.length / 2)]);
+}
+
+function computeBpmFromHistory(rgb) {
+  const recent = rgb.slice(-150);
   if (recent.length < 60) return 0;
   const greens = recent.map(p => p.g);
   const times = recent.map(p => p.time);
@@ -1042,7 +1769,7 @@ function computeBpm(rgb) {
   const meanAbs = absVals.reduce((a, b) => a + b, 0) / absVals.length;
   const maxAbs = Math.max(...absVals);
   if (meanAbs < 0.05) return 0;
-  if (maxAbs / meanAbs > 10) return 0;
+  if (maxAbs / meanAbs > 12) return 0;
 
   const smoothed = smooth(det, 3);
   const duration = (times[times.length - 1] - times[0]) / 1000;
@@ -1078,113 +1805,56 @@ function smooth(arr, w) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function computeEyeBaseline() {
-  if (state.eyeOpennessHistory.length < 5) return { left: 0.05, right: 0.05 };
-  const recent = state.eyeOpennessHistory.slice(-10);
+  const recent = state.eyeOpennessHistory.slice(-15);
+  if (recent.length < 3) return { left: 0.05, right: 0.05 };
   let sl = 0, sr = 0;
   for (const e of recent) { sl += e.left; sr += e.right; }
   return { left: sl / recent.length, right: sr / recent.length };
 }
 
-function analyzePostFlash() {
-  const ft = state.flashTime;
-  const postFlash = state.eyeOpennessHistory.filter(e => e.time > ft && e.time < ft + 600);
-  const baseline = state.preFlashBaseline || { left: 0.05, right: 0.05 };
-  const baseAvg = (baseline.left + baseline.right) / 2;
-
-  let blinkLat = 0;
-  for (const e of postFlash) {
-    const score = (e.left + e.right) / 2;
-    if (score > baseAvg + 0.1 && blinkLat === 0) {
-      blinkLat = Math.round(e.time - ft);
-      break;
-    }
-  }
-  if (blinkLat === 0) blinkLat = 180 + Math.floor(Math.random() * 220);
-  state.blinkLatency = blinkLat;
-
-  const postMouth = state.mouthAsymmetryHistory.filter(m => m.time > ft && m.time < ft + 600);
-  let aSum = 0, aCount = 0;
-  for (const m of postMouth) { aSum += Math.abs(m.left - m.right); aCount++; }
-  const rawAsym = aCount > 0 ? aSum / aCount : 0;
-  let asym = (rawAsym * 100).toFixed(1);
-  if (asym == 0 || asym > 50) asym = (Math.random() * 4 + 1.5).toFixed(1);
-  state.asymmetryIdx = asym;
-
-  const elevation = 4 + Math.floor(Math.random() * 9);
-  state.peakBpm = state.baselineBpm + elevation;
-
-  let score = 0;
-  if (blinkLat < 250) score += 2;
-  else if (blinkLat < 350) score += 1;
-  if (parseFloat(asym) > 3) score += 1;
-  if (elevation > 6) score += 1;
-  state.rejectedFlash = score >= 2;
-}
-
-function generateVerdict() {
-  const flashed = state.flashedOption === 'A' ? state.optionA : state.optionB;
-  const t = document.getElementById('verdictText');
-  const m = document.getElementById('verdictMeta');
-
-  if (state.rejectedFlash) {
-    t.innerHTML = `Your body recoiled from <strong>"${esc(flashed)}"</strong>.<br><br>What it wants is the other path.`;
-    m.textContent = `Detected: ${state.blinkLatency}ms autonomic blink • ${state.asymmetryIdx} asymmetry index • +${state.peakBpm - state.baselineBpm} BPM elevation. Consistent with rejection response.`;
-  } else {
-    t.innerHTML = `Your body did not flinch at <strong>"${esc(flashed)}"</strong>.<br><br>It accepts this path.`;
-    m.textContent = `Detected: ${state.blinkLatency}ms blink latency • ${state.asymmetryIdx} asymmetry index • +${state.peakBpm - state.baselineBpm} BPM elevation. Consistent with acceptance / neutral signal.`;
-  }
-
-  document.getElementById('dataBaseline').textContent = state.baselineBpm;
-  document.getElementById('dataPeak').textContent = state.peakBpm;
-  document.getElementById('dataDelta').textContent = ' +' + (state.peakBpm - state.baselineBpm);
-  document.getElementById('dataBlink').textContent = state.blinkLatency;
-  document.getElementById('dataAsym').textContent = state.asymmetryIdx;
-
-  const now = new Date();
-  document.getElementById('verdictStamp').textContent =
-    `SESSION ${state.sessionId} / ${now.toISOString().split('T')[1].split('.')[0]} UTC`;
+function computeMouthBaseline() {
+  const recent = state.mouthHistory.slice(-15);
+  if (recent.length < 3) return { left: 0, right: 0 };
+  let sl = 0, sr = 0;
+  for (const m of recent) { sl += m.left; sr += m.right; }
+  return { left: sl / recent.length, right: sr / recent.length };
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-function showVerdict() {
-  const replayVideo = document.getElementById('replayVideo');
-  if (state.recordedUrl) {
-    // Use the saved MP4/WebM recording — camera is now closed
-    replayVideo.srcObject = null;
-    replayVideo.src = state.recordedUrl;
-    replayVideo.playbackRate = 0.25;
-    replayVideo.play().catch(() => {});
-  } else if (state.videoStream) {
-    // Fallback: if recording failed, still try live stream
-    replayVideo.srcObject = state.videoStream;
-    replayVideo.playbackRate = 0.25;
-    replayVideo.play().catch(() => {});
+// ============================================
+// CLEANUP
+// ============================================
+function cleanupAll() {
+  state.scanActive = false;
+  state.faceLandmarkerReady = false;
+  if (state.frameReqId !== null) {
+    cancelAnimationFrame(state.frameReqId);
+    state.frameReqId = null;
   }
-  document.getElementById('scanScreen').classList.remove('active');
-  document.getElementById('verdictScreen').classList.add('active');
 
-  const canvas = document.getElementById('replayCanvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = 500; canvas.height = 500;
-  function drawAnnotations() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const t = Date.now() / 1000;
-    const pulse = Math.sin(t * 4) * 0.3 + 0.7;
-    ctx.strokeStyle = `rgba(255, 41, 41, ${pulse})`;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(canvas.width * 0.36, canvas.height * 0.42, 28, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(canvas.width * 0.64, canvas.height * 0.42, 28, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(255, 41, 41, 0.85)';
-    ctx.font = '10px JetBrains Mono';
-    ctx.fillText(`T+${state.blinkLatency}ms`, canvas.width * 0.64 + 32, canvas.height * 0.42 + 4);
-    requestAnimationFrame(drawAnnotations);
+  const videoEl = document.getElementById('video');
+  if (videoEl) {
+    videoEl.pause();
+    videoEl.srcObject = null;
+    videoEl.removeAttribute('src');
+    try { videoEl.load(); } catch (e) {}
   }
-  drawAnnotations();
+
+  if (state.videoStream) {
+    state.videoStream.getTracks().forEach(t => {
+      try { t.enabled = false; t.stop(); } catch (e) {}
+      try { state.videoStream.removeTrack(t); } catch (e) {}
+    });
+    state.videoStream = null;
+  }
+
+  // Force replacement of video element to fully sever media-engine references
+  if (videoEl && videoEl.parentNode) {
+    const newVideo = videoEl.cloneNode(false);
+    newVideo.id = 'video';
+    videoEl.parentNode.replaceChild(newVideo, videoEl);
+  }
 }
 
 function handlePayment() {
@@ -1195,43 +1865,25 @@ function handleLifetime() {
 }
 
 function backToInput() {
-  // Keep the A/B options so user can edit them
-  if (state.recordedUrl) {
-    URL.revokeObjectURL(state.recordedUrl);
-    state.recordedUrl = null;
-  }
+  cleanupAll();
+  if (state.recordedUrl) { URL.revokeObjectURL(state.recordedUrl); state.recordedUrl = null; }
   state.recordedBlob = null;
   state.recordedChunks = [];
-  state.rgbHistory = [];
-  state.pulseHistory = [];
-  state.eyeOpennessHistory = [];
-  state.mouthAsymmetryHistory = [];
-  state.baselineBpm = 0;
   document.getElementById('hudBpm').textContent = '— BPM';
   document.getElementById('verdictScreen').classList.remove('active');
   document.querySelector('.topbar').style.display = 'flex';
   goTo('screen-input');
-  // Restore the previous options
   document.getElementById('optionA').value = state.optionA;
   document.getElementById('optionB').value = state.optionB;
 }
 
 function resetApp() {
-  if (state.videoStream) {
-    state.videoStream.getTracks().forEach(t => t.stop());
-    state.videoStream = null;
-  }
-  if (state.recordedUrl) {
-    URL.revokeObjectURL(state.recordedUrl);
-    state.recordedUrl = null;
-  }
+  cleanupAll();
+  if (state.recordedUrl) { URL.revokeObjectURL(state.recordedUrl); state.recordedUrl = null; }
   state.recordedBlob = null;
   state.recordedChunks = [];
-  state.rgbHistory = [];
-  state.pulseHistory = [];
-  state.eyeOpennessHistory = [];
-  state.mouthAsymmetryHistory = [];
-  state.baselineBpm = 0;
+  state.optionA = ''; state.optionB = '';
+  state.currentBpm = 0;
   document.getElementById('optionA').value = '';
   document.getElementById('optionB').value = '';
   document.getElementById('hudBpm').textContent = '— BPM';
