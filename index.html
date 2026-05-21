@@ -344,7 +344,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1);
+    transform: scaleX(-1) scale(1.8);
+    transform-origin: center 35%;
   }
   #overlay {
     position: absolute;
@@ -469,6 +470,39 @@
     color: var(--dim);
     border-color: var(--dim2);
   }
+
+  /* Diagnostic strip — medical-grade readouts */
+  .diagnostic-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--dim2);
+    border: 1px solid var(--dim2);
+    margin-top: 12px;
+  }
+  .diag-cell {
+    background: #050505;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .diag-label {
+    font-size: 7px;
+    letter-spacing: 0.18em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .diag-value {
+    font-size: 11px;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+  .diag-value.green { color: var(--good); }
+  .diag-value.amber { color: #ffc800; }
+  .diag-value.red { color: var(--accent); }
   #pulseCanvas {
     width: 100%;
     height: 100%;
@@ -867,6 +901,26 @@
       </div>
     </div>
 
+    <!-- Diagnostic readouts -->
+    <div class="diagnostic-strip">
+      <div class="diag-cell">
+        <span class="diag-label">FACE LANDMARKS</span>
+        <span class="diag-value" id="diagLandmarks">468 / 468</span>
+      </div>
+      <div class="diag-cell">
+        <span class="diag-label">SIGNAL Q</span>
+        <span class="diag-value" id="diagSignal">—</span>
+      </div>
+      <div class="diag-cell">
+        <span class="diag-label">FRAME RATE</span>
+        <span class="diag-value" id="diagFps">—</span>
+      </div>
+      <div class="diag-cell">
+        <span class="diag-label">LUX</span>
+        <span class="diag-value" id="diagLux">—</span>
+      </div>
+    </div>
+
     <div class="calibration-status" id="calStatus">Awaiting camera access…</div>
     <div class="calibration-progress">
       <div class="calibration-progress-bar" id="calProgress"></div>
@@ -1079,6 +1133,23 @@
     const overlay = document.getElementById('overlay');
     const ctx = overlay.getContext('2d');
 
+    // FPS calculation
+    if (!state.lastFrameTime) state.lastFrameTime = timestamp;
+    const frameDelta = timestamp - state.lastFrameTime;
+    state.lastFrameTime = timestamp;
+    if (frameDelta > 0) {
+      const currentFps = 1000 / frameDelta;
+      if (!state.fpsHistory) state.fpsHistory = [];
+      state.fpsHistory.push(currentFps);
+      if (state.fpsHistory.length > 30) state.fpsHistory.shift();
+      const avgFps = state.fpsHistory.reduce((a, b) => a + b, 0) / state.fpsHistory.length;
+      const fpsEl = document.getElementById('diagFps');
+      if (fpsEl) {
+        fpsEl.textContent = avgFps.toFixed(0) + ' FPS';
+        fpsEl.className = 'diag-value ' + (avgFps > 24 ? 'green' : avgFps > 15 ? 'amber' : 'red');
+      }
+    }
+
     overlay.width = video.videoWidth || 640;
     overlay.height = video.videoHeight || 480;
 
@@ -1104,7 +1175,7 @@
       const faceWidth = maxX - minX;
       const faceHeight = maxY - minY;
       const faceFraction = Math.max(faceWidth, faceHeight);
-      const isCloseEnough = faceFraction > 0.45; // face takes at least 45% of frame
+      const isCloseEnough = faceFraction > 0.28; // adjusted for 1.8x zoom — face appears larger
 
       if (isCloseEnough) {
         document.getElementById('faceStatus').textContent = 'LOCKED';
@@ -1130,6 +1201,41 @@
             b: forehead.b
           });
           if (state.rgbHistory.length > 300) state.rgbHistory.shift();
+
+          // Lux estimate from average forehead brightness
+          const brightness = (forehead.r + forehead.g + forehead.b) / 3;
+          const luxEl = document.getElementById('diagLux');
+          if (luxEl) {
+            // Rough rule-of-thumb mapping for brightness → lux
+            const luxEstimate = Math.round(brightness * brightness / 25);
+            luxEl.textContent = luxEstimate + ' lx';
+            luxEl.className = 'diag-value ' + (luxEstimate > 80 ? 'green' : luxEstimate > 30 ? 'amber' : 'red');
+          }
+
+          // Signal quality — based on green channel variance over last 30 frames
+          if (state.rgbHistory.length >= 30) {
+            const recentGreens = state.rgbHistory.slice(-30).map(p => p.g);
+            const mean = recentGreens.reduce((a, b) => a + b, 0) / recentGreens.length;
+            const variance = recentGreens.reduce((acc, v) => acc + (v - mean) ** 2, 0) / recentGreens.length;
+            const stdDev = Math.sqrt(variance);
+            const signalEl = document.getElementById('diagSignal');
+            if (signalEl) {
+              let quality;
+              let qClass;
+              if (stdDev > 0.3 && stdDev < 3) {
+                quality = 'GOOD';
+                qClass = 'green';
+              } else if (stdDev > 3) {
+                quality = 'NOISY';
+                qClass = 'amber';
+              } else {
+                quality = 'WEAK';
+                qClass = 'red';
+              }
+              signalEl.textContent = quality;
+              signalEl.className = 'diag-value ' + qClass;
+            }
+          }
         }
       } else {
         // Face too far — pause calibration by resetting start time
@@ -1229,32 +1335,173 @@
   }
 
   function drawFaceMesh(ctx, landmarks, w, h) {
-    ctx.strokeStyle = 'rgba(255, 41, 41, 0.4)';
-    ctx.fillStyle = 'rgba(255, 41, 41, 0.8)';
-    ctx.lineWidth = 1;
+    const t = performance.now() / 1000;
 
-    // Draw key landmark points (subset for cleanliness)
-    const keyIndices = [
-      // Eye outline points
-      33, 133, 159, 145, 153, 154,
-      263, 362, 386, 374, 373, 380,
-      // Mouth
-      61, 291, 13, 14, 17, 0,
-      // Nose
-      1, 2, 5, 4, 195,
-      // Face contour
-      10, 152, 234, 454
-    ];
-
-    keyIndices.forEach(idx => {
-      const p = landmarks[idx];
-      if (!p) return;
-      ctx.beginPath();
-      ctx.arc(p.x * w, p.y * h, 1.5, 0, Math.PI * 2);
-      ctx.fill();
+    // Compute zoom-corrected coordinates to match the 1.8x zoom on the video
+    const zoom = 1.8;
+    const cx = w / 2;
+    const cy = h * 0.35;
+    const transform = (p) => ({
+      x: cx + (p.x * w - cx) * zoom,
+      y: cy + (p.y * h - cy) * zoom
     });
 
-    // Draw bounding box around face
+    // === LAYER 1: Subtle face mesh grid (semi-transparent) ===
+    ctx.strokeStyle = 'rgba(255, 41, 41, 0.15)';
+    ctx.lineWidth = 0.5;
+
+    // Draw a sparse mesh — connect every 8th point with nearby ones
+    for (let i = 0; i < landmarks.length; i += 8) {
+      for (let j = i + 8; j < Math.min(i + 24, landmarks.length); j += 8) {
+        const p1 = transform(landmarks[i]);
+        const p2 = transform(landmarks[j]);
+        const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+        if (dist < 60) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // === LAYER 2: Key landmark dots (scattered diagnostic points) ===
+    ctx.fillStyle = 'rgba(255, 41, 41, 0.6)';
+    for (let i = 0; i < landmarks.length; i += 4) {
+      const p = transform(landmarks[i]);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // === LAYER 3: Eye tracking ===
+    const leftEyeOuter = transform(landmarks[33]);
+    const leftEyeInner = transform(landmarks[133]);
+    const rightEyeInner = transform(landmarks[362]);
+    const rightEyeOuter = transform(landmarks[263]);
+    const leftEyeCenter = {
+      x: (leftEyeOuter.x + leftEyeInner.x) / 2,
+      y: (leftEyeOuter.y + leftEyeInner.y) / 2
+    };
+    const rightEyeCenter = {
+      x: (rightEyeOuter.x + rightEyeInner.x) / 2,
+      y: (rightEyeOuter.y + rightEyeInner.y) / 2
+    };
+    const eyeWidth = Math.abs(leftEyeOuter.x - leftEyeInner.x);
+
+    // Eye targeting rings — animated pulse
+    const eyePulse = 0.6 + Math.sin(t * 3) * 0.3;
+    ctx.strokeStyle = `rgba(255, 41, 41, ${eyePulse})`;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(leftEyeCenter.x, leftEyeCenter.y, eyeWidth * 0.9, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(rightEyeCenter.x, rightEyeCenter.y, eyeWidth * 0.9, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Eye crosshairs
+    ctx.strokeStyle = 'rgba(255, 41, 41, 0.5)';
+    ctx.lineWidth = 0.8;
+    [leftEyeCenter, rightEyeCenter].forEach(eye => {
+      ctx.beginPath();
+      ctx.moveTo(eye.x - eyeWidth * 1.2, eye.y);
+      ctx.lineTo(eye.x - eyeWidth * 0.7, eye.y);
+      ctx.moveTo(eye.x + eyeWidth * 0.7, eye.y);
+      ctx.lineTo(eye.x + eyeWidth * 1.2, eye.y);
+      ctx.moveTo(eye.x, eye.y - eyeWidth * 1.2);
+      ctx.lineTo(eye.x, eye.y - eyeWidth * 0.7);
+      ctx.moveTo(eye.x, eye.y + eyeWidth * 0.7);
+      ctx.lineTo(eye.x, eye.y + eyeWidth * 1.2);
+      ctx.stroke();
+    });
+
+    // === LAYER 4: Forehead rPPG scan area ===
+    const foreheadTop = transform(landmarks[10]);
+    const leftBrow = transform(landmarks[105]);
+    const rightBrow = transform(landmarks[334]);
+    const fhCenterX = (leftBrow.x + rightBrow.x) / 2;
+    const fhBottomY = (leftBrow.y + rightBrow.y) / 2;
+    const fhWidth = Math.abs(rightBrow.x - leftBrow.x) * 1.1;
+    const fhHeight = Math.abs(fhBottomY - foreheadTop.y) * 0.85;
+    const fhTop = fhBottomY - fhHeight;
+
+    // Scanning line effect on forehead (animated, moving up-down)
+    const scanProgress = (t * 0.7) % 1;
+    const scanY = fhTop + scanProgress * fhHeight;
+
+    ctx.strokeStyle = 'rgba(0, 255, 136, 0.7)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(fhCenterX - fhWidth / 2, scanY);
+    ctx.lineTo(fhCenterX + fhWidth / 2, scanY);
+    ctx.stroke();
+
+    // Forehead bounding box with corner brackets
+    ctx.strokeStyle = 'rgba(0, 255, 136, 0.6)';
+    ctx.lineWidth = 1;
+    const bracketLen = 8;
+    const corners = [
+      [fhCenterX - fhWidth / 2, fhTop, 1, 1],
+      [fhCenterX + fhWidth / 2, fhTop, -1, 1],
+      [fhCenterX - fhWidth / 2, fhBottomY, 1, -1],
+      [fhCenterX + fhWidth / 2, fhBottomY, -1, -1]
+    ];
+    corners.forEach(([x, y, dx, dy]) => {
+      ctx.beginPath();
+      ctx.moveTo(x, y + dy * bracketLen);
+      ctx.lineTo(x, y);
+      ctx.lineTo(x + dx * bracketLen, y);
+      ctx.stroke();
+    });
+
+    // Label "rPPG SAMPLE ZONE"
+    ctx.fillStyle = 'rgba(0, 255, 136, 0.85)';
+    ctx.font = '8px "JetBrains Mono", monospace';
+    ctx.fillText('rPPG ZONE', fhCenterX - fhWidth / 2, fhTop - 4);
+
+    // === LAYER 5: Cheek measurement points ===
+    const leftCheek = transform(landmarks[123]);
+    const rightCheek = transform(landmarks[352]);
+    ctx.strokeStyle = 'rgba(255, 200, 0, 0.6)';
+    ctx.lineWidth = 1;
+    [leftCheek, rightCheek].forEach(pt => {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pt.x - 3, pt.y);
+      ctx.lineTo(pt.x + 3, pt.y);
+      ctx.moveTo(pt.x, pt.y - 3);
+      ctx.lineTo(pt.x, pt.y + 3);
+      ctx.stroke();
+    });
+
+    // === LAYER 6: Mouth tracking ===
+    const mouthLeft = transform(landmarks[61]);
+    const mouthRight = transform(landmarks[291]);
+    const mouthCenter = {
+      x: (mouthLeft.x + mouthRight.x) / 2,
+      y: (mouthLeft.y + mouthRight.y) / 2
+    };
+    const mouthWidth = Math.abs(mouthRight.x - mouthLeft.x);
+
+    ctx.strokeStyle = 'rgba(255, 41, 41, 0.4)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.ellipse(mouthCenter.x, mouthCenter.y, mouthWidth * 0.65, mouthWidth * 0.2, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Asymmetry indicator line
+    ctx.strokeStyle = 'rgba(255, 41, 41, 0.5)';
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(mouthLeft.x, mouthLeft.y);
+    ctx.lineTo(mouthRight.x, mouthRight.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // === LAYER 7: Face bounding box (subtle, animated dashed) ===
     let minX = 1, minY = 1, maxX = 0, maxY = 0;
     for (const lm of landmarks) {
       if (lm.x < minX) minX = lm.x;
@@ -1262,29 +1509,16 @@
       if (lm.x > maxX) maxX = lm.x;
       if (lm.y > maxY) maxY = lm.y;
     }
-    ctx.strokeStyle = 'rgba(255, 41, 41, 0.6)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.strokeRect(minX * w, minY * h, (maxX - minX) * w, (maxY - minY) * h);
-    ctx.setLineDash([]);
+    const bbTL = transform({ x: minX, y: minY });
+    const bbBR = transform({ x: maxX, y: maxY });
 
-    // Eye markers (highlighted)
-    const leftEyeCenter = landmarks[468] || landmarks[33];
-    const rightEyeCenter = landmarks[473] || landmarks[263];
-    if (leftEyeCenter) {
-      ctx.strokeStyle = 'rgba(255, 41, 41, 0.9)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(leftEyeCenter.x * w, leftEyeCenter.y * h, 14, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    if (rightEyeCenter) {
-      ctx.strokeStyle = 'rgba(255, 41, 41, 0.9)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(rightEyeCenter.x * w, rightEyeCenter.y * h, 14, 0, Math.PI * 2);
-      ctx.stroke();
-    }
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([3, 3]);
+    ctx.lineDashOffset = -t * 12;
+    ctx.strokeRect(bbTL.x, bbTL.y, bbBR.x - bbTL.x, bbBR.y - bbTL.y);
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
   }
 
   function extractForeheadRegion(video, landmarks) {
