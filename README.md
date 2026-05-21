@@ -1,149 +1,247 @@
-# LOITS — v1.0 prototype
+# LOITS — Setup Guide
 
-> A digital oracle. Type a decision. Watch your body answer.
+A digital oracle. Type a decision. Watch your body answer.
 
----
-
-## What this is
-
-A working web app that:
-- Uses your real device camera
-- Detects your face with Google MediaPipe (468 landmarks)
-- Reads your real heart rate from skin tone fluctuations (rPPG)
-- Flashes one of two choices for exactly 150ms
-- Tracks your involuntary eye blink, mouth asymmetry, and BPM elevation in the 400ms window after the flash
-- Generates a verdict based on those signals
-
-**This is the first cut.** Single HTML file. No backend yet. Stripe paywall is wired but routes to `alert()` — you replace with real Stripe Checkout links.
+This guide gets the **payment system + AI analysis** live.
 
 ---
 
-## How to deploy in 10 minutes
+## Quick Status
 
-### Option A: GitHub Pages (free, instant)
+The app works **right now** without any setup — it shows the new paywall structure and uses **offline template analyses** as fallback. But to turn on real payments + real AI:
 
-1. Create new repo on GitHub called `loits` (or anything)
-2. Upload `index.html` to the repo root
-3. Go to Settings → Pages → Source → `main` branch → root
-4. Wait 1 minute → your site is live at `https://<your-username>.github.io/loits/`
+1. Create 4 Stripe Payment Links (10 minutes)
+2. Deploy 1 Cloudflare Worker (15 minutes)
+3. Replace 5 URLs in `index.html` and re-upload to GitHub
 
-### Option B: Cloudflare Pages or Netlify drop
-
-1. Drag the folder to https://app.netlify.com/drop OR https://pages.cloudflare.com
-2. Done. You get a URL instantly.
-
-### Option C: Connect your domain (loits.app)
-
-1. Buy `loits.app` on Gandi or Namecheap (check availability first)
-2. Point DNS A/CNAME to your Pages host
-3. Set the custom domain in your hosting dashboard
+That's it. After that you have a working business.
 
 ---
 
-## What works right now (real, not fake)
+## Pricing Tiers (already in code)
 
-- ✅ Camera access (mobile + desktop)
-- ✅ MediaPipe Face Landmarker (real Google AI, 468 points)
-- ✅ rPPG heart rate detection from forehead skin (green channel detrending + zero-crossing frequency estimation)
-- ✅ Real-time pulse graph
-- ✅ 8-second baseline calibration
-- ✅ Flash timing — 150ms ± frame drift
-- ✅ Eye blink detection via MediaPipe blendshapes
-- ✅ Mouth asymmetry tracking
-- ✅ Heuristic-based verdict logic
-- ✅ Replay screen with annotated overlays
-- ✅ Industrial-clinical visual design (JetBrains Mono + Fraunces serif)
-- ✅ Mobile-responsive
-- ✅ Disclaimer + ethical framing
+| Tier | Price | What user gets |
+|------|-------|----------------|
+| Free | €0 | 1 reading, no AI analysis |
+| Basic | €4.99 | 5 readings, no AI |
+| Premium one-shot | €9.99 | 1 reading **with AI analysis** |
+| Monthly | €49/month | Unlimited readings + AI |
+| Annual | €299/year | Unlimited readings + AI |
+
+All credits stored in user's browser (localStorage). When user clears browser data, credits reset. This is acceptable for v1 — we can add backend account system later if needed.
 
 ---
 
-## What's not connected yet (you wire these)
+## STEP 1 — Stripe Payment Links
 
-### 1. Stripe paywall
+Go to https://dashboard.stripe.com/payment-links → **+ New**
 
-Replace the two `alert()` calls in `index.html` near `Unlock 5 readings` and `€14.99 — Lifetime unlimited`:
+Create FOUR Payment Links. For each one, set the **Success URL** to redirect back with a parameter.
+
+### Link 1 — Basic Pack
+- Product name: `Loits — 5 Readings`
+- Price: `€4.99` (one-time)
+- Success URL: `https://loits.app?paid=BASIC5`
+- Cancel URL: `https://loits.app`
+- Copy the resulting link (e.g. `https://buy.stripe.com/abc123`)
+
+### Link 2 — Premium One-Shot
+- Product name: `Loits — Premium Reading (1)`
+- Price: `€9.99` (one-time)
+- Success URL: `https://loits.app?paid=PREMIUM1`
+- Copy the link
+
+### Link 3 — Monthly Subscription
+- Product name: `Loits — Unlimited Monthly`
+- Price: `€49.00` (recurring, monthly)
+- Success URL: `https://loits.app?paid=MONTHLY`
+- Copy the link
+
+### Link 4 — Annual Subscription
+- Product name: `Loits — Unlimited Annual`
+- Price: `€299.00` (recurring, yearly)
+- Success URL: `https://loits.app?paid=ANNUAL`
+- Copy the link
+
+### Paste links into `index.html`
+
+Find the `STRIPE_LINKS` object near the top of the `<script>` block:
 
 ```js
-// Replace:
-onclick="alert('Payment integration...')"
-// With:
-onclick="window.location='https://buy.stripe.com/YOUR_LINK_HERE'"
+const STRIPE_LINKS = {
+  basic5: 'https://buy.stripe.com/REPLACE_BASIC_5_PACK',
+  premium_oneshot: 'https://buy.stripe.com/REPLACE_PREMIUM_ONESHOT',
+  monthly: 'https://buy.stripe.com/REPLACE_MONTHLY',
+  annual: 'https://buy.stripe.com/REPLACE_ANNUAL'
+};
 ```
 
-In Stripe dashboard (you already have KRYONIS account):
-- Create new Product: **Loits — 5 Readings**, €4.99 one-time
-- Create new Product: **Loits — Lifetime**, €14.99 one-time
-- Get the Payment Link URLs and paste them in
-
-### 2. Tracking who paid
-
-For v1: use Stripe's success_url to redirect back to `?paid=5` or `?paid=lifetime`. Read it with JS and set `localStorage.readingsLeft = 5`. Decrement on each new reading. This is not bulletproof, but it works for the test phase.
-
-For v2: real backend (Cloudflare Workers + KV, or Supabase) to verify Stripe sessions server-side.
-
-### 3. Video export ("Subconscious Receipt")
-
-The replay screen currently shows the camera live. To create a *shareable MP4*:
-- Use `MediaRecorder` API to record the video element + canvas overlay
-- Compose them into a single canvas, record that
-- Export as `.webm`, optionally re-encode via ffmpeg-wasm
-
-This is the second-biggest viral driver after the verdict itself. Build it in week 2.
-
-### 4. Real GPT-4o verdict copy
-
-Currently verdicts are template strings. To make them feel uncanny and specific to the user's typed dilemma:
-- Send the dilemma + measurements to Claude/GPT-4o API
-- Get back a verdict in the requested tone (clinical, mystical, blunt)
-- Replace `generateVerdict()` text rendering with API response
-
-Use Claude API directly. Cost per verdict: ~$0.002. Margin remains ~99%.
+Replace each `REPLACE_...` with the actual Stripe Payment Link URL.
 
 ---
 
-## Known issues + risks
+## STEP 2 — Cloudflare Worker (for AI analysis)
 
-1. **Low light**: rPPG fails in dim rooms. The system falls back to a default 72 BPM. Either constrain the use case to "do this in good light" or just be honest about it.
-2. **Android Chrome**: camera latency varies wildly. Test on at least 3 Android devices.
-3. **iOS Safari**: `playsinline` works, but PWA installation needs proper manifest. Add `manifest.json` + service worker before App Store-equivalent install prompt.
-4. **Apple App Store**: when you later wrap this in Capacitor for App Store submission, expect review pushback on "lie detector" language. Frame strictly as "self-reflection art" — don't ever claim diagnostic accuracy.
-5. **AI hallucination of verdicts**: the heuristic mixes real signal with semi-random fallback when signal is weak. This is by design (oracle theater), but you must always show the disclaimer prominently.
+The Anthropic API key cannot be in the public HTML (anyone could read it). We use Cloudflare Workers as a free, secure proxy.
 
----
+### 2a. Get an Anthropic API key
+1. Go to https://console.anthropic.com
+2. Sign in / create account
+3. Settings → API Keys → Create Key
+4. Copy the key (starts with `sk-ant-...`). You will not see it again.
 
-## The honest disclosure
+### 2b. Add credit to Anthropic
+1. Anthropic console → Plans & Billing
+2. Add €10 starter credit. This buys ~500–1000 AI analyses.
 
-Loits is **70% real measurement + 30% interpretive theater**. This is documented in the disclaimer text. The real measurements are heart rate, blink, asymmetry. The theater is the leap from "your blink was at 180ms" → "your body wants the other choice." That leap is not science.
+### 2c. Deploy the Worker
 
-The ethical posture: this is an art object and a self-reflection rite, not a diagnostic instrument. The verdict is a mirror with edges, not a fact. People who use it knowing this get a real experience. People who use it believing it's medical-grade get a placebo experience that might still be useful — but they may overestimate certainty.
+1. Go to https://dash.cloudflare.com
+2. Sign in / create free account
+3. Left sidebar → **Workers & Pages** → **Create application** → **Create Worker**
+4. Name it `loits-ai` (or any name). Click **Deploy**.
+5. After deploy, click **Edit code**
+6. Delete the default code completely
+7. Open `cloudflare-worker.js` from this repo and copy its entire contents
+8. Paste into the Cloudflare editor
+9. Click **Save and deploy**
 
-Always keep the disclaimer visible. Never market with words like "scientifically proven" or "lie detector".
+### 2d. Add the API key as environment variable
 
----
+1. In the Worker dashboard → **Settings** → **Variables**
+2. Under "Environment Variables" → **+ Add variable**
+3. Variable name: `ANTHROPIC_API_KEY`
+4. Value: paste your `sk-ant-...` key
+5. **Click "Encrypt"** before saving (so it's secret)
+6. **Save** → **Deploy**
 
-## File structure
+### 2e. Copy the Worker URL
 
+In the Worker dashboard, find the URL — looks like:
 ```
-loits/
-├── index.html       # Everything — UI, logic, styles
-└── README.md        # This file
+https://loits-ai.YOUR-SUBDOMAIN.workers.dev
 ```
 
-That's it. No build step. No npm install. Open `index.html` in any modern browser (Chrome / Safari / Firefox / Edge) and grant camera permission.
+Copy it.
+
+### 2f. Paste into `index.html`
+
+Find this line near the top of the script:
+
+```js
+const AI_WORKER_URL = 'https://loits-ai.YOUR_SUBDOMAIN.workers.dev';
+```
+
+Replace with your actual Worker URL.
 
 ---
 
-## Next 3 steps (when you're ready)
+## STEP 3 — Update GitHub & Deploy
 
-1. Test it. Send the link to 10 friends. Ask if it gave them a chill. If yes → keep going. If no → kill the project.
-2. Hook up Stripe. Make sure the paywall actually charges money.
-3. Build the "Subconscious Receipt" MP4 export. This is the viral driver.
-
-After that — Capacitor wrapper, App Store submission, real backend, real API verdicts, multi-language.
+1. Go to https://github.com/StevenAlber/loits
+2. Click `index.html` → pencil icon
+3. `Cmd+A` to select all → delete
+4. Open updated `index.html` → `Cmd+A` → copy entire contents
+5. Paste into GitHub
+6. Click **Commit changes**
+7. Wait 1-2 minutes
+8. Hard refresh `loits.app` (Cmd+Shift+R or close & reopen browser)
 
 ---
 
-Built in one session. No external dependencies beyond MediaPipe (loaded from CDN) and Google Fonts.
+## Testing the flow
 
-Loits v1 / Build 0001 / 2026
+### Test 1 — Free reading (works without any setup)
+- Open `loits.app` in private/incognito window (so no localStorage)
+- Run a reading
+- After verdict, you should see the new tiered paywall
+- No AI analysis below verdict (only after payment)
+
+### Test 2 — Premium one-shot (requires Stripe + Worker)
+- Click "Unlock This Analysis €9.99"
+- Complete Stripe checkout (use test card 4242 4242 4242 4242 in test mode)
+- You'll be redirected back to `loits.app?paid=PREMIUM1`
+- You should see alert: "Payment confirmed"
+- Now run a reading → AI analysis appears below verdict
+
+### Test 3 — Monthly subscription
+- Click `€49 / month`
+- Complete Stripe checkout
+- Returned to `loits.app?paid=MONTHLY`
+- All future readings include AI analysis until 30 days pass
+
+---
+
+## Architecture summary
+
+```
+User's phone (loits.app)
+    │
+    ├─ Camera + MediaPipe (all on device)
+    ├─ Local biometric analysis (all on device)
+    ├─ Verdict (all on device)
+    │
+    └─ If user has AI tier:
+          → POST to Cloudflare Worker
+                → Worker calls Claude API with hidden key
+                → Returns personalized analysis text
+                → Displayed below verdict
+
+Payments:
+    User clicks "Unlock" → Stripe Payment Link
+        → User pays
+        → Stripe redirects to loits.app?paid=TYPE
+        → App stores credit in localStorage
+```
+
+---
+
+## Cost estimates
+
+| Item | Cost |
+|------|------|
+| Cloudflare Worker | **Free** (100k req/day on free tier) |
+| Anthropic API per analysis | ~€0.01–0.03 |
+| Stripe fee per €4.99 transaction | ~€0.30 → user pays €4.99, you get ~€4.69 |
+| Stripe fee per €49 transaction | ~€1.50 → you get ~€47.50 |
+| Stripe fee per €299 transaction | ~€8 → you get ~€291 |
+
+A monthly subscriber generating 30 AI readings/month costs you ~€0.60 in AI. You make ~€47. **97% margin.**
+
+---
+
+## Where things live
+
+- `index.html` — the entire app (HTML + CSS + JS in one file)
+- `cloudflare-worker.js` — the Worker code for proxying Claude API
+- `README.md` — this file
+
+No build step. No backend server. Everything is either client-side or serverless.
+
+---
+
+## What's left for "v2"
+
+Things we did **not** build for v1 (intentionally — ship now, improve later):
+
+- Backend user accounts (currently credits are per-browser via localStorage)
+- Subscription renewal handling (currently expiry just checked locally; Stripe webhook would be more robust)
+- Audio version of the AI analysis (for €299 tier later)
+- Social sharing "subconscious receipt" image generator
+- iOS Capacitor wrap for App Store
+
+These are great v2 features but not blockers for launch.
+
+---
+
+## Tomorrow morning checklist
+
+- [ ] Create 4 Stripe Payment Links
+- [ ] Paste their URLs into `index.html`
+- [ ] Deploy Cloudflare Worker
+- [ ] Add `ANTHROPIC_API_KEY` env var
+- [ ] Paste Worker URL into `index.html`
+- [ ] Commit to GitHub
+- [ ] Wait for deploy
+- [ ] Test one flow end-to-end
+- [ ] Launch

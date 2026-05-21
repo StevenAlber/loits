@@ -673,6 +673,215 @@
     margin-bottom: 16px;
   }
 
+  /* TIERED PAYWALL */
+  .tier-banner {
+    border: 1px solid var(--dim2);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.02);
+  }
+  .tier-banner.active {
+    border-color: var(--good);
+    background: rgba(0,255,136,0.04);
+  }
+  .tier-banner .banner-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .tier-banner.active .banner-label { color: var(--good); }
+  .tier-banner .banner-text {
+    font-size: 13px;
+    color: var(--fg);
+    line-height: 1.5;
+  }
+
+  .paywall-top {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .paywall-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 300;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .paywall-desc {
+    color: var(--dim);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  .premium-paywall {
+    border-color: #a855f7;
+    background: linear-gradient(180deg, rgba(168,85,247,0.05) 0%, transparent 100%);
+  }
+  .premium-paywall .paywall-top { color: #a855f7; }
+  .price-premium {
+    color: #a855f7;
+    font-size: 28px;
+    font-family: var(--mono);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .price-sub {
+    font-size: 11px;
+    color: var(--dim);
+    margin-bottom: 18px;
+    letter-spacing: 0.05em;
+  }
+  .btn-premium {
+    background: #a855f7;
+    color: #fff;
+  }
+  .btn-premium:hover, .btn-premium:active {
+    background: #9333ea;
+  }
+
+  .subscription-paywall {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, rgba(255,41,41,0.04) 0%, transparent 100%);
+  }
+  .subscription-paywall .paywall-top { color: var(--accent); }
+
+  .tier-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .tier-option {
+    background: transparent;
+    border: 1px solid var(--dim2);
+    color: var(--fg);
+    padding: 20px 14px;
+    cursor: pointer;
+    font-family: var(--mono);
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .tier-option:hover, .tier-option:active {
+    border-color: var(--fg);
+    background: rgba(255,255,255,0.03);
+  }
+  .tier-option.tier-recommended {
+    border-color: var(--accent);
+    background: rgba(255,41,41,0.04);
+  }
+  .tier-badge {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #000;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+  .tier-price {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: var(--mono);
+    margin-bottom: 2px;
+  }
+  .tier-period {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .tier-savings {
+    font-size: 9px;
+    color: var(--good);
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .basic-paywall {
+    background: transparent;
+  }
+  .price-basic {
+    color: var(--accent);
+    font-size: 18px;
+    font-family: var(--mono);
+    margin-bottom: 14px;
+  }
+  .btn-basic {
+    width: 100%;
+  }
+
+  /* AI ANALYSIS BOX */
+  .ai-analysis-box {
+    border: 1px solid #a855f7;
+    background: linear-gradient(180deg, rgba(168,85,247,0.05) 0%, transparent 80%);
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .ai-analysis-box .ai-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: #a855f7;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .ai-analysis-box .ai-content {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--fg);
+  }
+  .ai-analysis-box .ai-content p {
+    margin-bottom: 14px;
+  }
+  .ai-analysis-box .ai-content p:last-child {
+    margin-bottom: 0;
+  }
+  .ai-analysis-box .ai-content strong {
+    color: #a855f7;
+    font-weight: 500;
+    font-style: italic;
+  }
+  .ai-analysis-box .ai-content em {
+    color: var(--dim);
+    font-style: italic;
+  }
+  .ai-analysis-box .ai-loading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 0;
+  }
+  .ai-spinner {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--dim2);
+    border-top-color: #a855f7;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
   .disclaimer {
     margin-top: 16px;
     padding-top: 16px;
@@ -899,7 +1108,153 @@ const state = {
   recordedChunks: [],
   recordedUrl: null,
   recordedBlob: null,
+  lastVerdict: null,
 };
+
+// ============================================
+// TIER SYSTEM — localStorage persistence
+// ============================================
+const TIER = {
+  FREE: 'free',
+  BASIC: 'basic',        // €4.99 — 5 readings, no AI analysis
+  PREMIUM_ONESHOT: 'premium_oneshot', // €9.99 — 1 reading with AI analysis
+  MONTHLY: 'monthly',    // €49/mo — unlimited AI
+  ANNUAL: 'annual'       // €299/yr — unlimited AI
+};
+
+// Stripe Payment Links — replace these with real ones from Stripe dashboard
+const STRIPE_LINKS = {
+  basic5: 'https://buy.stripe.com/REPLACE_BASIC_5_PACK',
+  premium_oneshot: 'https://buy.stripe.com/REPLACE_PREMIUM_ONESHOT',
+  monthly: 'https://buy.stripe.com/REPLACE_MONTHLY',
+  annual: 'https://buy.stripe.com/REPLACE_ANNUAL'
+};
+
+// Cloudflare Worker proxy URL for Claude API — deploy this Worker separately
+const AI_WORKER_URL = 'https://loits-ai.YOUR_SUBDOMAIN.workers.dev';
+
+function getUserState() {
+  try {
+    const raw = localStorage.getItem('loits_user');
+    if (!raw) return {
+      tier: TIER.FREE,
+      freeReadingsUsed: 0,
+      basicReadingsRemaining: 0,
+      premiumOneshotAvailable: 0,
+      subscriptionExpires: null
+    };
+    return JSON.parse(raw);
+  } catch (e) {
+    return {
+      tier: TIER.FREE,
+      freeReadingsUsed: 0,
+      basicReadingsRemaining: 0,
+      premiumOneshotAvailable: 0,
+      subscriptionExpires: null
+    };
+  }
+}
+
+function saveUserState(s) {
+  try {
+    localStorage.setItem('loits_user', JSON.stringify(s));
+  } catch (e) {
+    console.warn('localStorage unavailable:', e);
+  }
+}
+
+// Determine current effective tier (handles subscription expiry)
+function getEffectiveTier() {
+  const u = getUserState();
+  const now = Date.now();
+  if (u.subscriptionExpires && u.subscriptionExpires > now) {
+    return u.tier; // monthly or annual still valid
+  }
+  if (u.basicReadingsRemaining > 0) return TIER.BASIC;
+  if (u.premiumOneshotAvailable > 0) return TIER.PREMIUM_ONESHOT;
+  return TIER.FREE;
+}
+
+// Can the user start a new reading?
+function canStartReading() {
+  const u = getUserState();
+  const tier = getEffectiveTier();
+  if (tier === TIER.MONTHLY || tier === TIER.ANNUAL) return true;
+  if (tier === TIER.BASIC && u.basicReadingsRemaining > 0) return true;
+  if (tier === TIER.PREMIUM_ONESHOT && u.premiumOneshotAvailable > 0) return true;
+  if (tier === TIER.FREE && u.freeReadingsUsed < 1) return true;
+  return false;
+}
+
+// Will this reading include AI analysis?
+function readingIncludesAI() {
+  const tier = getEffectiveTier();
+  return tier === TIER.PREMIUM_ONESHOT || tier === TIER.MONTHLY || tier === TIER.ANNUAL;
+}
+
+// Deduct one reading credit after a successful scan
+function consumeReadingCredit() {
+  const u = getUserState();
+  const tier = getEffectiveTier();
+  if (tier === TIER.MONTHLY || tier === TIER.ANNUAL) {
+    // unlimited — no deduction
+    return;
+  }
+  if (tier === TIER.PREMIUM_ONESHOT && u.premiumOneshotAvailable > 0) {
+    u.premiumOneshotAvailable--;
+    saveUserState(u);
+    return;
+  }
+  if (tier === TIER.BASIC && u.basicReadingsRemaining > 0) {
+    u.basicReadingsRemaining--;
+    saveUserState(u);
+    return;
+  }
+  if (tier === TIER.FREE) {
+    u.freeReadingsUsed++;
+    saveUserState(u);
+    return;
+  }
+}
+
+// Handle Stripe redirect — when user returns from successful payment
+function handleStripeReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const paid = params.get('paid');
+  if (!paid) return false;
+
+  const u = getUserState();
+  let message = '';
+
+  if (paid === 'BASIC5') {
+    u.basicReadingsRemaining = (u.basicReadingsRemaining || 0) + 5;
+    message = '5 readings unlocked';
+  } else if (paid === 'PREMIUM1') {
+    u.premiumOneshotAvailable = (u.premiumOneshotAvailable || 0) + 1;
+    message = 'Premium reading unlocked';
+  } else if (paid === 'MONTHLY') {
+    u.tier = TIER.MONTHLY;
+    u.subscriptionExpires = Date.now() + 31 * 24 * 60 * 60 * 1000;
+    message = 'Monthly subscription active';
+  } else if (paid === 'ANNUAL') {
+    u.tier = TIER.ANNUAL;
+    u.subscriptionExpires = Date.now() + 366 * 24 * 60 * 60 * 1000;
+    message = 'Annual subscription active';
+  }
+
+  saveUserState(u);
+
+  // Clean URL
+  window.history.replaceState({}, '', window.location.pathname);
+
+  // Show confirmation
+  setTimeout(() => {
+    alert('✓ Payment confirmed: ' + message);
+  }, 500);
+
+  return true;
+}
+
 
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1642,25 +1997,283 @@ function renderVerdict(v) {
       `;
     }
 
+    html += renderPaywallSection(v);
+  }
+
+  content.innerHTML = html;
+
+  // If user has AI access, fetch and display analysis
+  if (readingIncludesAI() && v.status !== 'failed') {
+    fetchAndDisplayAIAnalysis(v);
+  }
+}
+
+// ============================================
+// PAYWALL — tiered structure
+// ============================================
+function renderPaywallSection(v) {
+  const u = getUserState();
+  const tier = getEffectiveTier();
+  const hasAI = readingIncludesAI();
+  const now = Date.now();
+  const subActive = u.subscriptionExpires && u.subscriptionExpires > now;
+
+  let html = '';
+
+  // Status banner — what user currently has
+  if (subActive && (u.tier === TIER.MONTHLY || u.tier === TIER.ANNUAL)) {
+    const daysLeft = Math.ceil((u.subscriptionExpires - now) / (24*60*60*1000));
     html += `
-      <div class="paywall">
-        <div class="top">— Next reading</div>
-        <h3>Five more truths.</h3>
-        <p class="desc">Your first reading is free. The next ones are not.</p>
-        <div class="price">€4.99 / 5 readings</div>
-        <button class="btn-main" onclick="handlePayment()">Unlock 5 Readings</button>
-        <button class="btn-secondary" onclick="handleLifetime()">€14.99 — Lifetime unlimited</button>
+      <div class="tier-banner active">
+        <div class="banner-label">— ${u.tier === TIER.ANNUAL ? 'ANNUAL' : 'MONTHLY'} ACTIVE</div>
+        <div class="banner-text">Unlimited readings with AI analysis<br><span style="color:var(--dim); font-size:10px;">${daysLeft} days remaining</span></div>
       </div>
-      <button class="btn-secondary" onclick="resetApp()">New Reading</button>
-      <div class="disclaimer">
-        Body signals indicate physiological activation, not validated truth.<br>
-        Consult a licensed professional for serious choices.
+    `;
+  } else if (u.basicReadingsRemaining > 0 || u.premiumOneshotAvailable > 0) {
+    html += `
+      <div class="tier-banner">
+        <div class="banner-label">— YOUR CREDITS</div>
+        <div class="banner-text">
+          ${u.basicReadingsRemaining > 0 ? `${u.basicReadingsRemaining} basic reading${u.basicReadingsRemaining===1?'':'s'}` : ''}
+          ${u.basicReadingsRemaining > 0 && u.premiumOneshotAvailable > 0 ? ' • ' : ''}
+          ${u.premiumOneshotAvailable > 0 ? `${u.premiumOneshotAvailable} premium analysis` : ''}
+        </div>
       </div>
     `;
   }
 
-  content.innerHTML = html;
+  // Premium upgrade — ONLY if reading didn't include AI
+  if (!hasAI) {
+    html += `
+      <div class="paywall premium-paywall">
+        <div class="paywall-top">— DEEPER READING</div>
+        <h3 class="paywall-title">What does this actually mean?</h3>
+        <p class="paywall-desc">
+          Unlock a personalized AI analysis of this reading. We interpret the body's signals in light of your specific dilemma — beyond the numbers.
+        </p>
+        <div class="price-premium">€9.99</div>
+        <p class="price-sub">One-time — analysis of this reading</p>
+        <button class="btn-main btn-premium" onclick="handlePurchase('premium_oneshot')">Unlock This Analysis</button>
+      </div>
+    `;
+  }
+
+  // Subscription tier
+  if (!subActive) {
+    html += `
+      <div class="paywall subscription-paywall">
+        <div class="paywall-top">— UNLIMITED ACCESS</div>
+        <h3 class="paywall-title">For those who ask often.</h3>
+        <p class="paywall-desc">
+          Unlimited readings. AI analysis on every one. For decisions that don't stop coming.
+        </p>
+        <div class="tier-options">
+          <button class="tier-option" onclick="handlePurchase('monthly')">
+            <div class="tier-price">€49</div>
+            <div class="tier-period">per month</div>
+          </button>
+          <button class="tier-option tier-recommended" onclick="handlePurchase('annual')">
+            <div class="tier-badge">BEST VALUE</div>
+            <div class="tier-price">€299</div>
+            <div class="tier-period">per year</div>
+            <div class="tier-savings">Save €289</div>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Basic pack — only show if user is FREE
+  if (tier === TIER.FREE) {
+    html += `
+      <div class="paywall basic-paywall">
+        <div class="paywall-top">— OR CONTINUE BASIC</div>
+        <h3 class="paywall-title">Five more readings.</h3>
+        <p class="paywall-desc">Without AI analysis. Just the numbers and the verdict.</p>
+        <div class="price-basic">€4.99 / 5 readings</div>
+        <button class="btn-secondary btn-basic" onclick="handlePurchase('basic5')">Get 5 Readings</button>
+      </div>
+    `;
+  }
+
+  html += `
+    <button class="btn-secondary" onclick="resetApp()" style="margin-top: 16px;">New Reading</button>
+    <div class="disclaimer">
+      Body signals indicate physiological activation, not validated truth.<br>
+      Consult a licensed professional for serious choices.
+    </div>
+  `;
+
+  return html;
 }
+
+// Handle purchase clicks — redirect to Stripe
+function handlePurchase(type) {
+  let url;
+  switch(type) {
+    case 'basic5': url = STRIPE_LINKS.basic5; break;
+    case 'premium_oneshot': url = STRIPE_LINKS.premium_oneshot; break;
+    case 'monthly': url = STRIPE_LINKS.monthly; break;
+    case 'annual': url = STRIPE_LINKS.annual; break;
+    default: return;
+  }
+
+  if (url.includes('REPLACE_')) {
+    alert('Setup needed: Replace Stripe Payment Link URLs in code. See README.');
+    return;
+  }
+
+  // Add success_url parameter so Stripe redirects back here with paid=TYPE
+  const successParam = {
+    'basic5': 'BASIC5',
+    'premium_oneshot': 'PREMIUM1',
+    'monthly': 'MONTHLY',
+    'annual': 'ANNUAL'
+  }[type];
+
+  // Stripe Payment Links can have ?prefilled_email=... but success URL is set in dashboard
+  // The success URL in Stripe dashboard should be: https://loits.app?paid=BASIC5 (etc)
+  window.location = url;
+}
+
+// ============================================
+// AI ANALYSIS — fetch from Cloudflare Worker proxy
+// ============================================
+async function fetchAndDisplayAIAnalysis(v) {
+  const content = document.getElementById('verdictContent');
+
+  // Insert placeholder above the paywall
+  const placeholder = document.createElement('div');
+  placeholder.id = 'aiAnalysisBox';
+  placeholder.className = 'ai-analysis-box loading';
+  placeholder.innerHTML = `
+    <div class="ai-label">— DEEP ANALYSIS</div>
+    <div class="ai-loading">
+      <div class="ai-spinner"></div>
+      <span>Reading your signals...</span>
+    </div>
+  `;
+
+  // Insert before the first paywall
+  const firstPaywall = content.querySelector('.paywall, .tier-banner, button[onclick="resetApp()"]');
+  if (firstPaywall) {
+    firstPaywall.parentNode.insertBefore(placeholder, firstPaywall);
+  } else {
+    content.appendChild(placeholder);
+  }
+
+  try {
+    if (AI_WORKER_URL.includes('YOUR_SUBDOMAIN')) {
+      // Worker not configured — use local template
+      const localAnalysis = generateLocalAnalysis(v);
+      renderAIAnalysis(localAnalysis, true);
+      return;
+    }
+
+    const response = await fetch(AI_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        optionA: state.optionA,
+        optionB: state.optionB,
+        verdict: v,
+        sessionId: state.sessionId
+      })
+    });
+
+    if (!response.ok) throw new Error('AI request failed');
+    const data = await response.json();
+    renderAIAnalysis(data.analysis || data.text || '');
+  } catch (err) {
+    console.warn('AI analysis failed, using local template:', err);
+    const localAnalysis = generateLocalAnalysis(v);
+    renderAIAnalysis(localAnalysis, true);
+  }
+}
+
+function renderAIAnalysis(text, isLocal = false) {
+  const box = document.getElementById('aiAnalysisBox');
+  if (!box) return;
+  box.classList.remove('loading');
+  // Convert simple markdown-like formatting
+  const formatted = text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+  box.innerHTML = `
+    <div class="ai-label">— DEEP ANALYSIS${isLocal ? ' (offline)' : ''}</div>
+    <div class="ai-content"><p>${formatted}</p></div>
+  `;
+}
+
+// Local template-based analysis — fallback when API is unavailable
+function generateLocalAnalysis(v) {
+  if (v.status === 'failed') {
+    return "The signal was too quiet to interpret. The body either felt nothing — which itself is information — or the conditions of measurement could not capture what was there. Try again in stronger light, with the phone steadier. Sometimes the body whispers, and we must listen more carefully.";
+  }
+
+  const optA = state.optionA;
+  const optB = state.optionB;
+
+  if (v.status === 'dual_signal' && v.dualSignal) {
+    const aMeta = v.dualSignal.aWonMetric;
+    const bMeta = v.dualSignal.bWonMetric;
+    const aWord = aMeta?.type === 'bpm' ? 'cardiovascular activation' :
+                  aMeta?.type === 'asymmetry' ? 'an emotional facial response' :
+                  aMeta?.type === 'blink' ? 'a fast orienting reflex' : 'a measurable response';
+    const bWord = bMeta?.type === 'bpm' ? 'cardiovascular activation' :
+                  bMeta?.type === 'asymmetry' ? 'an emotional facial response' :
+                  bMeta?.type === 'blink' ? 'a fast orienting reflex' : 'a measurable response';
+
+    return `Your body did not choose between these paths. It reacted to **both** — but through different systems.\n\nWhen you saw **"${optA}"**, your body produced ${aWord}. This is the body's response to a real signal — something it recognizes as mattering.\n\nWhen you saw **"${optB}"**, your body produced ${bWord}. A different system, a different kind of mattering.\n\nThe reading is this: these are not in competition. They are two facets of the same engagement. Your body knows both paths exist in you. The question is not "which one" — the question is "how do they connect?"\n\nWhat you do with this is yours.`;
+  }
+
+  if (v.status === 'inconclusive') {
+    return `Both paths produced similar physiological signals.\n\nThis can mean two very different things:\n\nFirst, that the choice does not carry the weight you assigned it. Sometimes we label things "important decisions" out of habit, when our deeper system has already moved past them. Your body says: this is not where the tension lives.\n\nSecond, that the question is correctly weighted but **framed wrong**. The real choice may be hidden inside one of these options, or behind them entirely. Try asking the question differently. Try splitting one side into two more specific paths.\n\nLoits did not fail here. It told you the truth: in this framing, your body is quiet.`;
+  }
+
+  // Standard verdict — body chose one
+  const winsLabel = v.wantsOption === 'A' ? optA : optB;
+  const losesLabel = v.rejectedOption === 'A' ? optA : optB;
+  const conf = v.confidence;
+
+  let confidenceFrame = '';
+  if (conf === 'high') {
+    confidenceFrame = `Your body's response was **unambiguous**. Across the measurements, the signal was strong and consistent. This is not a marginal reading — it is a clear answer.`;
+  } else if (conf === 'medium') {
+    confidenceFrame = `Your body's response was **clear but not loud**. The signal pointed in one direction across multiple measurements. The body knew, but did not shout.`;
+  } else {
+    confidenceFrame = `Your body's response was **quiet but consistent**. The differential was small, but the signals across blink, asymmetry, and pulse pointed the same way. This is the kind of reading that confirms something you already half-knew.`;
+  }
+
+  // Pick which metric dominated for interpretive flavor
+  const aBlink = v.aBlinkAvg, bBlink = v.bBlinkAvg;
+  const aAsym = Math.abs(v.aAsymAvg || 0), bAsym = Math.abs(v.bAsymAvg || 0);
+  const aBpm = v.aBpmAvg || 0, bBpm = v.bBpmAvg || 0;
+
+  let flavor = '';
+  // Which option triggered the strongest single signal?
+  const strongerBpm = aBpm > bBpm ? { side: 'A', val: aBpm } : { side: 'B', val: bBpm };
+  const strongerAsym = aAsym > bAsym ? { side: 'A', val: aAsym } : { side: 'B', val: bAsym };
+  const fasterBlink = (aBlink !== null && bBlink !== null)
+    ? (aBlink < bBlink ? { side: 'A', val: aBlink } : { side: 'B', val: bBlink })
+    : null;
+
+  // Find which option the body reacted strongest to
+  const rejectedSide = v.rejectedOption;
+  if (fasterBlink && fasterBlink.side === rejectedSide && fasterBlink.val < 300) {
+    flavor = `The orienting reflex fired in ${Math.round(fasterBlink.val)} milliseconds — faster than thought. Your body recognized something it could not stay neutral about. This is not analysis. This is recognition.\n\n`;
+  } else if (strongerAsym.side === rejectedSide && strongerAsym.val > 1.0) {
+    flavor = `Your face moved asymmetrically when the option appeared. The mouth and brow do not lie the way words do. The body leaked what the mind would have hidden.\n\n`;
+  } else if (strongerBpm.side === rejectedSide && strongerBpm.val > 3) {
+    flavor = `Your pulse rose. Not enough to count as panic — enough to count as caring. The body marks what matters by changing its rhythm.\n\n`;
+  }
+
+  return `${confidenceFrame}\n\n${flavor}Your body reacted more strongly to **"${losesLabel}"**. In the language of the autonomic nervous system, stronger reaction usually means something that requires attention — often, something to move away from.\n\nIf this resonates, the work is not to argue with it. The work is to ask: what does my conscious mind want to say in defense of "${losesLabel}"? That defense is worth listening to. But know that you are arguing against the part of you that responded before you had a chance to think.\n\nThe reading does not decide for you. It tells you which way the deeper current flows. What you do with the current is yours.`;
+}
+
+
 
 function showVerdictScreen() {
   document.getElementById('scanScreen').classList.remove('active');
@@ -2109,6 +2722,58 @@ function resetApp() {
   document.querySelector('.topbar').style.display = 'flex';
   goTo('screen-intro');
 }
+
+// ============================================
+// INIT — handle Stripe returns, check reading credits
+// ============================================
+(function init() {
+  // Handle Stripe payment return
+  handleStripeReturn();
+
+  // If user has no readings available, show paywall on the intro screen
+  // (we'll add this UI hint without blocking — they can still see the intro)
+  setTimeout(() => {
+    const u = getUserState();
+    const tier = getEffectiveTier();
+    if (tier === TIER.FREE && u.freeReadingsUsed >= 1) {
+      // Show subtle hint that they've used their free reading
+      const introScreen = document.getElementById('screen-intro');
+      if (introScreen && !introScreen.querySelector('.free-used-banner')) {
+        const banner = document.createElement('div');
+        banner.className = 'free-used-banner';
+        banner.style.cssText = 'border:1px solid var(--accent); padding:14px 16px; margin-bottom:20px; background:rgba(255,41,41,0.04); font-size:12px; color:var(--fg); line-height:1.5;';
+        banner.innerHTML = '<div style="font-size:9px; letter-spacing:0.3em; color:var(--accent); text-transform:uppercase; margin-bottom:6px;">— Free reading used</div>To run another reading, choose a package below after the methodology screen, or scroll down.';
+        introScreen.insertBefore(banner, introScreen.firstChild);
+      }
+    }
+  }, 100);
+})();
+
+// Wrap startScan to check credits
+const _originalStartScan = startScan;
+startScan = async function() {
+  if (!canStartReading()) {
+    // Show paywall-style alert before scan
+    const u = getUserState();
+    if (u.freeReadingsUsed >= 1 && getEffectiveTier() === TIER.FREE) {
+      alert('You have used your free reading. Choose a package to continue:\n\n€4.99 — 5 readings\n€9.99 — 1 premium reading with AI\n€49/month — unlimited + AI\n€299/year — unlimited + AI');
+      // Could redirect to a dedicated paywall screen here
+      return;
+    }
+  }
+  await _originalStartScan.apply(this, arguments);
+};
+
+// Hook: after a successful scan, deduct credit
+const _originalShowVerdictScreen = showVerdictScreen;
+showVerdictScreen = function() {
+  // Only consume credit if verdict was actually generated (not on failed scans before flow)
+  if (state.trials && state.trials.length > 0) {
+    consumeReadingCredit();
+  }
+  _originalShowVerdictScreen.apply(this, arguments);
+};
+
 </script>
 </body>
 </html>
