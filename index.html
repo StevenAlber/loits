@@ -401,39 +401,73 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background: rgba(0,0,0,0.7);
+    height: 72px;
+    background: rgba(0,0,0,0.85);
     border-top: 1px solid var(--dim2);
     z-index: 5;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    padding: 0 16px;
-    gap: 16px;
+    padding: 8px 14px;
+    gap: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .pulse-readout {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.1;
   }
   .pulse-label {
-    font-size: 9px;
-    letter-spacing: 0.2em;
+    font-size: 8px;
+    letter-spacing: 0.25em;
     color: var(--dim);
     text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .pulse-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
   }
   .pulse-value {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--accent);
     font-variant-numeric: tabular-nums;
-    min-width: 70px;
     font-family: var(--mono);
+    line-height: 1;
   }
   .pulse-unit {
-    font-size: 10px;
+    font-size: 8px;
     color: var(--dim);
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
   .pulse-graph {
-    flex: 1;
-    height: 32px;
+    height: 36px;
     position: relative;
+    min-width: 80px;
+  }
+  .pulse-lock-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+  .pulse-lock-tag {
+    font-size: 8px;
+    letter-spacing: 0.25em;
+    color: var(--good);
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid var(--good);
+    line-height: 1;
+  }
+  .pulse-lock-tag.searching {
+    color: var(--dim);
+    border-color: var(--dim2);
   }
   #pulseCanvas {
     width: 100%;
@@ -802,7 +836,7 @@
     </div>
     <h2 style="font-family: var(--serif); font-size: 28px; font-weight: 300; margin-bottom: 16px;">Hold still. Breathe normally.</h2>
     <p style="font-size: 12px; color: var(--dim); line-height: 1.7; margin-bottom: 8px;">
-      Position your face inside the frame. Stay still for 8 seconds while the system reads your baseline heart rate from the skin tone of your face.
+      Hold the phone <strong style="color: var(--fg);">30 cm from your face</strong>. Your face must fill most of the frame. Good light on your forehead. Stay still for 12 seconds.
     </p>
 
     <div class="camera-container">
@@ -817,11 +851,18 @@
       <div class="hud br" id="lockStatus">UNLOCKED</div>
 
       <div class="pulse-bar">
-        <span class="pulse-label">BPM</span>
-        <span class="pulse-value" id="bpmDisplay">—</span>
-        <span class="pulse-unit">baseline</span>
+        <div class="pulse-readout">
+          <span class="pulse-label">rPPG / BPM</span>
+          <div class="pulse-value-row">
+            <span class="pulse-value" id="bpmDisplay">—</span>
+            <span class="pulse-unit">baseline</span>
+          </div>
+        </div>
         <div class="pulse-graph">
           <canvas id="pulseCanvas"></canvas>
+        </div>
+        <div class="pulse-lock-indicator">
+          <span class="pulse-lock-tag searching" id="pulseLockTag">SEARCHING</span>
         </div>
       </div>
     </div>
@@ -1051,23 +1092,54 @@
 
     if (results.faceLandmarks && results.faceLandmarks.length > 0) {
       const landmarks = results.faceLandmarks[0];
-      document.getElementById('faceStatus').textContent = 'LOCKED';
-      document.getElementById('lockStatus').textContent = 'LOCKED';
-      document.getElementById('lockStatus').style.color = 'var(--good)';
+
+      // Calculate face size as fraction of frame
+      let minX = 1, minY = 1, maxX = 0, maxY = 0;
+      for (const lm of landmarks) {
+        if (lm.x < minX) minX = lm.x;
+        if (lm.y < minY) minY = lm.y;
+        if (lm.x > maxX) maxX = lm.x;
+        if (lm.y > maxY) maxY = lm.y;
+      }
+      const faceWidth = maxX - minX;
+      const faceHeight = maxY - minY;
+      const faceFraction = Math.max(faceWidth, faceHeight);
+      const isCloseEnough = faceFraction > 0.45; // face takes at least 45% of frame
+
+      if (isCloseEnough) {
+        document.getElementById('faceStatus').textContent = 'LOCKED';
+        document.getElementById('lockStatus').textContent = 'LOCKED';
+        document.getElementById('lockStatus').style.color = 'var(--good)';
+      } else {
+        document.getElementById('faceStatus').textContent = 'TOO FAR';
+        document.getElementById('lockStatus').textContent = 'COME CLOSER';
+        document.getElementById('lockStatus').style.color = 'var(--accent)';
+      }
 
       // Draw face mesh subset
       drawFaceMesh(ctx, landmarks, overlay.width, overlay.height);
 
-      // Extract forehead region for rPPG
-      const forehead = extractForeheadRegion(video, landmarks);
-      if (forehead) {
-        state.rgbHistory.push({
-          time: timestamp,
-          r: forehead.r,
-          g: forehead.g,
-          b: forehead.b
-        });
-        if (state.rgbHistory.length > 300) state.rgbHistory.shift();
+      // Extract forehead region for rPPG (only if face is close enough)
+      if (isCloseEnough) {
+        const forehead = extractForeheadRegion(video, landmarks);
+        if (forehead) {
+          state.rgbHistory.push({
+            time: timestamp,
+            r: forehead.r,
+            g: forehead.g,
+            b: forehead.b
+          });
+          if (state.rgbHistory.length > 300) state.rgbHistory.shift();
+        }
+      } else {
+        // Face too far — pause calibration by resetting start time
+        if (state.isCalibrating) {
+          state.calibrationStartTime = performance.now();
+          state.rgbHistory = [];
+          state.pulseHistory = [];
+          document.getElementById('calStatus').innerHTML = '<span style="color: var(--accent);">FACE TOO FAR — BRING PHONE CLOSER</span>';
+          document.getElementById('calProgress').style.width = '0%';
+        }
       }
 
       // Track blendshapes for micro-expression
@@ -1085,38 +1157,61 @@
         if (state.mouthAsymmetryHistory.length > 60) state.mouthAsymmetryHistory.shift();
       }
 
-      // Compute rPPG every few frames
-      if (state.rgbHistory.length >= 90 && state.rgbHistory.length % 15 === 0) {
+      // Compute rPPG less frequently and with stricter filtering
+      if (state.rgbHistory.length >= 150 && state.rgbHistory.length % 30 === 0) {
         const bpm = computeBpmFromRgb(state.rgbHistory);
-        if (bpm > 40 && bpm < 180) {
+        // Stricter range — typical resting baseline is 50–100
+        if (bpm > 50 && bpm < 110) {
           state.pulseHistory.push(bpm);
-          if (state.pulseHistory.length > 20) state.pulseHistory.shift();
-          const avgBpm = Math.round(state.pulseHistory.reduce((a,b) => a+b, 0) / state.pulseHistory.length);
-          document.getElementById('bpmDisplay').textContent = avgBpm;
-          state.baselineBpm = avgBpm;
-          drawPulseGraph(state.pulseHistory);
+          if (state.pulseHistory.length > 10) state.pulseHistory.shift();
+
+          // Only display BPM after at least 3 valid readings (smoother lock)
+          if (state.pulseHistory.length >= 3) {
+            // Use median instead of mean — more robust to outliers
+            const sorted = [...state.pulseHistory].sort((a, b) => a - b);
+            const median = sorted[Math.floor(sorted.length / 2)];
+            const avgBpm = Math.round(median);
+            document.getElementById('bpmDisplay').textContent = avgBpm;
+            state.baselineBpm = avgBpm;
+
+            // Mark as locked
+            const lockTag = document.getElementById('pulseLockTag');
+            if (lockTag) {
+              lockTag.textContent = 'LOCKED';
+              lockTag.classList.remove('searching');
+            }
+
+            drawPulseGraph(state.pulseHistory);
+          }
         }
       }
 
       // Update calibration progress
-      if (state.isCalibrating) {
+      if (state.isCalibrating && isCloseEnough) {
+        // Reset status text if it was showing the "too far" warning
+        const statusEl = document.getElementById('calStatus');
+        if (statusEl.innerHTML.includes('TOO FAR')) {
+          statusEl.textContent = 'Calibrating baseline. Hold still.';
+        }
+
         const elapsed = (performance.now() - state.calibrationStartTime) / 1000;
-        const progress = Math.min((elapsed / 8) * 100, 100);
+        // Extended to 12 seconds for more reliable lock
+        const progress = Math.min((elapsed / 12) * 100, 100);
         document.getElementById('calProgress').style.width = progress + '%';
 
-        if (elapsed >= 8 && state.baselineBpm > 0) {
+        if (elapsed >= 12) {
+          // Always proceed at 12 seconds — with measured BPM if available, else fallback
+          if (state.baselineBpm === 0) {
+            state.baselineBpm = 72; // physiological fallback
+            document.getElementById('bpmDisplay').textContent = state.baselineBpm;
+            const lockTag = document.getElementById('pulseLockTag');
+            if (lockTag) {
+              lockTag.textContent = 'EST.';
+              lockTag.classList.remove('searching');
+            }
+          }
           state.isCalibrating = false;
           document.getElementById('calStatus').innerHTML = '<span class="ready">BASELINE LOCKED — READY</span>';
-          const btn = document.getElementById('proceedBtn');
-          btn.disabled = false;
-          btn.style.opacity = '1';
-          btn.style.pointerEvents = 'auto';
-        } else if (elapsed >= 8 && state.baselineBpm === 0) {
-          // If pulse hasn't locked, still let them proceed but with a default
-          state.baselineBpm = 72;
-          document.getElementById('bpmDisplay').textContent = state.baselineBpm;
-          state.isCalibrating = false;
-          document.getElementById('calStatus').innerHTML = '<span class="ready">BASELINE ESTIMATED — READY</span>';
           const btn = document.getElementById('proceedBtn');
           btn.disabled = false;
           btn.style.opacity = '1';
@@ -1226,25 +1321,60 @@
   }
 
   function computeBpmFromRgb(rgbHistory) {
+    // Use only the most recent ~5 seconds of data (last 150 samples at 30fps)
+    const recent = rgbHistory.slice(-150);
+    if (recent.length < 90) return 0;
+
     // Use green channel — strongest hemoglobin signal
-    const greens = rgbHistory.map(p => p.g);
-    const times = rgbHistory.map(p => p.time);
+    const greens = recent.map(p => p.g);
+    const times = recent.map(p => p.time);
 
     // Detrend (subtract moving avg)
     const detrended = detrend(greens);
-    // Bandpass-ish — count zero crossings as proxy for frequency
-    const duration = (times[times.length - 1] - times[0]) / 1000; // seconds
-    let crossings = 0;
-    for (let i = 1; i < detrended.length; i++) {
-      if ((detrended[i] > 0 && detrended[i - 1] < 0) ||
-          (detrended[i] < 0 && detrended[i - 1] > 0)) {
-        crossings++;
+
+    // Check amplitude — if signal is too flat or too noisy, reject
+    const absVals = detrended.map(v => Math.abs(v));
+    const meanAbs = absVals.reduce((a, b) => a + b, 0) / absVals.length;
+    const maxAbs = Math.max(...absVals);
+
+    // If signal is too flat (no pulse) or dominated by huge outliers (motion noise), reject
+    if (meanAbs < 0.05) return 0;          // signal too flat
+    if (maxAbs / meanAbs > 10) return 0;   // dominated by motion artifacts
+
+    // Smooth the detrended signal with a small window
+    const smoothed = smoothSignal(detrended, 3);
+
+    // Count zero crossings (positive-going only, to avoid double-counting)
+    const duration = (times[times.length - 1] - times[0]) / 1000;
+    if (duration < 3) return 0;
+
+    let positiveCrossings = 0;
+    for (let i = 1; i < smoothed.length; i++) {
+      if (smoothed[i] > 0 && smoothed[i - 1] <= 0) {
+        positiveCrossings++;
       }
     }
-    // 2 crossings per cycle
-    const cyclesPerSec = (crossings / 2) / duration;
+
+    // Each positive crossing = 1 full cycle
+    const cyclesPerSec = positiveCrossings / duration;
     const bpm = cyclesPerSec * 60;
     return bpm;
+  }
+
+  function smoothSignal(arr, windowSize) {
+    const out = [];
+    for (let i = 0; i < arr.length; i++) {
+      const start = Math.max(0, i - windowSize);
+      const end = Math.min(arr.length, i + windowSize + 1);
+      let sum = 0;
+      let count = 0;
+      for (let j = start; j < end; j++) {
+        sum += arr[j];
+        count++;
+      }
+      out.push(sum / count);
+    }
+    return out;
   }
 
   function detrend(arr) {
