@@ -751,9 +751,21 @@ async function runScanSequence() {
   const flashText = flashOpt === 'A' ? state.optionA : state.optionB;
 
   document.getElementById('flashText').textContent = flashText.toUpperCase();
+
+  // Pre-flash white pulse — alerts the eye, like a camera flash priming
+  document.getElementById('flashOverlay').style.background = '#fff';
   document.getElementById('flashOverlay').classList.add('active');
-  await sleep(150);
+  document.getElementById('flashText').style.opacity = '0';
+  await sleep(60);
+
+  // Now the actual text flash on black background
+  document.getElementById('flashOverlay').style.background = '#000';
+  document.getElementById('flashText').style.opacity = '1';
+  await sleep(280); // longer — user must be able to read it
+
   document.getElementById('flashOverlay').classList.remove('active');
+  document.getElementById('flashOverlay').style.background = '';
+  document.getElementById('flashText').style.opacity = '';
 
   setStatus('Recording response', '');
   await sleep(800);
@@ -773,11 +785,25 @@ async function runScanSequence() {
   setStatus('Scan complete', '');
   await sleep(400);
 
-  // CLOSE the camera — privacy + battery
+  // AGGRESSIVE camera shutdown — required for iOS LED to actually turn off
+  const videoEl = document.getElementById('video');
+
+  // 1. Stop all tracks on the stream
   if (state.videoStream) {
-    state.videoStream.getTracks().forEach(t => t.stop());
+    state.videoStream.getTracks().forEach(t => {
+      t.stop();
+      state.videoStream.removeTrack(t);
+    });
     state.videoStream = null;
   }
+
+  // 2. Detach the video element from any source
+  videoEl.pause();
+  videoEl.srcObject = null;
+  videoEl.removeAttribute('src');
+  videoEl.load(); // forces browser to release the media element
+
+  // 3. Stop the face landmarker
   state.faceLandmarkerReady = false;
 
   setStatus('Analyzing', '');
