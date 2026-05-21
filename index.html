@@ -599,6 +599,10 @@
   .verdict-box.failed {
     border-color: var(--dim);
   }
+  .verdict-box.dual {
+    border-color: #a855f7;
+    background: linear-gradient(180deg, rgba(168,85,247,0.06) 0%, transparent 100%);
+  }
   .verdict-label {
     font-size: 9px;
     letter-spacing: 0.3em;
@@ -608,6 +612,7 @@
   }
   .verdict-box.uncertain .verdict-label { color: var(--warn); }
   .verdict-box.failed .verdict-label { color: var(--dim); }
+  .verdict-box.dual .verdict-label { color: #a855f7; }
 
   .verdict-text {
     font-family: var(--serif);
@@ -1316,6 +1321,72 @@ function aggregateTrials() {
   const unanimous = totalVotes >= 2 && (votesA === totalVotes || votesB === totalVotes);
   const majority = totalVotes >= 3 && Math.max(votesA, votesB) >= totalVotes - 1;
 
+  // ============================================
+  // DUAL SIGNAL DETECTION
+  // When both sides react strongly but on DIFFERENT metrics,
+  // it's not "inconclusive" — it's a richer truth:
+  // both paths matter, but in qualitatively different ways
+  // ============================================
+  // Each side needs to "win" a metric clearly to qualify as a strong reactor
+  const dualSignalDetected = (() => {
+    if (totalVotes < 2) return false;
+    if (votesA < 1 || votesB < 1) return false;
+    // Both sides need at least one clear win
+    if (Math.abs(votesA - votesB) > 1) return false;
+
+    // Check signal strength — both sides must have at least one MEANINGFUL signal
+    let aHasStrong = false, bHasStrong = false;
+
+    // BPM elevation is meaningful when >= 3 bpm
+    if (aBpmAvg !== null && aBpmAvg >= 3) aHasStrong = true;
+    if (bBpmAvg !== null && bBpmAvg >= 3) bHasStrong = true;
+
+    // Asymmetry is meaningful when |val| >= 0.5
+    if (aAsymAvg !== null && Math.abs(aAsymAvg) >= 0.5) aHasStrong = true;
+    if (bAsymAvg !== null && Math.abs(bAsymAvg) >= 0.5) bHasStrong = true;
+
+    // Blink is meaningful when latency <= 450ms
+    if (aBlinkAvg !== null && aBlinkAvg <= 450) aHasStrong = true;
+    if (bBlinkAvg !== null && bBlinkAvg <= 450) bHasStrong = true;
+
+    return aHasStrong && bHasStrong;
+  })();
+
+  // Identify which metric each side won — for narrative explanation
+  let aWonMetric = null, bWonMetric = null;
+  if (dualSignalDetected) {
+    // Find A's strongest metric
+    const aMetrics = [];
+    if (aBpmAvg !== null && aBpmAvg >= 3 &&
+        (bBpmAvg === null || aBpmAvg > bBpmAvg + 1)) {
+      aMetrics.push({ name: 'cardiovascular', value: aBpmAvg, type: 'bpm' });
+    }
+    if (aAsymAvg !== null && Math.abs(aAsymAvg) >= 0.5 &&
+        (bAsymAvg === null || Math.abs(aAsymAvg) > Math.abs(bAsymAvg) + 0.2)) {
+      aMetrics.push({ name: 'facial', value: aAsymAvg, type: 'asymmetry' });
+    }
+    if (aBlinkAvg !== null && aBlinkAvg <= 450 &&
+        (bBlinkAvg === null || aBlinkAvg < bBlinkAvg - 50)) {
+      aMetrics.push({ name: 'orienting', value: aBlinkAvg, type: 'blink' });
+    }
+    if (aMetrics.length > 0) aWonMetric = aMetrics[0];
+
+    const bMetrics = [];
+    if (bBpmAvg !== null && bBpmAvg >= 3 &&
+        (aBpmAvg === null || bBpmAvg > aBpmAvg + 1)) {
+      bMetrics.push({ name: 'cardiovascular', value: bBpmAvg, type: 'bpm' });
+    }
+    if (bAsymAvg !== null && Math.abs(bAsymAvg) >= 0.5 &&
+        (aAsymAvg === null || Math.abs(bAsymAvg) > Math.abs(aAsymAvg) + 0.2)) {
+      bMetrics.push({ name: 'facial', value: bAsymAvg, type: 'asymmetry' });
+    }
+    if (bBlinkAvg !== null && bBlinkAvg <= 450 &&
+        (aBlinkAvg === null || bBlinkAvg < aBlinkAvg - 50)) {
+      bMetrics.push({ name: 'orienting', value: bBlinkAvg, type: 'blink' });
+    }
+    if (bMetrics.length > 0) bWonMetric = bMetrics[0];
+  }
+
   // Confidence based on signal separation
   let confidence;
   if (absDiff < 0.08) confidence = 'inconclusive';
@@ -1348,8 +1419,18 @@ function aggregateTrials() {
     rejectedOption = diff > 0 ? 'A' : 'B';
   }
 
+  // Determine final status — dual signal takes priority over inconclusive
+  let finalStatus;
+  if (dualSignalDetected && confidence === 'inconclusive') {
+    finalStatus = 'dual_signal';
+  } else if (confidence === 'inconclusive') {
+    finalStatus = 'inconclusive';
+  } else {
+    finalStatus = 'success';
+  }
+
   return {
-    status: confidence === 'inconclusive' ? 'inconclusive' : 'success',
+    status: finalStatus,
     confidence,
     differential: parseFloat((absDiff * 100).toFixed(1)),
     aScore: parseFloat(aScore.toFixed(3)),
@@ -1368,7 +1449,6 @@ function aggregateTrials() {
     neutralTrialCount: neutralTrials.length,
     totalValid: aTrials.length + bTrials.length + neutralTrials.length,
     totalRun: state.trials.length,
-    // NEW: multi-metric agreement diagnostics
     metricAgreement: {
       totalMetrics: totalVotes,
       votesA,
@@ -1376,7 +1456,11 @@ function aggregateTrials() {
       unanimous,
       majority,
       dominantSide
-    }
+    },
+    dualSignal: dualSignalDetected ? {
+      aWonMetric,
+      bWonMetric
+    } : null
   };
 }
 
@@ -1465,7 +1549,60 @@ function renderVerdict(v) {
     const wantsLabel = v.wantsOption === 'A' ? state.optionA : state.optionB;
     const rejectedLabel = v.rejectedOption === 'A' ? state.optionA : state.optionB;
 
-    if (confLevel === 'inconclusive') {
+    // ============================================
+    // DUAL SIGNAL — both paths triggered different body systems
+    // ============================================
+    if (v.status === 'dual_signal' && v.dualSignal) {
+      const interpret = (metric) => {
+        if (!metric) return { phrase: '', system: '', meaning: '' };
+        if (metric.type === 'bpm') {
+          return {
+            phrase: `cardiovascular activation (+${metric.value.toFixed(1)} bpm)`,
+            system: 'Heart rate elevation',
+            meaning: "the body's response to a potential change or hypothetical leap"
+          };
+        }
+        if (metric.type === 'asymmetry') {
+          return {
+            phrase: `facial emotional response (asymmetry ${metric.value.toFixed(1)})`,
+            system: 'Mouth/brow micro-expression',
+            meaning: "the body's response to something already embedded — recognition rather than novelty"
+          };
+        }
+        if (metric.type === 'blink') {
+          return {
+            phrase: `orienting reflex (blink ${Math.round(metric.value)} ms)`,
+            system: 'Eyelid response',
+            meaning: "the body's response to surprise, salience, or aversion"
+          };
+        }
+        return { phrase: '', system: '', meaning: '' };
+      };
+
+      const aInt = interpret(v.dualSignal.aWonMetric);
+      const bInt = interpret(v.dualSignal.bWonMetric);
+
+      html += `
+        <div class="verdict-box dual">
+          <div class="verdict-label">— DUAL SIGNAL</div>
+          <div class="verdict-text">
+            Your body reacted to <strong>both</strong> paths — but in <strong>different ways</strong>.<br><br>
+            <strong>"${esc(state.optionA)}"</strong> triggered ${aInt.phrase}.<br>
+            <em style="color: var(--dim); font-size: 14px;">${aInt.meaning}.</em><br><br>
+            <strong>"${esc(state.optionB)}"</strong> triggered ${bInt.phrase}.<br>
+            <em style="color: var(--dim); font-size: 14px;">${bInt.meaning}.</em><br><br>
+            These paths are not in competition. They are different forms of engagement. Your body finds <strong>both</strong> meaningful — and that itself is the reading.
+          </div>
+          <div class="verdict-confidence">
+            <div class="conf-label">Why dual signal</div>
+            Both sides triggered measurable but qualitatively distinct responses.<br>
+            Differential: ${v.differential}% (low — but driven by different systems)<br>
+            A score: ${v.aScore} • B score: ${v.bScore}<br>
+            Metric agreement: ${v.metricAgreement.votesA}A / ${v.metricAgreement.votesB}B (${v.metricAgreement.totalMetrics} signals)
+          </div>
+        </div>
+      `;
+    } else if (confLevel === 'inconclusive') {
       html += `
         <div class="verdict-box uncertain">
           <div class="verdict-label">— INCONCLUSIVE</div>
