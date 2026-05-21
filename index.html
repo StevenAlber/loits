@@ -345,7 +345,7 @@
     height: 100%;
     object-fit: cover;
     transform: scaleX(-1) scale(1.8);
-    transform-origin: center 35%;
+    transform-origin: center 70%;
   }
   #overlay {
     position: absolute;
@@ -870,7 +870,7 @@
     </div>
     <h2 style="font-family: var(--serif); font-size: 28px; font-weight: 300; margin-bottom: 16px;">Hold still. Breathe normally.</h2>
     <p style="font-size: 12px; color: var(--dim); line-height: 1.7; margin-bottom: 8px;">
-      Hold the phone <strong style="color: var(--fg);">30 cm from your face</strong>. Your face must fill most of the frame. Good light on your forehead. Stay still for 12 seconds.
+      Hold the phone <strong style="color: var(--fg);">straight in front of your face</strong>, about 30 cm away. Don't tilt the phone. Good light on your forehead. Stay still for 12 seconds.
     </p>
 
     <div class="camera-container">
@@ -1340,7 +1340,7 @@
     // Compute zoom-corrected coordinates to match the 1.8x zoom on the video
     const zoom = 1.8;
     const cx = w / 2;
-    const cy = h * 0.35;
+    const cy = h * 0.7;
     const transform = (p) => ({
       x: cx + (p.x * w - cx) * zoom,
       y: cy + (p.y * h - cy) * zoom
