@@ -727,6 +727,24 @@ async function runScanSequence() {
     await sleep(700);
   }
 
+  // Start recording video frames for replay (using MediaRecorder)
+  state.recordedChunks = [];
+  let mediaRecorder = null;
+  try {
+    const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=h264')
+      ? 'video/mp4;codecs=h264'
+      : MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : 'video/webm';
+    mediaRecorder = new MediaRecorder(state.videoStream, { mimeType });
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) state.recordedChunks.push(e.data);
+    };
+    mediaRecorder.start();
+  } catch (e) {
+    console.warn('MediaRecorder not supported, falling back to live stream', e);
+  }
+
   state.flashTime = performance.now();
   const flashOpt = Math.random() < 0.5 ? 'A' : 'B';
   state.flashedOption = flashOpt;
@@ -738,7 +756,29 @@ async function runScanSequence() {
   document.getElementById('flashOverlay').classList.remove('active');
 
   setStatus('Recording response', '');
-  await sleep(600);
+  await sleep(800);
+
+  // Stop recording and finalize the video blob
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    await new Promise(resolve => {
+      mediaRecorder.onstop = resolve;
+      mediaRecorder.stop();
+    });
+    if (state.recordedChunks.length > 0) {
+      state.recordedBlob = new Blob(state.recordedChunks, { type: mediaRecorder.mimeType });
+      state.recordedUrl = URL.createObjectURL(state.recordedBlob);
+    }
+  }
+
+  setStatus('Scan complete', '');
+  await sleep(400);
+
+  // CLOSE the camera — privacy + battery
+  if (state.videoStream) {
+    state.videoStream.getTracks().forEach(t => t.stop());
+    state.videoStream = null;
+  }
+  state.faceLandmarkerReady = false;
 
   setStatus('Analyzing', '');
   await sleep(800);
@@ -1024,7 +1064,14 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 
 function showVerdict() {
   const replayVideo = document.getElementById('replayVideo');
-  if (state.videoStream) {
+  if (state.recordedUrl) {
+    // Use the saved MP4/WebM recording — camera is now closed
+    replayVideo.srcObject = null;
+    replayVideo.src = state.recordedUrl;
+    replayVideo.playbackRate = 0.25;
+    replayVideo.play().catch(() => {});
+  } else if (state.videoStream) {
+    // Fallback: if recording failed, still try live stream
     replayVideo.srcObject = state.videoStream;
     replayVideo.playbackRate = 0.25;
     replayVideo.play().catch(() => {});
@@ -1067,6 +1114,12 @@ function resetApp() {
     state.videoStream.getTracks().forEach(t => t.stop());
     state.videoStream = null;
   }
+  if (state.recordedUrl) {
+    URL.revokeObjectURL(state.recordedUrl);
+    state.recordedUrl = null;
+  }
+  state.recordedBlob = null;
+  state.recordedChunks = [];
   state.rgbHistory = [];
   state.pulseHistory = [];
   state.eyeOpennessHistory = [];
