@@ -338,14 +338,23 @@
     overflow: hidden;
     margin: 24px 0;
   }
+  .camera-container::after {
+    /* Radial vignette — focuses attention on face center, hides chest/background */
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 65% 55% at 50% 45%, transparent 0%, transparent 35%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.92) 90%, #000 100%);
+    z-index: 6;
+  }
   #video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1) scale(1.8);
-    transform-origin: center 70%;
+    transform: scaleX(-1);
   }
   #overlay {
     position: absolute;
@@ -785,6 +794,11 @@
   }
   @keyframes spin {
     to { transform: rotate(360deg); }
+  }
+
+  @keyframes btn-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 41, 41, 0.6); }
+    50% { box-shadow: 0 0 0 12px rgba(255, 41, 41, 0); }
   }
 
   /* Mobile tweaks */
@@ -1301,9 +1315,15 @@
         }
 
         const elapsed = (performance.now() - state.calibrationStartTime) / 1000;
+        const remaining = Math.max(0, 12 - elapsed);
         // Extended to 12 seconds for more reliable lock
         const progress = Math.min((elapsed / 12) * 100, 100);
         document.getElementById('calProgress').style.width = progress + '%';
+
+        // Show visible countdown in status text
+        if (elapsed < 12) {
+          statusEl.innerHTML = 'CALIBRATING — ' + Math.ceil(remaining) + 's REMAINING';
+        }
 
         if (elapsed >= 12) {
           // Always proceed at 12 seconds — with measured BPM if available, else fallback
@@ -1317,11 +1337,16 @@
             }
           }
           state.isCalibrating = false;
-          document.getElementById('calStatus').innerHTML = '<span class="ready">BASELINE LOCKED — READY</span>';
+          document.getElementById('calStatus').innerHTML = '<span class="ready">✓ BASELINE LOCKED — TAP BELOW TO BEGIN</span>';
           const btn = document.getElementById('proceedBtn');
           btn.disabled = false;
           btn.style.opacity = '1';
           btn.style.pointerEvents = 'auto';
+          btn.style.background = 'var(--accent)';
+          btn.style.color = 'var(--fg)';
+          btn.textContent = 'PROCEED TO READING';
+          // Subtle pulse animation
+          btn.style.animation = 'btn-pulse 1.5s ease-in-out infinite';
         }
       }
 
@@ -1337,13 +1362,10 @@
   function drawFaceMesh(ctx, landmarks, w, h) {
     const t = performance.now() / 1000;
 
-    // Compute zoom-corrected coordinates to match the 1.8x zoom on the video
-    const zoom = 1.8;
-    const cx = w / 2;
-    const cy = h * 0.7;
+    // Coordinates map 1:1 to video frame (no zoom)
     const transform = (p) => ({
-      x: cx + (p.x * w - cx) * zoom,
-      y: cy + (p.y * h - cy) * zoom
+      x: p.x * w,
+      y: p.y * h
     });
 
     // === LAYER 1: Subtle face mesh grid (semi-transparent) ===
