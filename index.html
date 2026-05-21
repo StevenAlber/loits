@@ -1262,6 +1262,60 @@ function aggregateTrials() {
   const diff = aScore - bScore;
   const absDiff = Math.abs(diff);
 
+  // ============================================
+  // MULTI-METRIC AGREEMENT CHECK
+  // If all available metrics point the SAME direction,
+  // boost confidence — this catches subtle but consistent signals
+  // ============================================
+  const avgMetric = (trials, key) => {
+    const vals = trials.map(t => t[key]).filter(v => v !== null);
+    if (vals.length === 0) return null;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+  };
+
+  const aBlinkAvg = avgMetric(aTrials, 'blinkLatency');
+  const bBlinkAvg = avgMetric(bTrials, 'blinkLatency');
+  const aAsymAvg = avgMetric(aTrials, 'asymmetryDelta');
+  const bAsymAvg = avgMetric(bTrials, 'asymmetryDelta');
+  const aBpmAvg = avgMetric(aTrials, 'bpmDelta');
+  const bBpmAvg = avgMetric(bTrials, 'bpmDelta');
+
+  // For each metric, which option got stronger reaction?
+  // (lower blink latency = stronger; higher |asymmetry| = stronger; higher BPM = stronger)
+  const metricVotes = [];
+
+  // Blink vote — lower latency = stronger reaction
+  // If only one side has data, that side is the stronger one
+  if (aBlinkAvg !== null && bBlinkAvg !== null) {
+    metricVotes.push(aBlinkAvg < bBlinkAvg ? 'A' : 'B');
+  } else if (aBlinkAvg !== null && bBlinkAvg === null) {
+    metricVotes.push('A');
+  } else if (bBlinkAvg !== null && aBlinkAvg === null) {
+    metricVotes.push('B');
+  }
+
+  // Asymmetry vote — bigger absolute value = stronger reaction
+  if (aAsymAvg !== null && bAsymAvg !== null) {
+    if (Math.abs(Math.abs(aAsymAvg) - Math.abs(bAsymAvg)) > 0.05) {
+      metricVotes.push(Math.abs(aAsymAvg) > Math.abs(bAsymAvg) ? 'A' : 'B');
+    }
+  }
+
+  // BPM vote — higher elevation = stronger reaction
+  if (aBpmAvg !== null && bBpmAvg !== null) {
+    if (Math.abs(aBpmAvg - bBpmAvg) > 0.5) {
+      metricVotes.push(aBpmAvg > bBpmAvg ? 'A' : 'B');
+    }
+  }
+
+  // Count agreement
+  const votesA = metricVotes.filter(v => v === 'A').length;
+  const votesB = metricVotes.filter(v => v === 'B').length;
+  const totalVotes = metricVotes.length;
+  const dominantSide = votesA > votesB ? 'A' : 'B';
+  const unanimous = totalVotes >= 2 && (votesA === totalVotes || votesB === totalVotes);
+  const majority = totalVotes >= 3 && Math.max(votesA, votesB) >= totalVotes - 1;
+
   // Confidence based on signal separation
   let confidence;
   if (absDiff < 0.08) confidence = 'inconclusive';
@@ -1269,18 +1323,30 @@ function aggregateTrials() {
   else if (absDiff < 0.30) confidence = 'medium';
   else confidence = 'high';
 
-  // Body's stronger reaction = rejection of that option
-  // (the option that triggered MORE response is the one the body recoiled from)
-  const strongerReaction = diff > 0 ? 'A' : 'B';
-  const wantsOption = diff > 0 ? 'B' : 'A';
-  const rejectedOption = diff > 0 ? 'A' : 'B';
+  // BOOST: if all metrics agree, raise confidence by one level
+  // This catches the "quiet but clear" signals like your politics example
+  if (unanimous && totalVotes >= 2) {
+    if (confidence === 'inconclusive' && absDiff >= 0.04) confidence = 'low';
+    else if (confidence === 'low') confidence = 'medium';
+    else if (confidence === 'medium') confidence = 'high';
+  } else if (majority && totalVotes >= 3) {
+    if (confidence === 'inconclusive' && absDiff >= 0.05) confidence = 'low';
+    else if (confidence === 'low') confidence = 'medium';
+  }
 
-  // Compute averaged metrics for display
-  const avgMetric = (trials, key) => {
-    const vals = trials.map(t => t[key]).filter(v => v !== null);
-    if (vals.length === 0) return null;
-    return vals.reduce((a, b) => a + b, 0) / vals.length;
-  };
+  // Determine final winner — if all metrics unanimously agree but mean-score
+  // differential was tiny, trust the agreement
+  let strongerReaction, wantsOption, rejectedOption;
+  if (unanimous && absDiff < 0.08) {
+    // Override the mean-score direction with the unanimous vote
+    strongerReaction = dominantSide;
+    wantsOption = dominantSide === 'A' ? 'B' : 'A';
+    rejectedOption = dominantSide;
+  } else {
+    strongerReaction = diff > 0 ? 'A' : 'B';
+    wantsOption = diff > 0 ? 'B' : 'A';
+    rejectedOption = diff > 0 ? 'A' : 'B';
+  }
 
   return {
     status: confidence === 'inconclusive' ? 'inconclusive' : 'success',
@@ -1291,17 +1357,26 @@ function aggregateTrials() {
     neutralScore: parseFloat(neutralScore.toFixed(3)),
     wantsOption,
     rejectedOption,
-    aBlinkAvg: avgMetric(aTrials, 'blinkLatency'),
-    bBlinkAvg: avgMetric(bTrials, 'blinkLatency'),
-    aAsymAvg: avgMetric(aTrials, 'asymmetryDelta'),
-    bAsymAvg: avgMetric(bTrials, 'asymmetryDelta'),
-    aBpmAvg: avgMetric(aTrials, 'bpmDelta'),
-    bBpmAvg: avgMetric(bTrials, 'bpmDelta'),
+    aBlinkAvg,
+    bBlinkAvg,
+    aAsymAvg,
+    bAsymAvg,
+    aBpmAvg,
+    bBpmAvg,
     aTrialCount: aTrials.length,
     bTrialCount: bTrials.length,
     neutralTrialCount: neutralTrials.length,
     totalValid: aTrials.length + bTrials.length + neutralTrials.length,
-    totalRun: state.trials.length
+    totalRun: state.trials.length,
+    // NEW: multi-metric agreement diagnostics
+    metricAgreement: {
+      totalMetrics: totalVotes,
+      votesA,
+      votesB,
+      unanimous,
+      majority,
+      dominantSide
+    }
   };
 }
 
@@ -1402,11 +1477,17 @@ function renderVerdict(v) {
             <div class="conf-label">Why</div>
             Differential: ${v.differential}%<br>
             Confidence: <strong>${confLevel}</strong><br>
-            A score: ${v.aScore} • B score: ${v.bScore}
+            A score: ${v.aScore} • B score: ${v.bScore}<br>
+            Metric agreement: ${v.metricAgreement.votesA}A / ${v.metricAgreement.votesB}B (${v.metricAgreement.totalMetrics} signals)
           </div>
         </div>
       `;
     } else {
+      const agreementNote = v.metricAgreement.unanimous && v.metricAgreement.totalMetrics >= 2
+        ? `<br><span style="color: var(--good);">All ${v.metricAgreement.totalMetrics} measurements agreed.</span>`
+        : v.metricAgreement.majority
+          ? `<br>${Math.max(v.metricAgreement.votesA, v.metricAgreement.votesB)} of ${v.metricAgreement.totalMetrics} measurements agreed.`
+          : '';
       html += `
         <div class="verdict-box">
           <div class="verdict-label">— VERDICT (${confLevel.toUpperCase()} CONFIDENCE)</div>
@@ -1418,7 +1499,7 @@ function renderVerdict(v) {
             <div class="conf-label">Signal strength</div>
             Differential: <strong>${v.differential}%</strong><br>
             A response score: ${v.aScore} • B response score: ${v.bScore}<br>
-            Confidence: <strong>${confLevel}</strong> (based on ${v.totalValid}/5 valid trials)
+            Confidence: <strong>${confLevel}</strong> (based on ${v.totalValid}/5 valid trials)${agreementNote}
           </div>
         </div>
       `;
