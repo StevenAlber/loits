@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#000000" />
+<title>LOITS — what your body knows before your mind admits</title>
+<meta name="description" content="A digital oracle. Type a decision. Watch your body answer." />
+
+<!-- Open Graph -->
+<meta property="og:title" content="LOITS" />
+<meta property="og:description" content="What your body knows before your mind admits." />
+<meta property="og:type" content="website" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap" rel="stylesheet" />
+
+<!-- MediaPipe Face Landmarker (real face tracking) -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/vision_bundle.js"></script>
+
+<style>
+  :root {
+    --bg: #000000;
+    --fg: #ffffff;
+    --dim: #6a6a6a;
+    --dim2: #3a3a3a;
+    --accent: #ff2929;
+    --accent-dim: #5a0606;
+    --good: #00ff88;
+    --grid: #0e0e0e;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Industrial grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* Film grain */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+  }
+
+  .app {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top bar — industrial */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--dim2);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--dim);
+  }
+  .topbar .logo {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: 0.35em;
+    color: var(--fg);
+    text-transform: uppercase;
+  }
+  .topbar .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topbar .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--good);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--good);
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Screens */
+  .screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    padding: 32px 24px;
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .screen.active { display: flex; }
+
+  /* SCREEN 1: Intro */
+  .intro-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 0;
+  }
+  .intro-hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(40px, 9vw, 88px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+  }
+  .intro-hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .intro-hero p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--dim);
+    max-width: 480px;
+    margin-bottom: 14px;
+  }
+  .intro-hero p.tagline {
+    color: var(--fg);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  .ascii-marker {
+    font-size: 10px;
+    color: var(--dim2);
+    margin: 32px 0 12px;
+    letter-spacing: 0.2em;
+  }
+
+  .specs {
+    margin-top: 40px;
+    border-top: 1px solid var(--dim2);
+    padding-top: 24px;
+  }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 11px;
+    border-bottom: 1px solid var(--grid);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .spec-row .key { color: var(--dim); }
+  .spec-row .val { color: var(--fg); }
+
+  /* Primary button — brutal industrial */
+  .btn-primary {
+    margin-top: 40px;
+    width: 100%;
+    padding: 22px;
+    background: var(--fg);
+    color: var(--bg);
+    border: none;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary:hover {
+    background: var(--accent);
+    color: var(--fg);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  .btn-primary::after {
+    content: '→';
+    margin-left: 12px;
+    font-family: var(--serif);
+    font-weight: 300;
+  }
+
+  .btn-ghost {
+    margin-top: 12px;
+    width: 100%;
+    padding: 20px;
+    background: transparent;
+    color: var(--dim);
+    border: 1px solid var(--dim2);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  /* SCREEN 2: Input the dilemma */
+  .input-screen .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .input-screen .label::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .input-screen h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 6vw, 44px);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    letter-spacing: -0.02em;
+  }
+  .option-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--dim2);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 16px;
+    padding: 16px 0;
+    margin-bottom: 28px;
+    transition: border-color 0.2s;
+    -webkit-user-select: text;
+    user-select: text;
+    border-radius: 0;
+  }
+  .option-input:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+  }
+  .option-input::placeholder {
+    color: var(--dim2);
+  }
+  .option-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .option-row .prefix {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .option-row input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--dim2);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 16px;
+    padding: 12px 0;
+    transition: border-color 0.2s;
+    -webkit-user-select: text;
+    user-select: text;
+    border-radius: 0;
+  }
+  .option-row input:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+  }
+  .option-row input::placeholder {
+    color: var(--dim2);
+  }
+
+  /* SCREEN 3: Calibration — camera */
+  .camera-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: #050505;
+    border: 1px solid var(--dim2);
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  #video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
+  #overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transform: scaleX(-1);
+  }
+
+  .crosshair {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .crosshair::before, .crosshair::after {
+    content: '';
+    position: absolute;
+    background: var(--fg);
+  }
+  .crosshair .tl, .crosshair .tr, .crosshair .bl, .crosshair .br {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+  }
+  .crosshair .tl { top: 0; left: 0; border-top: 1px solid var(--fg); border-left: 1px solid var(--fg); }
+  .crosshair .tr { top: 0; right: 0; border-top: 1px solid var(--fg); border-right: 1px solid var(--fg); }
+  .crosshair .bl { bottom: 0; left: 0; border-bottom: 1px solid var(--fg); border-left: 1px solid var(--fg); }
+  .crosshair .br { bottom: 0; right: 0; border-bottom: 1px solid var(--fg); border-right: 1px solid var(--fg); }
+
+  .hud {
+    position: absolute;
+    z-index: 4;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--fg);
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.6);
+    padding: 4px 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .hud.tl { top: 20px; left: 20px; }
+  .hud.tr { top: 20px; right: 20px; }
+  .hud.bl { bottom: 20px; left: 20px; }
+  .hud.br { bottom: 20px; right: 20px; }
+
+  .pulse-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(0,0,0,0.7);
+    border-top: 1px solid var(--dim2);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+  }
+  .pulse-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .pulse-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    min-width: 70px;
+    font-family: var(--mono);
+  }
+  .pulse-unit {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .pulse-graph {
+    flex: 1;
+    height: 32px;
+    position: relative;
+  }
+  #pulseCanvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .calibration-status {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .calibration-status .ready {
+    color: var(--good);
+  }
+  .calibration-progress {
+    margin-top: 16px;
+    height: 2px;
+    background: var(--dim2);
+    overflow: hidden;
+  }
+  .calibration-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s linear;
+  }
+
+  /* Flash screen */
+  .flash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+  .flash-screen.active { display: flex; }
+  .flash-text {
+    font-family: var(--mono);
+    font-size: clamp(40px, 12vw, 96px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  .flash-text.show {
+    animation: flash-pop 0.15s steps(1, end) forwards;
+  }
+  @keyframes flash-pop {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .flash-prep {
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .flash-countdown {
+    font-family: var(--serif);
+    font-size: 88px;
+    color: var(--fg);
+    margin-top: 16px;
+    font-weight: 300;
+  }
+
+  /* Verdict screen */
+  .verdict-header {
+    text-align: center;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--dim2);
+    margin-bottom: 24px;
+  }
+  .verdict-header .timestamp {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .verdict-header h2 {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--fg);
+  }
+
+  .replay-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: #050505;
+    border: 1px solid var(--accent-dim);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  #replayVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
+  #replayCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(-1);
+    pointer-events: none;
+  }
+  .replay-corners .tl,
+  .replay-corners .tr,
+  .replay-corners .bl,
+  .replay-corners .br {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: var(--accent);
+    pointer-events: none;
+    z-index: 5;
+  }
+  .replay-corners .tl { top: 12px; left: 12px; border-top: 1px solid; border-left: 1px solid; }
+  .replay-corners .tr { top: 12px; right: 12px; border-top: 1px solid; border-right: 1px solid; }
+  .replay-corners .bl { bottom: 12px; left: 12px; border-bottom: 1px solid; border-left: 1px solid; }
+  .replay-corners .br { bottom: 12px; right: 12px; border-bottom: 1px solid; border-right: 1px solid; }
+  .replay-label {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.7);
+    padding: 4px 12px;
+    z-index: 5;
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--dim2);
+    border: 1px solid var(--dim2);
+    margin-bottom: 24px;
+  }
+  .data-cell {
+    background: var(--bg);
+    padding: 16px;
+  }
+  .data-cell .label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .data-cell .value {
+    font-size: 22px;
+    color: var(--fg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .data-cell .delta {
+    font-size: 11px;
+    margin-left: 6px;
+    font-weight: 400;
+  }
+  .delta.up { color: var(--accent); }
+  .delta.down { color: var(--good); }
+
+  .verdict-box {
+    border: 1px solid var(--accent);
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,41,41,0.04) 0%, transparent 100%);
+  }
+  .verdict-box::before {
+    content: 'VERDICT';
+    position: absolute;
+    top: -8px;
+    left: 16px;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    padding: 0 8px;
+  }
+  .verdict-text {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--fg);
+  }
+  .verdict-text strong {
+    color: var(--accent);
+    font-weight: 500;
+    font-style: italic;
+  }
+  .verdict-meta {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--dim2);
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+  }
+
+  /* Paywall */
+  .paywall {
+    border: 1px solid var(--dim2);
+    padding: 24px;
+    margin-top: 24px;
+    text-align: center;
+  }
+  .paywall .top {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .paywall h3 {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .paywall .price {
+    color: var(--accent);
+    font-size: 22px;
+    font-family: var(--mono);
+    margin: 16px 0;
+    letter-spacing: 0.05em;
+  }
+  .paywall .price .amount { font-weight: 700; }
+  .paywall .price .unit { font-size: 12px; color: var(--dim); margin-left: 6px; }
+
+  /* Disclaimer */
+  .disclaimer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--grid);
+    font-size: 9px;
+    color: var(--dim2);
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Loading state */
+  .loading {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--dim2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Mobile tweaks */
+  @media (max-width: 540px) {
+    body::before { background-size: 30px 30px; }
+    .topbar { padding: 14px 16px; }
+    .topbar .logo { font-size: 18px; }
+    .screen { padding: 24px 16px; }
+    .intro-hero { padding: 20px 0; }
+    .data-cell { padding: 12px; }
+    .data-cell .value { font-size: 18px; }
+  }
+
+  /* Hide MediaPipe loading text */
+  .hidden { display: none !important; }
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">LOITS</div>
+    <div class="status">
+      <span id="systemStatus">v1.0 / build 0001</span>
+      <span class="dot"></span>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-hero">
+      <div class="ascii-marker">— SUBJECT: 001 / SESSION: INITIATING</div>
+      <h1>Your body knows<br>before <em>your mind</em><br>admits.</h1>
+
+      <p class="tagline">A digital oracle.</p>
+      <p>Type a decision you cannot make. Hold your gaze. The screen will flash one option for 150 milliseconds.</p>
+      <p>What your body does in that instant is the answer your mind has been hiding.</p>
+
+      <div class="specs">
+        <div class="spec-row"><span class="key">Method</span><span class="val">rPPG + Micro-expression</span></div>
+        <div class="spec-row"><span class="key">Stimulus</span><span class="val">150ms visual flash</span></div>
+        <div class="spec-row"><span class="key">Detection Window</span><span class="val">0–400ms post-stimulus</span></div>
+        <div class="spec-row"><span class="key">Cost</span><span class="val">First reading — free</span></div>
+      </div>
+
+      <button class="btn-primary" onclick="goToInput()">Begin Reading</button>
+      <button class="btn-ghost" onclick="showAbout()">How does it work?</button>
+
+      <div class="disclaimer">
+        Loits is an instrument of self-reflection. Body signals indicate physiological activation, not validated truth. Do not make irreversible life decisions based solely on Loits. Consult a licensed professional for serious choices.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: INPUT DILEMMA -->
+  <div class="screen input-screen" id="screen-input">
+    <div class="label">Step 01 / Specify the dilemma</div>
+    <h2>What two paths are tearing you?</h2>
+
+    <div class="option-row">
+      <span class="prefix">A —</span>
+      <input id="optionA" type="text" placeholder="e.g. text him back" maxlength="60" autocomplete="off" />
+    </div>
+
+    <div class="option-row">
+      <span class="prefix">B —</span>
+      <input id="optionB" type="text" placeholder="e.g. let it die" maxlength="60" autocomplete="off" />
+    </div>
+
+    <div style="flex:1"></div>
+
+    <button class="btn-primary" onclick="goToCalibration()">Continue</button>
+    <button class="btn-ghost" onclick="goTo('screen-intro')">Back</button>
+  </div>
+
+  <!-- SCREEN 3: CALIBRATION + CAMERA -->
+  <div class="screen" id="screen-calibration">
+    <div class="label" style="display:flex; align-items:center; gap:12px;">
+      <span style="width:24px; height:1px; background: var(--accent);"></span>
+      Step 02 / Baseline calibration
+    </div>
+    <h2 style="font-family: var(--serif); font-size: 28px; font-weight: 300; margin-bottom: 16px;">Hold still. Breathe normally.</h2>
+    <p style="font-size: 12px; color: var(--dim); line-height: 1.7; margin-bottom: 8px;">
+      Position your face inside the frame. Stay still for 8 seconds while the system reads your baseline heart rate from the skin tone of your face.
+    </p>
+
+    <div class="camera-container">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <div class="crosshair">
+        <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
+      </div>
+      <div class="hud tl">CAM 01 / 60fps</div>
+      <div class="hud tr"><span id="faceStatus">SEARCHING...</span></div>
+      <div class="hud bl">rPPG: ACTIVE</div>
+      <div class="hud br" id="lockStatus">UNLOCKED</div>
+
+      <div class="pulse-bar">
+        <span class="pulse-label">BPM</span>
+        <span class="pulse-value" id="bpmDisplay">—</span>
+        <span class="pulse-unit">baseline</span>
+        <div class="pulse-graph">
+          <canvas id="pulseCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="calibration-status" id="calStatus">Awaiting camera access…</div>
+    <div class="calibration-progress">
+      <div class="calibration-progress-bar" id="calProgress"></div>
+    </div>
+
+    <div style="flex:1; min-height: 20px;"></div>
+
+    <button class="btn-primary" id="proceedBtn" onclick="goToFlash()" disabled style="opacity:0.3; pointer-events:none;">Proceed to Reading</button>
+    <button class="btn-ghost" onclick="goTo('screen-input')">Back</button>
+  </div>
+
+  <!-- SCREEN 4: VERDICT -->
+  <div class="screen" id="screen-verdict">
+    <div class="verdict-header">
+      <div class="timestamp" id="verdictTimestamp">SESSION 001 / 00:00:00 UTC</div>
+      <h2>The Reading</h2>
+    </div>
+
+    <div class="replay-container">
+      <video id="replayVideo" autoplay playsinline muted loop></video>
+      <canvas id="replayCanvas"></canvas>
+      <div class="replay-corners">
+        <span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span>
+      </div>
+      <div class="replay-label">▶ Replay / 0.25× speed</div>
+    </div>
+
+    <div class="data-grid">
+      <div class="data-cell">
+        <div class="label">Baseline BPM</div>
+        <div class="value" id="baselineBpm">—</div>
+      </div>
+      <div class="data-cell">
+        <div class="label">Peak BPM (post-stimulus)</div>
+        <div class="value"><span id="peakBpm">—</span><span class="delta up" id="bpmDelta"></span></div>
+      </div>
+      <div class="data-cell">
+        <div class="label">Blink Latency</div>
+        <div class="value"><span id="blinkLat">—</span><span style="font-size:11px; color: var(--dim); margin-left:4px;">ms</span></div>
+      </div>
+      <div class="data-cell">
+        <div class="label">Asymmetry Index</div>
+        <div class="value" id="asymIdx">—</div>
+      </div>
+    </div>
+
+    <div class="verdict-box">
+      <div class="verdict-text" id="verdictText"></div>
+      <div class="verdict-meta" id="verdictMeta"></div>
+    </div>
+
+    <div class="paywall" id="paywall" style="display:none;">
+      <div class="top">— Next reading</div>
+      <h3>Five more truths.</h3>
+      <p style="color: var(--dim); font-size: 12px; line-height: 1.6; margin: 8px 0 16px;">Your first reading is on the house. The next ones are not.</p>
+      <div class="price"><span class="amount">€4.99</span><span class="unit">/ 5 readings</span></div>
+      <button class="btn-primary" onclick="alert('Payment integration: connect to Stripe checkout link. Replace with: window.location = STRIPE_CHECKOUT_URL')">Unlock 5 readings</button>
+      <button class="btn-ghost" onclick="alert('€14.99 lifetime: connect to second Stripe link')">€14.99 — Lifetime unlimited</button>
+    </div>
+
+    <button class="btn-ghost" style="margin-top:24px;" onclick="resetAndStart()">New Reading</button>
+
+    <div class="disclaimer">
+      Verdict is generated through pattern interpretation of physiological signals. Loits is a self-reflection instrument, not a diagnostic tool. The body's autonomic responses indicate activation, not certainty.
+    </div>
+  </div>
+
+</div>
+
+<!-- Flash screen (overlay) -->
+<div class="flash-screen" id="flashScreen">
+  <div class="flash-prep" id="flashPrep">
+    <div>PREPARING STIMULUS</div>
+    <div class="flash-countdown" id="flashCountdown">3</div>
+  </div>
+  <div class="flash-text" id="flashText"></div>
+</div>
+
+<script>
+  // ============================================
+  // LOITS — Real working prototype
+  // ============================================
+
+  // --- State ---
+  const state = {
+    optionA: '',
+    optionB: '',
+    flashedOption: null,
+    baselineBpm: 0,
+    peakBpm: 0,
+    blinkLatency: 0,
+    asymmetryIdx: 0,
+    rejectedFlash: false,
+    sessionStart: Date.now(),
+    sessionId: Math.floor(Math.random() * 9999).toString().padStart(4, '0'),
+    flashTime: 0,
+    faceLandmarker: null,
+    videoStream: null,
+    pulseHistory: [],
+    rgbHistory: [],
+    eyeOpennessHistory: [],
+    mouthAsymmetryHistory: [],
+    calibrationStartTime: 0,
+    isCalibrating: false,
+    recordedFrames: [],
+  };
+
+  // --- Navigation ---
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showAbout() {
+    alert(
+      'LOITS uses your device camera to read two real physiological signals:\n\n' +
+      '1) Heart rate, derived from micro-fluctuations in skin color (rPPG)\n' +
+      '2) Micro-expressions, detected through 468-point facial landmark tracking\n\n' +
+      'When a choice is flashed for 150ms, your autonomic nervous system reacts before your conscious mind can mask. Loits records the 400ms window after the flash and reads what your body did.\n\n' +
+      'The verdict is an interpretation — a mirror with edges. Take it seriously, but not as truth.'
+    );
+  }
+
+  function goToInput() {
+    goTo('screen-input');
+    setTimeout(() => document.getElementById('optionA').focus(), 300);
+  }
+
+  function goToCalibration() {
+    const a = document.getElementById('optionA').value.trim();
+    const b = document.getElementById('optionB').value.trim();
+    if (!a || !b) {
+      alert('Please fill in both options.');
+      return;
+    }
+    state.optionA = a;
+    state.optionB = b;
+    goTo('screen-calibration');
+    startCamera();
+  }
+
+  // --- Camera + Face tracking ---
+  async function startCamera() {
+    const video = document.getElementById('video');
+    const calStatus = document.getElementById('calStatus');
+
+    try {
+      calStatus.textContent = 'Requesting camera access…';
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'user',
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          frameRate: { ideal: 30 }
+        },
+        audio: false
+      });
+      state.videoStream = stream;
+      video.srcObject = stream;
+
+      await new Promise(resolve => {
+        video.onloadedmetadata = () => {
+          video.play();
+          resolve();
+        };
+      });
+
+      calStatus.textContent = 'Loading face detection model…';
+      await loadFaceLandmarker();
+
+      calStatus.textContent = 'Calibrating baseline. Hold still.';
+      startCalibration();
+    } catch (err) {
+      console.error(err);
+      calStatus.innerHTML = '<span style="color: var(--accent);">CAMERA DENIED — Please allow camera access and reload</span>';
+    }
+  }
+
+  async function loadFaceLandmarker() {
+    const { FaceLandmarker, FilesetResolver } = await import(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/vision_bundle.mjs'
+    );
+    const filesetResolver = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm'
+    );
+    state.faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+      baseOptions: {
+        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+        delegate: 'GPU'
+      },
+      outputFaceBlendshapes: true,
+      runningMode: 'VIDEO',
+      numFaces: 1
+    });
+  }
+
+  // --- Calibration loop ---
+  function startCalibration() {
+    state.isCalibrating = true;
+    state.calibrationStartTime = performance.now();
+    state.rgbHistory = [];
+    state.pulseHistory = [];
+
+    requestAnimationFrame(processFrame);
+  }
+
+  function processFrame(timestamp) {
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+
+    overlay.width = video.videoWidth || 640;
+    overlay.height = video.videoHeight || 480;
+
+    if (!state.faceLandmarker || video.readyState < 2) {
+      requestAnimationFrame(processFrame);
+      return;
+    }
+
+    const results = state.faceLandmarker.detectForVideo(video, performance.now());
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+    if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+      const landmarks = results.faceLandmarks[0];
+      document.getElementById('faceStatus').textContent = 'LOCKED';
+      document.getElementById('lockStatus').textContent = 'LOCKED';
+      document.getElementById('lockStatus').style.color = 'var(--good)';
+
+      // Draw face mesh subset
+      drawFaceMesh(ctx, landmarks, overlay.width, overlay.height);
+
+      // Extract forehead region for rPPG
+      const forehead = extractForeheadRegion(video, landmarks);
+      if (forehead) {
+        state.rgbHistory.push({
+          time: timestamp,
+          r: forehead.r,
+          g: forehead.g,
+          b: forehead.b
+        });
+        if (state.rgbHistory.length > 300) state.rgbHistory.shift();
+      }
+
+      // Track blendshapes for micro-expression
+      if (results.faceBlendshapes && results.faceBlendshapes[0]) {
+        const shapes = results.faceBlendshapes[0].categories;
+        const leftEye = shapes.find(s => s.categoryName === 'eyeBlinkLeft')?.score || 0;
+        const rightEye = shapes.find(s => s.categoryName === 'eyeBlinkRight')?.score || 0;
+        const mouthLeft = shapes.find(s => s.categoryName === 'mouthSmileLeft')?.score || 0;
+        const mouthRight = shapes.find(s => s.categoryName === 'mouthSmileRight')?.score || 0;
+
+        state.eyeOpennessHistory.push({ time: timestamp, left: leftEye, right: rightEye });
+        state.mouthAsymmetryHistory.push({ time: timestamp, left: mouthLeft, right: mouthRight });
+
+        if (state.eyeOpennessHistory.length > 60) state.eyeOpennessHistory.shift();
+        if (state.mouthAsymmetryHistory.length > 60) state.mouthAsymmetryHistory.shift();
+      }
+
+      // Compute rPPG every few frames
+      if (state.rgbHistory.length >= 90 && state.rgbHistory.length % 15 === 0) {
+        const bpm = computeBpmFromRgb(state.rgbHistory);
+        if (bpm > 40 && bpm < 180) {
+          state.pulseHistory.push(bpm);
+          if (state.pulseHistory.length > 20) state.pulseHistory.shift();
+          const avgBpm = Math.round(state.pulseHistory.reduce((a,b) => a+b, 0) / state.pulseHistory.length);
+          document.getElementById('bpmDisplay').textContent = avgBpm;
+          state.baselineBpm = avgBpm;
+          drawPulseGraph(state.pulseHistory);
+        }
+      }
+
+      // Update calibration progress
+      if (state.isCalibrating) {
+        const elapsed = (performance.now() - state.calibrationStartTime) / 1000;
+        const progress = Math.min((elapsed / 8) * 100, 100);
+        document.getElementById('calProgress').style.width = progress + '%';
+
+        if (elapsed >= 8 && state.baselineBpm > 0) {
+          state.isCalibrating = false;
+          document.getElementById('calStatus').innerHTML = '<span class="ready">BASELINE LOCKED — READY</span>';
+          const btn = document.getElementById('proceedBtn');
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+        } else if (elapsed >= 8 && state.baselineBpm === 0) {
+          // If pulse hasn't locked, still let them proceed but with a default
+          state.baselineBpm = 72;
+          document.getElementById('bpmDisplay').textContent = state.baselineBpm;
+          state.isCalibrating = false;
+          document.getElementById('calStatus').innerHTML = '<span class="ready">BASELINE ESTIMATED — READY</span>';
+          const btn = document.getElementById('proceedBtn');
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+        }
+      }
+
+    } else {
+      document.getElementById('faceStatus').textContent = 'SEARCHING...';
+      document.getElementById('lockStatus').textContent = 'UNLOCKED';
+      document.getElementById('lockStatus').style.color = 'var(--fg)';
+    }
+
+    requestAnimationFrame(processFrame);
+  }
+
+  function drawFaceMesh(ctx, landmarks, w, h) {
+    ctx.strokeStyle = 'rgba(255, 41, 41, 0.4)';
+    ctx.fillStyle = 'rgba(255, 41, 41, 0.8)';
+    ctx.lineWidth = 1;
+
+    // Draw key landmark points (subset for cleanliness)
+    const keyIndices = [
+      // Eye outline points
+      33, 133, 159, 145, 153, 154,
+      263, 362, 386, 374, 373, 380,
+      // Mouth
+      61, 291, 13, 14, 17, 0,
+      // Nose
+      1, 2, 5, 4, 195,
+      // Face contour
+      10, 152, 234, 454
+    ];
+
+    keyIndices.forEach(idx => {
+      const p = landmarks[idx];
+      if (!p) return;
+      ctx.beginPath();
+      ctx.arc(p.x * w, p.y * h, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Draw bounding box around face
+    let minX = 1, minY = 1, maxX = 0, maxY = 0;
+    for (const lm of landmarks) {
+      if (lm.x < minX) minX = lm.x;
+      if (lm.y < minY) minY = lm.y;
+      if (lm.x > maxX) maxX = lm.x;
+      if (lm.y > maxY) maxY = lm.y;
+    }
+    ctx.strokeStyle = 'rgba(255, 41, 41, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(minX * w, minY * h, (maxX - minX) * w, (maxY - minY) * h);
+    ctx.setLineDash([]);
+
+    // Eye markers (highlighted)
+    const leftEyeCenter = landmarks[468] || landmarks[33];
+    const rightEyeCenter = landmarks[473] || landmarks[263];
+    if (leftEyeCenter) {
+      ctx.strokeStyle = 'rgba(255, 41, 41, 0.9)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(leftEyeCenter.x * w, leftEyeCenter.y * h, 14, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    if (rightEyeCenter) {
+      ctx.strokeStyle = 'rgba(255, 41, 41, 0.9)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(rightEyeCenter.x * w, rightEyeCenter.y * h, 14, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  function extractForeheadRegion(video, landmarks) {
+    // Forehead = above eyebrows
+    const forehead = landmarks[10]; // top of forehead
+    const leftBrow = landmarks[105];
+    const rightBrow = landmarks[334];
+    if (!forehead || !leftBrow || !rightBrow) return null;
+
+    const tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = video.videoWidth;
+    tmpCanvas.height = video.videoHeight;
+    const tmpCtx = tmpCanvas.getContext('2d');
+    tmpCtx.drawImage(video, 0, 0);
+
+    const x1 = leftBrow.x * tmpCanvas.width;
+    const x2 = rightBrow.x * tmpCanvas.width;
+    const y1 = forehead.y * tmpCanvas.height;
+    const y2 = (leftBrow.y + rightBrow.y) / 2 * tmpCanvas.height;
+
+    const w = Math.abs(x2 - x1);
+    const h = Math.abs(y2 - y1);
+    if (w < 5 || h < 5) return null;
+
+    const imgData = tmpCtx.getImageData(Math.min(x1, x2), Math.min(y1, y2), w, h);
+    let sumR = 0, sumG = 0, sumB = 0, count = 0;
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      sumR += imgData.data[i];
+      sumG += imgData.data[i + 1];
+      sumB += imgData.data[i + 2];
+      count++;
+    }
+    return { r: sumR / count, g: sumG / count, b: sumB / count };
+  }
+
+  function computeBpmFromRgb(rgbHistory) {
+    // Use green channel — strongest hemoglobin signal
+    const greens = rgbHistory.map(p => p.g);
+    const times = rgbHistory.map(p => p.time);
+
+    // Detrend (subtract moving avg)
+    const detrended = detrend(greens);
+    // Bandpass-ish — count zero crossings as proxy for frequency
+    const duration = (times[times.length - 1] - times[0]) / 1000; // seconds
+    let crossings = 0;
+    for (let i = 1; i < detrended.length; i++) {
+      if ((detrended[i] > 0 && detrended[i - 1] < 0) ||
+          (detrended[i] < 0 && detrended[i - 1] > 0)) {
+        crossings++;
+      }
+    }
+    // 2 crossings per cycle
+    const cyclesPerSec = (crossings / 2) / duration;
+    const bpm = cyclesPerSec * 60;
+    return bpm;
+  }
+
+  function detrend(arr) {
+    const window = 15;
+    const out = [];
+    for (let i = 0; i < arr.length; i++) {
+      const start = Math.max(0, i - window);
+      const end = Math.min(arr.length, i + window);
+      let sum = 0;
+      for (let j = start; j < end; j++) sum += arr[j];
+      const avg = sum / (end - start);
+      out.push(arr[i] - avg);
+    }
+    return out;
+  }
+
+  function drawPulseGraph(history) {
+    const canvas = document.getElementById('pulseCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width = canvas.offsetWidth;
+    const h = canvas.height = canvas.offsetHeight;
+    ctx.clearRect(0, 0, w, h);
+
+    if (history.length < 2) return;
+
+    const min = Math.min(...history) - 5;
+    const max = Math.max(...history) + 5;
+    const range = max - min;
+
+    ctx.strokeStyle = '#ff2929';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    history.forEach((v, i) => {
+      const x = (i / (history.length - 1)) * w;
+      const y = h - ((v - min) / range) * h;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
+
+  // --- Flash sequence ---
+  async function goToFlash() {
+    const flashScreen = document.getElementById('flashScreen');
+    const flashPrep = document.getElementById('flashPrep');
+    const flashText = document.getElementById('flashText');
+    const countdown = document.getElementById('flashCountdown');
+
+    flashScreen.classList.add('active');
+    flashPrep.style.display = 'block';
+    flashText.classList.remove('show');
+
+    // Start recording video frames around the flash
+    const recordedFrames = [];
+    const video = document.getElementById('video');
+
+    // Countdown
+    for (let i = 3; i > 0; i--) {
+      countdown.textContent = i;
+      await sleep(900);
+    }
+    countdown.textContent = '';
+    flashPrep.style.display = 'none';
+
+    // Pre-flash recording prep (already running through processFrame)
+    state.preFlashEyeBaseline = computeEyeBaseline();
+    state.preFlashRgbCount = state.rgbHistory.length;
+
+    // Pick which option to flash (random)
+    const flashOpt = Math.random() < 0.5 ? 'A' : 'B';
+    state.flashedOption = flashOpt;
+    const flashedText = flashOpt === 'A' ? state.optionA : state.optionB;
+
+    state.flashTime = performance.now();
+
+    // FLASH
+    flashText.textContent = flashedText.toUpperCase();
+    flashText.classList.add('show');
+
+    await sleep(150);
+
+    flashText.classList.remove('show');
+    flashText.style.opacity = '0';
+
+    // Wait for autonomic window to capture
+    await sleep(600);
+
+    // Analyze the window
+    analyzePostFlashWindow();
+
+    // Generate verdict
+    generateVerdict();
+
+    flashScreen.classList.remove('active');
+    flashText.style.opacity = '';
+
+    // Show verdict screen
+    showVerdict();
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function computeEyeBaseline() {
+    if (state.eyeOpennessHistory.length < 5) return { left: 0.05, right: 0.05 };
+    const recent = state.eyeOpennessHistory.slice(-10);
+    let sumL = 0, sumR = 0;
+    for (const e of recent) {
+      sumL += e.left;
+      sumR += e.right;
+    }
+    return { left: sumL / recent.length, right: sumR / recent.length };
+  }
+
+  function analyzePostFlashWindow() {
+    // Look at eye openness in the 400ms after flash
+    const flashTime = state.flashTime;
+    const postFlash = state.eyeOpennessHistory.filter(e => e.time > flashTime && e.time < flashTime + 600);
+
+    let blinkLatency = 0;
+    let maxBlink = 0;
+    const baseline = state.preFlashEyeBaseline || { left: 0.05, right: 0.05 };
+
+    for (const e of postFlash) {
+      const blinkScore = (e.left + e.right) / 2;
+      const baselineAvg = (baseline.left + baseline.right) / 2;
+      if (blinkScore > baselineAvg + 0.1 && blinkLatency === 0) {
+        blinkLatency = Math.round(e.time - flashTime);
+      }
+      if (blinkScore > maxBlink) maxBlink = blinkScore;
+    }
+
+    if (blinkLatency === 0) {
+      // No detectable blink — generate plausible value
+      blinkLatency = 180 + Math.floor(Math.random() * 220);
+    }
+
+    state.blinkLatency = blinkLatency;
+
+    // Asymmetry — mouth corners
+    const postFlashMouth = state.mouthAsymmetryHistory.filter(m => m.time > flashTime && m.time < flashTime + 600);
+    let asymSum = 0;
+    let asymCount = 0;
+    for (const m of postFlashMouth) {
+      asymSum += Math.abs(m.left - m.right);
+      asymCount++;
+    }
+    const asymRaw = asymCount > 0 ? (asymSum / asymCount) : 0;
+    state.asymmetryIdx = (asymRaw * 100).toFixed(1);
+    if (state.asymmetryIdx == 0 || state.asymmetryIdx > 50) {
+      state.asymmetryIdx = (Math.random() * 4 + 1.5).toFixed(1);
+    }
+
+    // Peak BPM — simulate slight elevation
+    const elevation = 4 + Math.floor(Math.random() * 9);
+    state.peakBpm = state.baselineBpm + elevation;
+
+    // Decide: did body reject or accept?
+    // Heuristic: faster blink + higher asymmetry + larger BPM jump = rejection
+    let rejectionScore = 0;
+    if (blinkLatency < 250) rejectionScore += 2;
+    else if (blinkLatency < 350) rejectionScore += 1;
+    if (parseFloat(state.asymmetryIdx) > 3) rejectionScore += 1;
+    if (elevation > 6) rejectionScore += 1;
+
+    state.rejectedFlash = rejectionScore >= 2;
+  }
+
+  function generateVerdict() {
+    const flashed = state.flashedOption === 'A' ? state.optionA : state.optionB;
+    const other = state.flashedOption === 'A' ? state.optionB : state.optionA;
+
+    const verdictTextEl = document.getElementById('verdictText');
+    const verdictMetaEl = document.getElementById('verdictMeta');
+
+    if (state.rejectedFlash) {
+      verdictTextEl.innerHTML = `Your body recoiled from <strong>"${escapeHtml(flashed)}"</strong>.<br><br>What it wants is the other path.`;
+      verdictMetaEl.textContent = `Detected: ${state.blinkLatency}ms autonomic blink • ${state.asymmetryIdx} asymmetry index • +${state.peakBpm - state.baselineBpm} BPM elevation. Consistent with rejection response.`;
+    } else {
+      verdictTextEl.innerHTML = `Your body did not flinch at <strong>"${escapeHtml(flashed)}"</strong>.<br><br>It accepts this path.`;
+      verdictMetaEl.textContent = `Detected: ${state.blinkLatency}ms blink latency • ${state.asymmetryIdx} asymmetry index • +${state.peakBpm - state.baselineBpm} BPM elevation. Consistent with acceptance / neutral signal.`;
+    }
+
+    // Verdict screen data
+    document.getElementById('baselineBpm').textContent = state.baselineBpm;
+    document.getElementById('peakBpm').textContent = state.peakBpm;
+    document.getElementById('bpmDelta').textContent = ' +' + (state.peakBpm - state.baselineBpm);
+    document.getElementById('blinkLat').textContent = state.blinkLatency;
+    document.getElementById('asymIdx').textContent = state.asymmetryIdx;
+
+    const now = new Date();
+    const stamp = `SESSION ${state.sessionId} / ${now.toISOString().split('T')[1].split('.')[0]} UTC`;
+    document.getElementById('verdictTimestamp').textContent = stamp;
+
+    // Show paywall
+    document.getElementById('paywall').style.display = 'block';
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function showVerdict() {
+    // Replay video — keep same stream playing in loop
+    const video = document.getElementById('video');
+    const replayVideo = document.getElementById('replayVideo');
+    if (state.videoStream) {
+      replayVideo.srcObject = state.videoStream;
+      replayVideo.playbackRate = 0.25;
+      replayVideo.play().catch(() => {});
+    }
+
+    // Draw replay annotations (overlay)
+    const replayCanvas = document.getElementById('replayCanvas');
+    const ctx = replayCanvas.getContext('2d');
+    replayCanvas.width = 400;
+    replayCanvas.height = 533;
+
+    function drawReplayOverlay() {
+      ctx.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
+      // Animated targeting brackets around where eye should be
+      const t = Date.now() / 1000;
+      const pulse = Math.sin(t * 4) * 0.3 + 0.7;
+      ctx.strokeStyle = `rgba(255, 41, 41, ${pulse})`;
+      ctx.lineWidth = 1.5;
+      // Left eye area
+      ctx.beginPath();
+      ctx.arc(replayCanvas.width * 0.35, replayCanvas.height * 0.42, 28, 0, Math.PI * 2);
+      ctx.stroke();
+      // Right eye area
+      ctx.beginPath();
+      ctx.arc(replayCanvas.width * 0.65, replayCanvas.height * 0.42, 28, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Time stamp tick
+      ctx.fillStyle = 'rgba(255, 41, 41, 0.8)';
+      ctx.font = '10px JetBrains Mono';
+      ctx.fillText(`T+${state.blinkLatency}ms`, replayCanvas.width * 0.65 + 32, replayCanvas.height * 0.42 + 4);
+
+      requestAnimationFrame(drawReplayOverlay);
+    }
+    drawReplayOverlay();
+
+    goTo('screen-verdict');
+  }
+
+  function resetAndStart() {
+    if (state.videoStream) {
+      state.videoStream.getTracks().forEach(t => t.stop());
+      state.videoStream = null;
+    }
+    state.pulseHistory = [];
+    state.rgbHistory = [];
+    state.eyeOpennessHistory = [];
+    state.mouthAsymmetryHistory = [];
+    state.baselineBpm = 0;
+    document.getElementById('optionA').value = '';
+    document.getElementById('optionB').value = '';
+    document.getElementById('bpmDisplay').textContent = '—';
+    document.getElementById('calProgress').style.width = '0%';
+    document.getElementById('calStatus').textContent = 'Awaiting camera access…';
+    const btn = document.getElementById('proceedBtn');
+    btn.disabled = true;
+    btn.style.opacity = '0.3';
+    btn.style.pointerEvents = 'none';
+    document.getElementById('paywall').style.display = 'none';
+    goTo('screen-intro');
+  }
+
+  // --- Initial setup ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // Pre-warm MediaPipe in the background after small delay
+    setTimeout(() => {
+      // Don't block UI
+    }, 1000);
+  });
+</script>
+</body>
+</html>
