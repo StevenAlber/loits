@@ -1371,6 +1371,10 @@ const LANGUAGES = [
 //  - Use native idioms; avoid literal translations that sound foreign
 const I18N = {
   en: {
+    'THE READING': 'THE READING',
+    'BODY RECOMMENDS': 'BODY RECOMMENDS',
+    'BODY REJECTED': 'BODY REJECTED',
+    'Your autonomic nervous system reacted more strongly against the second option — typically a sign of rejection, not desire.': 'Your autonomic nervous system reacted more strongly against the second option — typically a sign of rejection, not desire.',
     'THE BODY CHOSE': 'THE BODY CHOSE',
     'Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.': 'Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.',
     'Detailed interpretation specific to your dilemma is available in paid versions.': 'Detailed interpretation specific to your dilemma is available in paid versions.',
@@ -1484,6 +1488,10 @@ const I18N = {
     'method_not_do': 'We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure only physiological activation — the response of your autonomic nervous system. Activation can mean rejection, surprise, tension, fear, or recognition. The body speaks loudly, but in one language only: <em>one matters more than the other</em>.'
   },
   et: {
+    'THE READING': 'TULEMUS',
+    'BODY RECOMMENDS': 'KEHA SOOVITAB',
+    'BODY REJECTED': 'KEHA TÕRJUS',
+    'Your autonomic nervous system reacted more strongly against the second option — typically a sign of rejection, not desire.': 'Sinu autonoomne närvisüsteem reageeris tugevamalt teisele valikule — tavaliselt tähendab see tõrjumist, mitte soovi.',
     'THE BODY CHOSE': 'KEHA VALIS',
     'Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.': 'Sinu autonoomne närvisüsteem reageeris tugevamalt teisele valikule {opt} — tavaliselt tähendab see tõrjumist, mitte soovi.',
     'Detailed interpretation specific to your dilemma is available in paid versions.': 'Põhjalikum tõlgendus sinu dilemmale on saadaval tasulistes versioonides.',
@@ -4221,22 +4229,34 @@ function renderVerdict(v) {
       // The answer line — body chose X. Same for free and paid tiers.
       // Paid tiers will additionally show AI analysis below.
       const closingClause = !readingIncludesAI()
-        ? `<p style="color: var(--dim); font-size: 11px; margin-top: 14px; font-style: italic;">${t('Detailed interpretation specific to your dilemma is available in paid versions.')}</p>`
+        ? `<p style="color: var(--dim); font-size: 11px; margin-top: 18px; font-style: italic; line-height: 1.5;">${t('Detailed interpretation specific to your dilemma is available in paid versions.')}</p>`
         : '';
 
       html += `
         <div class="verdict-box">
-          <div class="verdict-label">— ${t('THE BODY CHOSE')} · ${t(confLevel).toUpperCase()} ${t('CONFIDENCE')}</div>
-          <div class="verdict-text">
-            <div style="font-family: 'EB Garamond', serif; font-size: 24px; line-height: 1.35; margin-bottom: 14px;">
-              <strong style="color: var(--good);">"${esc(wantsLabel)}"</strong>
+          <div class="verdict-label">— ${t('THE READING')} · ${t(confLevel).toUpperCase()} ${t('CONFIDENCE')}</div>
+
+          <div style="margin-top: 18px; padding: 18px; background: rgba(74,222,128,0.06); border-left: 3px solid var(--good); border-radius: 2px;">
+            <div style="font-size: 9px; letter-spacing: 0.3em; color: var(--good); text-transform: uppercase; margin-bottom: 10px;">→ ${t('BODY RECOMMENDS')}</div>
+            <div style="font-family: 'EB Garamond', serif; font-size: 22px; line-height: 1.35; color: var(--good); font-weight: 500;">
+              "${esc(wantsLabel)}"
             </div>
-            <p style="font-size: 14px; color: var(--fg); line-height: 1.55; margin: 0;">
-              ${t('Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.').replace('{opt}', `<strong>"${esc(rejectedLabel)}"</strong>`)}
-            </p>
-            ${closingClause}
           </div>
-          <div class="verdict-confidence">
+
+          <div style="margin-top: 12px; padding: 14px 18px; background: rgba(255,41,41,0.04); border-left: 3px solid var(--accent); border-radius: 2px;">
+            <div style="font-size: 9px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">✕ ${t('BODY REJECTED')}</div>
+            <div style="font-family: 'EB Garamond', serif; font-size: 17px; line-height: 1.35; color: var(--accent); font-style: italic;">
+              "${esc(rejectedLabel)}"
+            </div>
+          </div>
+
+          <p style="font-size: 13px; color: var(--dim); line-height: 1.6; margin: 18px 0 0 0;">
+            ${t('Your autonomic nervous system reacted more strongly against the second option — typically a sign of rejection, not desire.')}
+          </p>
+
+          ${closingClause}
+
+          <div class="verdict-confidence" style="margin-top: 22px;">
             <div class="conf-label">${t('Signal strength')}</div>
             ${t('Differential')}: <strong>${v.differential}%</strong><br>
             ${t('A response score')}: ${v.aScore} • ${t('B response score')}: ${v.bScore}<br>
