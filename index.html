@@ -1144,16 +1144,16 @@
     </div>
     <h1 class="intro-title" data-i18n-html="Your body knows before <em>your mind</em> admits."><span>Your body knows<br>before <em>your mind</em><br>admits.</span></h1>
     <p class="intro-sub" data-i18n="intro_p1">
-      Loits is a biometric instrument. Your phone's camera monitors your face — pulse, blink reflexes, micro-expressions — while we flash you two options. Your autonomic nervous system reacts in milliseconds, before conscious thought can intervene. We measure those reactions and reveal which path your body recognizes.
+      Loits is a facial biometric instrument. Your phone's camera registers your autonomic nervous system responses — pulse, blink reflex, micro-expression asymmetry — while we present two options. These responses occur in 200–500 milliseconds, before conscious thought can intervene. We measure them and reveal which path your body recognizes.
     </p>
     <p class="intro-sub" data-i18n="intro_p2">
-      Nothing is uploaded. All measurement happens on your device. We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.
+      Nothing is uploaded. All measurement happens on your device. We measure only what is physiologically measurable. If conditions aren't right, we tell you. We don't guess.
     </p>
     <div class="intro-features" data-i18n-html="intro_features">
-      <span>● Facial biometric monitoring</span>
-      <span>● Heart rate via skin color (rPPG)</span>
-      <span>● 468-point face tracking</span>
-      <span>● Autonomic response analysis</span>
+      <span>● Facial biometrics · 468-point tracking</span>
+      <span>● Pulse via skin color shifts (rPPG)</span>
+      <span>● Micro-expression asymmetry</span>
+      <span>● Autonomic nervous system response</span>
     </div>
     <button class="btn-main" onclick="goToMethod()" data-i18n="How It Works →">How It Works →</button>
     <button class="btn-secondary" onclick="goToInput()" data-i18n="Skip — Begin Reading">Skip — Begin Reading</button>
@@ -1354,15 +1354,39 @@ const LANGUAGES = [
 //  - Tone: serious, intimate, slightly poetic — like a neuroscientist who reads literature
 //  - Use native idioms; avoid literal translations that sound foreign
 const I18N = {
-  en: {}, // base — every key returns itself
+  en: {
+    // Short keys need explicit English values (they're not self-referencing)
+    'intro_p1': 'Loits is a facial biometric instrument. Your phone\'s camera registers your autonomic nervous system responses — pulse, blink reflex, micro-expression asymmetry — while we present two options. These responses occur in 200–500 milliseconds, before conscious thought can intervene. We measure them and reveal which path your body recognizes.',
+    'intro_p2': 'Nothing is uploaded. All measurement happens on your device. We measure only what is physiologically measurable. If conditions aren\'t right, we tell you. We don\'t guess.',
+    'intro_features': '<span>● Facial biometrics · 468-point tracking</span><span>● Pulse via skin color shifts (rPPG)</span><span>● Micro-expression asymmetry</span><span>● Autonomic nervous system response</span>',
 
+    'method_intro': 'We use your phone\'s camera and advanced computer vision models to read four physiological signals from your face. Everything happens on your device. Nothing is uploaded or stored.',
+
+    'method_01_p1': 'With each heartbeat, blood briefly enters your facial capillaries, changing your skin color microscopically. This is remote photoplethysmography (rPPG) — a contactless pulse measurement method used in medical devices since 2008.',
+    'method_01_method': '<strong>Method:</strong> Green channel analysis of forehead and both cheeks, sampled at 30fps, detrended, bandpass-filtered to the cardiac frequency range (0.7–2.5 Hz). Three independent regions are compared.',
+    'method_01_limit': '<strong>Condition:</strong> Requires good light and stillness. We report your BPM, change after stimulus, and signal confidence.',
+
+    'method_02_p1': 'Your autonomic nervous system triggers a protective blink reflex when seeing something the body wants to reject. A natural blink takes 100–150ms; a reflexive one occurs 200–400ms after the stimulus. This is well-documented in neuropsychology.',
+    'method_02_method': '<strong>Method:</strong> Google MediaPipe FaceLandmarker tracks 468 facial points at 30fps. Blink onset is detected by eyeBlinkLeft + eyeBlinkRight blendshape scores crossing your personal baseline.',
+    'method_02_limit': '<strong>Condition:</strong> If you do not blink within 600ms of the stimulus, we report "no detectable response." We do not generate a response when signal is absent.',
+
+    'method_03_p1': 'The face is controlled by two hemispheres via different neural pathways. Genuine emotional reactions appear asymmetrically — one side before the other — in 200–500ms. Consciously controlled expressions tend to be symmetric. This is the core finding of Paul Ekman\'s micro-expression research.',
+    'method_03_method': '<strong>Method:</strong> The difference between mouthSmileLeft / mouthSmileRight, browInnerUp, and jawForward blendshape scores, sampled at 60ms intervals after the stimulus.',
+    'method_03_limit': '<strong>Condition:</strong> Beards, makeup, and glasses can reduce sensitivity. We report this as the Asymmetry Index.',
+
+    'method_04_p1': 'One flash proves nothing. We present each option twice and a neutral control word once, in randomized order with 2-second pauses. Your A-responses are compared to your B-responses, with the control as baseline. This is a classical psychophysiological trial design.',
+    'method_04_method': '<strong>Method:</strong> Each trial measures blink latency, asymmetry delta, and BPM acceleration. A confidence score is computed from the consistency between trials.',
+    'method_04_limit': '<strong>Condition:</strong> Below 60% confidence we report the result as inconclusive. Above 75% we report it as significant.',
+
+    'method_not_do': 'We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure only physiological activation — the response of your autonomic nervous system. Activation can mean rejection, surprise, tension, fear, or recognition. The body speaks loudly, but in one language only: <em>this matters more than that</em>.'
+  },
   et: {
     // — INTRO SCREEN
     '— REAL-TIME BIOMETRIC ORACLE': '— REAALAJA BIOMEETRILINE ORAAKEL',
     'Your body knows before <em>your mind</em> admits.': 'Su keha teab enne, kui <em>su teadvus</em> möönab.',
-    'intro_p1': 'Loits on biomeetriline instrument. Sinu telefoni kaamera monitoorib su nägu — pulssi, silmade pilgutusreflekse, mikroväljendusi — sel ajal kui vilgutame sulle kaks valikut. Su autonoomne närvisüsteem reageerib millisekundite jooksul, enne kui teadvus jõuab sekkuda. Mõõdame need reaktsioonid ja paljastame, millise tee su keha ära tunneb.',
-    'intro_p2': 'Mitte midagi ei laeta üles. Kogu mõõtmine toimub sinu seadmes. Mõõdame ainult seda, mis on mõõdetav. Kui tingimused pole õiged, ütleme seda. Me ei arva.',
-    'intro_features': '<span>● Näo biomeetriline monitooring</span><span>● Südamerütm naha värvi kaudu (rPPG)</span><span>● 468-punktiline näojälgimine</span><span>● Autonoomse vastuse analüüs</span>',
+    'intro_p1': 'Loits on näo biomeetria instrument. Sinu telefoni kaamera registreerib sinu autonoomse närvisüsteemi reaktsioone — pulssi, pilgutusrefleksi, mikroväljenduste asümmeetriat — kui näitame sulle kaht valikut. Need reaktsioonid toimuvad 200–500 millisekundi jooksul, enne kui teadvus jõuab sekkuda. Mõõdame need ja paljastame, millise tee su keha ära tunneb.',
+    'intro_p2': 'Mitte midagi ei laadita üles. Kogu mõõtmine toimub sinu seadmes. Mõõdame ainult seda, mis on füsioloogiliselt mõõdetav. Kui tingimused pole õiged, ütleme seda. Me ei arva.',
+    'intro_features': '<span>● Näo biomeetria · 468 punkti</span><span>● Pulss naha värvimuutustest (rPPG)</span><span>● Mikroväljenduste asümmeetria</span><span>● Autonoomse närvisüsteemi reaktsioon</span>',
     'How It Works →': 'Kuidas see töötab →',
     'Skip — Begin Reading': 'Jäta vahele — alusta mõõtmist',
     'An instrument of self-reflection. Not a diagnostic tool.': 'Eneserefleksiooni tööriist. Mitte diagnostikavahend.',
@@ -1370,34 +1394,34 @@ const I18N = {
     // — METHODOLOGY SCREEN
     '— Methodology': '— Metoodika',
     'What we measure.': 'Mida me mõõdame.',
-    'method_intro': 'Kasutame su telefoni kaamerat ja tipptasemel tehisintellekti nägemismudeleid, et lugeda neli signaali sinu näolt. Kõik toimub sinu seadmes. Midagi ei laeta üles.',
+    'method_intro': 'Kasutame sinu telefoni kaamerat ja tipptasemel arvutinägemise mudeleid, et lugeda nelja füsioloogilist signaali sinu näo reaktsioonidest. Kõik toimub sinu seadmes. Midagi ei laadita üles ega salvestata.',
 
-    '— 01 / Heart Rate (rPPG)': '— 01 / Südamerütm (rPPG)',
-    'Pulse from skin color': 'Pulss naha värvi järgi',
-    'method_01_p1': 'Iga südamelöögiga voolab veri korraks su näokapillaaridesse, muutes naha värvi mikroskoopiliselt. Kaamera tuvastab seda.',
-    'method_01_method': '<strong>Meetod:</strong> Rohelise kanali analüüs otsmikul ja mõlemal põsel, kogutud 30 kaadrit sekundis, trendi-eemaldatud, ribafiltri abil filtreeritud kardiaalsesse sagedusvahemikku (0,7–2,5 Hz). Võrdleme kolme sõltumatut piirkonda.',
-    'method_01_limit': '<strong>Piir:</strong> Vajab head valgust ja paigalseismist. Edastame su BPM-i, muutuse pärast stiimulit ja signaali kindluse.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Südamerütm / rPPG',
+    'Pulse from skin color': 'Pulss naha värvimuutuste põhjal',
+    'method_01_p1': 'Iga südamelöögiga jõuab veri hetkeks näo väikestesse kapillaaridesse, muutes naha värvitooni mikroskoopilisel tasemel. See on remote photoplethysmography (rPPG) — kontaktivaba pulsimõõtmise meetod, mida kasutatakse meditsiinilistes seadmetes alates 2008. aastast.',
+    'method_01_method': '<strong>Meetod:</strong> Analüüsime rohelise kanali muutusi otsmikul ja mõlemal põsel. Signaal kogutakse 30 kaadrit sekundis, puhastatakse trendimürast ja filtreeritakse kardiaalsesse sagedusvahemikku 0,7–2,5 Hz. Võrdleme kolme sõltumatut näopiirkonda.',
+    'method_01_limit': '<strong>Tingimus:</strong> Tulemus vajab head valgust ja võimalikult paigal püsimist. Edastame sinu BPM-i, muutuse pärast stiimulit ja signaali kindluse.',
 
     '— 02 / Blink Response': '— 02 / Pilgutusreaktsioon',
-    'The eye reflex': 'Silmarefleks',
-    'method_02_p1': 'Orienteerumisrefleks sulgeb silmalaud kiiremini, kui näed midagi, mida su autonoomne süsteem tahab tõrjuda. Loomulik pilgutus võtab 100–150ms; refleksiivne toimub 200–400ms pärast stiimulit.',
-    'method_02_method': '<strong>Meetod:</strong> Google MediaPipe FaceLandmarker jälgib 468 näopunkti 30 kaadrit sekundis. Pilgutuse algust tuvastame, kui eyeBlinkLeft + eyeBlinkRight blendshape-skoorid ületavad sinu personaalse baasväärtuse.',
-    'method_02_limit': '<strong>Piir:</strong> Kui sa ei pilguta 600ms jooksul pärast stiimulit, edastame "vastust ei tuvastatud". Me ei mõtle vastust välja.',
+    'The eye reflex': 'Orienteerumisrefleks',
+    'method_02_p1': 'Autonoomne närvisüsteem käivitab kaitsva pilgutusreaktsiooni, kui näeme midagi, mida keha tahab tõrjuda. Loomulik pilgutus kestab 100–150 ms; refleksiivne pilgutus toimub ligikaudu 200–400 ms pärast stiimulit. See on neuropsühholoogias hästi dokumenteeritud nähtus.',
+    'method_02_method': '<strong>Meetod:</strong> Google MediaPipe FaceLandmarker jälgib 468 näopunkti 30 kaadrit sekundis. Pilgutuse algus tuvastatakse siis, kui eyeBlinkLeft ja eyeBlinkRight blendshape-skoorid ületavad sinu personaalse baasväärtuse.',
+    'method_02_limit': '<strong>Tingimus:</strong> Kui 600 ms jooksul pärast stiimulit pilgutust ei tuvastata, märgime tulemuseks „vastust ei tuvastatud". Me ei genereeri vastust, kui signaal puudub.',
 
     '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroväljenduse asümmeetria',
-    'What leaks before masking': 'Mis lekib enne maskeerimist',
-    'method_03_p1': 'Nägu kontrollivad kaks ajupoolkera. Ehedad emotsionaalsed reaktsioonid ilmuvad asümmeetriliselt (üks pool enne) 200–500ms jooksul. Tahtlikud väljendused on sümmeetrilised.',
-    'method_03_method': '<strong>Meetod:</strong> Vahe mouthSmileLeft / mouthSmileRight, browInnerUp ja jawForward blendshape-skooride vahel, kogutud 60ms intervallidena pärast stiimulit.',
-    'method_03_limit': '<strong>Piir:</strong> Habe, meik ja prillid vähendavad tundlikkust. Edastame seda Asümmeetria Indeksina.',
+    'What leaks before masking': 'Mis jõuab näole enne kontrolli',
+    'method_03_p1': 'Nägu juhivad kaks ajupoolkera erinevate radade kaudu. Ehedad emotsionaalsed reaktsioonid ilmuvad sageli asümmeetriliselt, üks näopool enne teist, umbes 200–500 ms jooksul. Teadlikult kontrollitud väljendused on tavaliselt sümmeetrilisemad. See on Paul Ekmani mikroväljenduste uuringute põhiline avastus.',
+    'method_03_method': '<strong>Meetod:</strong> Mõõdame erinevusi mouthSmileLeft, mouthSmileRight, browInnerUp ja jawForward blendshape-skooride vahel. Andmeid kogutakse 60 ms intervallidena pärast stiimulit.',
+    'method_03_limit': '<strong>Tingimus:</strong> Habe, meik ja prillid võivad tundlikkust vähendada. Edastame tulemuse asümmeetriaindeksina.',
 
     '— 04 / Trial Design': '— 04 / Katse ülesehitus',
     'Five flashes, not one': 'Viis vilkumist, mitte üks',
-    'method_04_p1': 'Üks vilkumine ei tõenda midagi. Vilgutame kummagi valiku kaks korda ja neutraalse kontroll-sõna ühe korra, juhuslikus järjekorras 2-sekundiliste pausidega. Võrdleme su A-vastuseid B-vastustega, kontroll on baasväärtus.',
-    'method_04_method': '<strong>Meetod:</strong> Iga katse mõõdab pilgutuslatentsust, asümmeetria erinevust ja BPM-i kiirenemist. Kindluse skoor arvutatakse katsete järjepidevuse põhjal.',
-    'method_04_limit': '<strong>Piir:</strong> Alla 60% kindluse puhul edastame tulemuse kui ebaselge. Üle 75% kui oluline.',
+    'method_04_p1': 'Üks vilkumine ei tõenda midagi. Näitame kumbagi valikut kaks korda ja neutraalset kontroll-sõna ühe korra, juhuslikus järjekorras ning 2-sekundiliste pausidega. Võrdleme sinu A-vastuseid B-vastustega; kontroll on baasväärtus. See on klassikaline psühhofüsioloogiline katsedisain.',
+    'method_04_method': '<strong>Meetod:</strong> Iga katse mõõdab pilgutuslatentsust, asümmeetria erinevust ja BPM-i kiirenemist. Kindlusskoor arvutatakse katsete järjepidevuse põhjal.',
+    'method_04_limit': '<strong>Tingimus:</strong> Alla 60% kindluse korral esitame tulemuse ebaselgena. Üle 75% korral märgime selle oluliseks.',
 
-    '— What we do NOT do': '— Mida me EI tee',
-    'method_not_do': 'Me ei loe mõtteid. Me ei diagnoosi. Me ei salvesta sinu videot ega saada seda kuhugi. Me mõõdame ainult aktivatsiooni — ja aktivatsioon võib tähendada tõrjumist, üllatust, tõmmet, hirmu või äratundmist. Keha räägib valjult, aga ühes keeles: <em>see loeb rohkem kui see</em>.',
+    '— What we do NOT do': '— Mida me ei tee',
+    'method_not_do': 'Me ei loe mõtteid. Me ei diagnoosi. Me ei salvesta sinu videot ega saada seda kuhugi. Me mõõdame ainult füsioloogilist aktivatsiooni — keha autonoomse närvisüsteemi reaktsiooni. Aktivatsioon võib tähendada tõrjumist, üllatust, pinget, hirmu või äratundmist. Keha räägib valjult, aga ainult ühes keeles: <em>see loeb rohkem kui see</em>.',
 
     'I Understand — Begin Reading →': 'Saan aru — alusta mõõtmist →',
 
