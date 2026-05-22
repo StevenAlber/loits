@@ -1371,6 +1371,9 @@ const LANGUAGES = [
 //  - Use native idioms; avoid literal translations that sound foreign
 const I18N = {
   en: {
+    'THE BODY CHOSE': 'THE BODY CHOSE',
+    'Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.': 'Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.',
+    'Detailed interpretation specific to your dilemma is available in paid versions.': 'Detailed interpretation specific to your dilemma is available in paid versions.',
     'The Reading': 'The Reading',
     'REPLAY / FULL SCAN': 'REPLAY / FULL SCAN',
     'SCAN INCONCLUSIVE': 'SCAN INCONCLUSIVE',
@@ -1481,6 +1484,9 @@ const I18N = {
     'method_not_do': 'We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure only physiological activation — the response of your autonomic nervous system. Activation can mean rejection, surprise, tension, fear, or recognition. The body speaks loudly, but in one language only: <em>one matters more than the other</em>.'
   },
   et: {
+    'THE BODY CHOSE': 'KEHA VALIS',
+    'Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.': 'Sinu autonoomne närvisüsteem reageeris tugevamalt teisele valikule {opt} — tavaliselt tähendab see tõrjumist, mitte soovi.',
+    'Detailed interpretation specific to your dilemma is available in paid versions.': 'Põhjalikum tõlgendus sinu dilemmale on saadaval tasulistes versioonides.',
     'The Reading': 'Mõõtmise tulemus',
     'REPLAY / FULL SCAN': 'KORDUS / TÄIELIK SKAN',
     'SCAN INCONCLUSIVE': 'MÕÕTMINE EBASELGE',
@@ -4212,23 +4218,23 @@ function renderVerdict(v) {
           ? `<br>${t('{x} of {y} measurements agreed.').replace('{x}', Math.max(v.metricAgreement.votesA, v.metricAgreement.votesB)).replace('{y}', v.metricAgreement.totalMetrics)}`
           : '';
 
-      // Free explainer — 3-4 lines so users actually understand what just happened
-      const freeExplainer = !readingIncludesAI() ? `
-        <div class="verdict-explainer">
-          <div class="explainer-label">— ${t('WHAT THIS MEANS')}</div>
-          <p>${t('Before your mind decides, your body reacts.')} ${t('When you saw option {opt}, your autonomic system fired more strongly — faster blinks, micro-tension, heart-rate shift.').replace('{opt}', `<strong>"${esc(rejectedLabel)}"</strong>`)}</p>
-          <p>${t('This usually signals avoidance, not desire. The body is flagging something costly, dangerous, or unwanted about that path.')}</p>
-          <p>${t('Differential {pct} means the gap between the two responses. Higher = clearer body signal. Confidence {level} reflects how many measurements agreed.').replace('{pct}', `<strong>${v.differential}%</strong>`).replace('{level}', `<strong>${t(confLevel)}</strong>`)}</p>
-          <p style="color: var(--dim); font-size: 11px; margin-top: 10px;">${t("This is the body's first reaction — not a verdict on truth. For the full interpretation specific to your dilemma, see deeper reading below.")}</p>
-        </div>
-      ` : '';
+      // The answer line — body chose X. Same for free and paid tiers.
+      // Paid tiers will additionally show AI analysis below.
+      const closingClause = !readingIncludesAI()
+        ? `<p style="color: var(--dim); font-size: 11px; margin-top: 14px; font-style: italic;">${t('Detailed interpretation specific to your dilemma is available in paid versions.')}</p>`
+        : '';
 
       html += `
         <div class="verdict-box">
-          <div class="verdict-label">— ${t('VERDICT')} (${t(confLevel).toUpperCase()} ${t('CONFIDENCE')})</div>
+          <div class="verdict-label">— ${t('THE BODY CHOSE')} · ${t(confLevel).toUpperCase()} ${t('CONFIDENCE')}</div>
           <div class="verdict-text">
-            ${t('Your body reacted more strongly to {opt}.').replace('{opt}', `<strong>"${esc(rejectedLabel)}"</strong>`)}<br><br>
-            ${t('It wants the other path: {opt}.').replace('{opt}', `<strong>"${esc(wantsLabel)}"</strong>`)}
+            <div style="font-family: 'EB Garamond', serif; font-size: 24px; line-height: 1.35; margin-bottom: 14px;">
+              <strong style="color: var(--good);">"${esc(wantsLabel)}"</strong>
+            </div>
+            <p style="font-size: 14px; color: var(--fg); line-height: 1.55; margin: 0;">
+              ${t('Your autonomic nervous system reacted more strongly against {opt} — typically a sign of rejection, not desire.').replace('{opt}', `<strong>"${esc(rejectedLabel)}"</strong>`)}
+            </p>
+            ${closingClause}
           </div>
           <div class="verdict-confidence">
             <div class="conf-label">${t('Signal strength')}</div>
@@ -4236,7 +4242,6 @@ function renderVerdict(v) {
             ${t('A response score')}: ${v.aScore} • ${t('B response score')}: ${v.bScore}<br>
             ${t('Confidence')}: <strong>${t(confLevel)}</strong> (${t('based on {x}/5 valid trials').replace('{x}', v.totalValid)})${agreementNote}
           </div>
-          ${freeExplainer}
         </div>
       `;
     }
