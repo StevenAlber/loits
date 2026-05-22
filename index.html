@@ -252,6 +252,19 @@
     margin-bottom: 32px;
   }
 
+  .oracle-frame {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.55;
+    color: var(--fg);
+    margin: 0 0 28px 0;
+    padding: 18px 0 18px 18px;
+    border-left: 2px solid var(--accent);
+    background: rgba(255, 41, 41, 0.02);
+    letter-spacing: 0.005em;
+  }
+
   .intro-features {
     display: flex;
     flex-direction: column;
@@ -1143,6 +1156,9 @@
       — REAL-TIME BIOMETRIC ORACLE
     </div>
     <h1 class="intro-title" data-i18n-html="Your body knows before <em>your mind</em> admits."><span>Your body knows<br>before <em>your mind</em><br>admits.</span></h1>
+    <p class="oracle-frame" data-i18n="oracle_frame">
+      Loits is an oracle in the sense that it does not predict the future or read minds. It reveals the body's reaction — before the mind has had time to explain it away.
+    </p>
     <p class="intro-sub" data-i18n="intro_p1">
       Loits is a facial biometric instrument. Your phone's camera registers your autonomic nervous system responses — pulse, blink reflex, micro-expression asymmetry — while we present two options. These responses occur in 200–500 milliseconds, before conscious thought can intervene. We measure them and reveal which path your body recognizes.
     </p>
@@ -1204,7 +1220,7 @@
 
     <div class="method-warning">
       <div class="label" data-i18n="— What we do NOT do">— What we do NOT do</div>
-      <p data-i18n-html="method_not_do">We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure activation only — and activation can mean rejection, surprise, attraction, fear, or recognition. The body speaks loudly, but it speaks in one language: <em>this matters more than that</em>.</p>
+      <p data-i18n-html="method_not_do">We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure activation only — and activation can mean rejection, surprise, attraction, fear, or recognition. The body speaks loudly, but in one language only: <em>one matters more than the other</em>.</p>
     </div>
 
     <button class="btn-main" onclick="goToInput()" data-i18n="I Understand — Begin Reading →">I Understand — Begin Reading →</button>
@@ -1356,6 +1372,7 @@ const LANGUAGES = [
 const I18N = {
   en: {
     // Short keys need explicit English values (they're not self-referencing)
+    'oracle_frame': 'Loits is an oracle in the sense that it does not predict the future or read minds. It reveals the body\'s reaction — before the mind has had time to explain it away.',
     'intro_p1': 'Loits is a facial biometric instrument. Your phone\'s camera registers your autonomic nervous system responses — pulse, blink reflex, micro-expression asymmetry — while we present two options. These responses occur in 200–500 milliseconds, before conscious thought can intervene. We measure them and reveal which path your body recognizes.',
     'intro_p2': 'Nothing is uploaded. All measurement happens on your device. We measure only what is physiologically measurable. If conditions aren\'t right, we tell you. We don\'t guess.',
     'intro_features': '<span>● Facial biometrics · 468-point tracking</span><span>● Pulse via skin color shifts (rPPG)</span><span>● Micro-expression asymmetry</span><span>● Autonomic nervous system response</span>',
@@ -1378,15 +1395,16 @@ const I18N = {
     'method_04_method': '<strong>Method:</strong> Each trial measures blink latency, asymmetry delta, and BPM acceleration. A confidence score is computed from the consistency between trials.',
     'method_04_limit': '<strong>Condition:</strong> Below 60% confidence we report the result as inconclusive. Above 75% we report it as significant.',
 
-    'method_not_do': 'We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure only physiological activation — the response of your autonomic nervous system. Activation can mean rejection, surprise, tension, fear, or recognition. The body speaks loudly, but in one language only: <em>this matters more than that</em>.'
+    'method_not_do': 'We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure only physiological activation — the response of your autonomic nervous system. Activation can mean rejection, surprise, tension, fear, or recognition. The body speaks loudly, but in one language only: <em>one matters more than the other</em>.'
   },
   et: {
     // — INTRO SCREEN
     '— REAL-TIME BIOMETRIC ORACLE': '— REAALAJA BIOMEETRILINE ORAAKEL',
     'Your body knows before <em>your mind</em> admits.': 'Su keha teab enne, kui <em>su teadvus</em> möönab.',
-    'intro_p1': 'Loits on näo biomeetria instrument. Sinu telefoni kaamera registreerib sinu autonoomse närvisüsteemi reaktsioone — pulssi, pilgutusrefleksi, mikroväljenduste asümmeetriat — kui näitame sulle kaht valikut. Need reaktsioonid toimuvad 200–500 millisekundi jooksul, enne kui teadvus jõuab sekkuda. Mõõdame need ja paljastame, millise tee su keha ära tunneb.',
-    'intro_p2': 'Mitte midagi ei laadita üles. Kogu mõõtmine toimub sinu seadmes. Mõõdame ainult seda, mis on füsioloogiliselt mõõdetav. Kui tingimused pole õiged, ütleme seda. Me ei arva.',
-    'intro_features': '<span>● Näo biomeetria · 468 punkti</span><span>● Pulss naha värvimuutustest (rPPG)</span><span>● Mikroväljenduste asümmeetria</span><span>● Autonoomse närvisüsteemi reaktsioon</span>',
+    'oracle_frame': 'Loits on oraakel selles tähenduses, et ta ei ennusta tulevikku ega loe mõtteid. Ta toob nähtavale keha reaktsiooni — enne kui mõistus jõuab selle ära seletada.',
+    'intro_p1': 'Loits on reaalaja näobiomeetria oraakel. Sinu telefoni kaamera registreerib autonoomse närvisüsteemi reaktsioone hetkel, mil sa võrdled kahte enda valitud võimalust.',
+    'intro_p2': 'Mõõdame pulssi, pilgutusrefleksi ja mikroväljenduste asümmeetriat. Need reaktsioonid võivad ilmneda 200–500 millisekundi jooksul, enne kui teadlik kontroll jõuab sekkuda. Loits ei loe mõtteid ega tee diagnoose. Mõõdame ainult füsioloogiliselt tuvastatavat aktivatsiooni ja näitame, kummale valikule su keha tugevamalt reageerib. Midagi ei laadita üles — kogu mõõtmine toimub sinu seadmes. Kui signaal ei ole piisavalt selge, ütleme seda. Me ei arva.',
+    'intro_features': '<span>● Näobiomeetria · 468 näopunkti</span><span>● Pulss naha värvimuutuste põhjal / rPPG</span><span>● Pilgutusrefleks ja mikroväljendused</span><span>● Autonoomse närvisüsteemi reaktsioon</span>',
     'How It Works →': 'Kuidas see töötab →',
     'Skip — Begin Reading': 'Jäta vahele — alusta mõõtmist',
     'An instrument of self-reflection. Not a diagnostic tool.': 'Eneserefleksiooni tööriist. Mitte diagnostikavahend.',
@@ -1421,7 +1439,7 @@ const I18N = {
     'method_04_limit': '<strong>Tingimus:</strong> Alla 60% kindluse korral esitame tulemuse ebaselgena. Üle 75% korral märgime selle oluliseks.',
 
     '— What we do NOT do': '— Mida me ei tee',
-    'method_not_do': 'Me ei loe mõtteid. Me ei diagnoosi. Me ei salvesta sinu videot ega saada seda kuhugi. Me mõõdame ainult füsioloogilist aktivatsiooni — keha autonoomse närvisüsteemi reaktsiooni. Aktivatsioon võib tähendada tõrjumist, üllatust, pinget, hirmu või äratundmist. Keha räägib valjult, aga ainult ühes keeles: <em>see loeb rohkem kui see</em>.',
+    'method_not_do': 'Me ei loe mõtteid. Me ei diagnoosi. Me ei salvesta sinu videot ega saada seda kuhugi. Me mõõdame ainult füsioloogilist aktivatsiooni — keha autonoomse närvisüsteemi reaktsiooni. Aktivatsioon võib tähendada tõrjumist, üllatust, pinget, hirmu või äratundmist. Keha räägib valjult, aga ainult ühes keeles: <em>üks loeb rohkem kui teine</em>.',
 
     'I Understand — Begin Reading →': 'Saan aru — alusta mõõtmist →',
 
@@ -1485,6 +1503,7 @@ const I18N = {
     // — INTRO
     '— REAL-TIME BIOMETRIC ORACLE': '— REAALIAIKAINEN BIOMETRINEN ORAAKKELI',
     'Your body knows before <em>your mind</em> admits.': 'Kehosi tietää ennen kuin <em>tietoisuutesi</em> myöntää.',
+    'oracle_frame': 'Loits on oraakkeli siinä mielessä, ettei se ennusta tulevaisuutta tai lue ajatuksia. Se paljastaa kehon reaktion — ennen kuin mieli ehtii selittää sen pois.',
     'intro_p1': 'Loits on biometrinen instrumentti. Puhelimesi kamera tarkkailee kasvojasi — sykettä, silmien räpäysreflexejä, mikroilmeitä — sillä aikaa kun välähdytämme sinulle kaksi vaihtoehtoa. Autonominen hermostosi reagoi millisekunneissa, ennen kuin tietoinen ajattelu ehtii puuttua. Mittaamme nämä reaktiot ja paljastamme, minkä polun kehosi tunnistaa.',
     'intro_p2': 'Mitään ei lähetetä ulos. Kaikki mittaus tapahtuu laitteellasi. Mittaamme vain mitattavissa olevaa. Jos olosuhteet eivät ole oikeat, kerromme sen. Emme arvaile.',
     'intro_features': '<span>● Kasvojen biometrinen tarkkailu</span><span>● Syke ihon värin kautta (rPPG)</span><span>● 468-pisteen kasvoseuranta</span><span>● Autonomisen vasteen analyysi</span>',
@@ -1522,7 +1541,7 @@ const I18N = {
     'method_04_limit': '<strong>Rajoitus:</strong> Alle 60% luotettavuudella raportoimme tuloksen epäselvänä. Yli 75% merkittävänä.',
 
     '— What we do NOT do': '— Mitä EMME tee',
-    'method_not_do': 'Emme lue mieliä. Emme diagnosoi. Emme tallenna videotasi tai lähetä sitä mihinkään. Mittaamme vain aktivaatiota — ja aktivaatio voi tarkoittaa torjuntaa, yllätystä, vetoa, pelkoa tai tunnistusta. Keho puhuu kovaa, mutta yhdellä kielellä: <em>tämä merkitsee enemmän kuin tämä</em>.',
+    'method_not_do': 'Emme lue mieliä. Emme diagnosoi. Emme tallenna videotasi tai lähetä sitä mihinkään. Mittaamme vain aktivaatiota — ja aktivaatio voi tarkoittaa torjuntaa, yllätystä, vetoa, pelkoa tai tunnistusta. Keho puhuu kovaa, mutta yhdellä kielellä: <em>toinen merkitsee enemmän kuin toinen</em>.',
 
     'I Understand — Begin Reading →': 'Ymmärrän — aloita mittaus →',
 
@@ -1630,6 +1649,7 @@ const I18N = {
     'One-time — analysis of this reading': 'Engångs — analys av denna mätning',
 
     // — IMPROVED INTRO + METHODOLOGY
+    'oracle_frame': 'Loits är ett orakel i den meningen att det inte förutsäger framtiden eller läser tankar. Det avslöjar kroppens reaktion — innan sinnet hinner förklara bort den.',
     'intro_p1': 'Loits är ett biometriskt instrument. Telefonens kamera övervakar ditt ansikte — puls, blinkreflexer, mikrouttryck — medan vi blixtrar två val. Ditt autonoma nervsystem reagerar i millisekunder, innan medveten tanke hinner ingripa. Vi mäter dessa reaktioner och avslöjar vilken väg din kropp känner igen.',
     'intro_p2': 'Inget laddas upp. All mätning sker på din enhet. Vi mäter bara det mätbara. Om förhållandena inte är rätt säger vi det. Vi gissar inte.',
     'intro_features': '<span>● Biometrisk ansiktsövervakning</span><span>● Puls via hudfärg (rPPG)</span><span>● 468-punkts ansiktsspårning</span><span>● Analys av autonomt svar</span>',
@@ -1657,7 +1677,7 @@ const I18N = {
     'method_04_method': '<strong>Metod:</strong> Varje försök mäter blinkfördröjning, asymmetridelta och BPM-acceleration. En tillförlitlighetspoäng beräknas från konsistensen mellan försök.',
     'method_04_limit': '<strong>Begränsning:</strong> Under 60% tillförlitlighet rapporterar vi resultatet som inte slutgiltigt. Över 75% rapporterar vi som signifikant.',
     '— What we do NOT do': '— Vad vi INTE gör',
-    'method_not_do': 'Vi läser inte tankar. Vi diagnostiserar inte. Vi sparar inte din video eller skickar den någonstans. Vi mäter bara aktivering — och aktivering kan betyda avvisning, förvåning, dragning, rädsla eller igenkänning. Kroppen talar högt, men på ett språk: <em>detta betyder mer än det där</em>.'
+    'method_not_do': 'Vi läser inte tankar. Vi diagnostiserar inte. Vi sparar inte din video eller skickar den någonstans. Vi mäter bara aktivering — och aktivering kan betyda avvisning, förvåning, dragning, rädsla eller igenkänning. Kroppen talar högt, men på ett språk: <em>den ena betyder mer än den andra</em>.'
   },
 
   no: {
@@ -1715,6 +1735,8 @@ const I18N = {
     'What does this actually mean?': 'Hva betyr dette egentlig?',
     'One-time — analysis of this reading': 'Engangs — analyse av denne målingen',
 
+    'oracle_frame': 'Loits er et orakel i den forstand at det ikke forutsier fremtiden eller leser tanker. Det avslører kroppens reaksjon — før sinnet rekker å forklare den bort.',
+    'oracle_frame': 'Loits er et orakel i den forstand, at det ikke forudsiger fremtiden eller læser tanker. Det afslører kroppens reaktion — før sindet når at bortforklare den.',
     'intro_p1': 'Loits er et biometrisk instrument. Telefonens kamera overvåker ansiktet ditt — puls, blinkrefleksjon, mikrouttrykk — mens vi blinker to valg. Det autonome nervesystemet ditt reagerer på millisekunder, før bevisst tanke rekker å gripe inn. Vi måler disse reaksjonene og avslører hvilken vei kroppen din gjenkjenner.',
     'intro_p2': 'Ingenting lastes opp. All måling skjer på enheten din. Vi måler bare det målbare. Hvis forholdene ikke er riktige, sier vi det. Vi gjetter ikke.',
     'intro_features': '<span>● Biometrisk ansiktsovervåkning</span><span>● Puls via hudfarge (rPPG)</span><span>● 468-punkts ansiktssporing</span><span>● Analyse av autonom respons</span>',
@@ -1742,7 +1764,7 @@ const I18N = {
     'method_04_method': '<strong>Metode:</strong> Hvert forsøk måler blinkforsinkelse, asymmetridelta og BPM-akselerasjon. En tillitsscore beregnes fra konsistens mellom forsøk.',
     'method_04_limit': '<strong>Begrensning:</strong> Under 60% tillit rapporterer vi resultatet som ikke avgjørende. Over 75% som signifikant.',
     '— What we do NOT do': '— Hva vi IKKE gjør',
-    'method_not_do': 'Vi leser ikke tanker. Vi diagnostiserer ikke. Vi lagrer ikke videoen din eller sender den noe sted. Vi måler bare aktivering — og aktivering kan bety avvisning, overraskelse, tiltrekning, frykt eller gjenkjennelse. Kroppen snakker høyt, men på ett språk: <em>dette betyr mer enn det der</em>.'
+    'method_not_do': 'Vi leser ikke tanker. Vi diagnostiserer ikke. Vi lagrer ikke videoen din eller sender den noe sted. Vi måler bare aktivering — og aktivering kan bety avvisning, overraskelse, tiltrekning, frykt eller gjenkjennelse. Kroppen snakker høyt, men på ett språk: <em>det ene betyr mer enn det andre</em>.'
   },
 
   da: {
@@ -1827,7 +1849,7 @@ const I18N = {
     'method_04_method': '<strong>Metode:</strong> Hvert forsøg måler blinkforsinkelse, asymmetridelta og BPM-acceleration. En tillidsscore beregnes ud fra konsistens mellem forsøg.',
     'method_04_limit': '<strong>Begrænsning:</strong> Under 60% tillid rapporterer vi resultatet som inkonklusivt. Over 75% som signifikant.',
     '— What we do NOT do': '— Hvad vi IKKE gør',
-    'method_not_do': 'Vi læser ikke tanker. Vi diagnosticerer ikke. Vi gemmer ikke din video eller sender den nogetsteds. Vi måler kun aktivering — og aktivering kan betyde afvisning, overraskelse, tiltrækning, frygt eller genkendelse. Kroppen taler højt, men på ét sprog: <em>dette betyder mere end det der</em>.'
+    'method_not_do': 'Vi læser ikke tanker. Vi diagnosticerer ikke. Vi gemmer ikke din video eller sender den nogetsteds. Vi måler kun aktivering — og aktivering kan betyde afvisning, overraskelse, tiltrækning, frygt eller genkendelse. Kroppen taler højt, men på ét sprog: <em>det ene betyder mere end det andet</em>.'
   },
 
   is: {
@@ -1877,6 +1899,7 @@ const I18N = {
     '— Deeper reading': '— Dýpri mæling',
     'What does this actually mean?': 'Hvað þýðir þetta í raun?',
 
+    'oracle_frame': 'Loits er véfrétt í þeim skilningi að hún spáir ekki framtíðina og les ekki hugsanir. Hún birtir viðbragð líkamans — áður en hugurinn nær að útskýra það burt.',
     'intro_p1': 'Loits er lífmæliskt tæki. Myndavél símans fylgist með andliti þínu — púls, augnviðbrögð, smáhreyfingar — meðan við blikkum tvo valkosti. Sjálfvirka taugakerfið þitt bregst við á millisekúndum, áður en meðvituð hugsun nær að grípa inn í. Við mælum þessi viðbrögð og afhjúpum hvaða leið líkaminn þekkir.',
     'intro_p2': 'Ekkert er sent upp. Öll mæling fer fram á tækinu þínu. Við mælum aðeins það mælanlega. Ef aðstæður eru ekki réttar segjum við þér það. Við giskum ekki.',
     'intro_features': '<span>● Lífmælislegt eftirlit andlits</span><span>● Púls í gegnum húðlit (rPPG)</span><span>● 468-punkta andlitsmæling</span><span>● Greining sjálfvirkrar svörunar</span>',
@@ -1904,7 +1927,7 @@ const I18N = {
     'method_04_method': '<strong>Aðferð:</strong> Hver tilraun mælir augnabliksfresti, ósamhverfu-mismun og BPM-hröðun. Öryggisstig er reiknað út frá samkvæmni milli tilrauna.',
     'method_04_limit': '<strong>Takmörkun:</strong> Undir 60% öryggi sýnum við niðurstöðu sem óljósa. Yfir 75% sem marktækan.',
     '— What we do NOT do': '— Hvað við gerum EKKI',
-    'method_not_do': 'Við lesum ekki huga. Við gerum ekki greiningar. Við vistum ekki myndband þitt eða sendum það neitt. Við mælum aðeins virkjun — og virkjun getur þýtt höfnun, undrun, aðdráttarafl, ótta eða þekkingu. Líkaminn talar hátt, en á einu tungumáli: <em>þetta skiptir meira máli en hitt</em>.'
+    'method_not_do': 'Við lesum ekki huga. Við gerum ekki greiningar. Við vistum ekki myndband þitt eða sendum það neitt. Við mælum aðeins virkjun — og virkjun getur þýtt höfnun, undrun, aðdráttarafl, ótta eða þekkingu. Líkaminn talar hátt, en á einu tungumáli: <em>annað skiptir meira máli en hitt</em>.'
   },
 
   de: {
@@ -1963,6 +1986,7 @@ const I18N = {
     'What does this actually mean?': 'Was bedeutet das eigentlich?',
     'One-time — analysis of this reading': 'Einmalig — Analyse dieser Messung',
 
+    'oracle_frame': 'Loits ist ein Orakel in dem Sinne, dass es weder die Zukunft vorhersagt noch Gedanken liest. Es zeigt die Reaktion des Körpers — bevor der Geist Zeit hatte, sie wegzuerklären.',
     'intro_p1': 'Loits ist ein biometrisches Instrument. Die Kamera deines Telefons überwacht dein Gesicht — Puls, Lidschlagreflexe, Mikroausdrücke — während wir dir zwei Optionen aufblitzen lassen. Dein autonomes Nervensystem reagiert in Millisekunden, bevor bewusstes Denken eingreifen kann. Wir messen diese Reaktionen und enthüllen, welchen Weg dein Körper erkennt.',
     'intro_p2': 'Nichts wird hochgeladen. Die gesamte Messung erfolgt auf deinem Gerät. Wir messen nur das Messbare. Wenn die Bedingungen nicht stimmen, sagen wir es. Wir raten nicht.',
     'intro_features': '<span>● Biometrische Gesichtsüberwachung</span><span>● Puls über Hautfarbe (rPPG)</span><span>● 468-Punkte-Gesichtsverfolgung</span><span>● Analyse der autonomen Reaktion</span>',
@@ -1990,7 +2014,7 @@ const I18N = {
     'method_04_method': '<strong>Methode:</strong> Jeder Versuch misst Lidschlaglatenz, Asymmetriedelta und BPM-Beschleunigung. Eine Vertrauensbewertung wird aus der Konsistenz zwischen Versuchen berechnet.',
     'method_04_limit': '<strong>Grenze:</strong> Unter 60% Vertrauen melden wir das Ergebnis als nicht schlüssig. Über 75% als signifikant.',
     '— What we do NOT do': '— Was wir NICHT tun',
-    'method_not_do': 'Wir lesen keine Gedanken. Wir diagnostizieren nicht. Wir speichern dein Video nicht und senden es nirgendwohin. Wir messen nur Aktivierung — und Aktivierung kann Ablehnung, Überraschung, Anziehung, Angst oder Erkennen bedeuten. Der Körper spricht laut, aber in einer Sprache: <em>das zählt mehr als das</em>.'
+    'method_not_do': 'Wir lesen keine Gedanken. Wir diagnostizieren nicht. Wir speichern dein Video nicht und senden es nirgendwohin. Wir messen nur Aktivierung — und Aktivierung kann Ablehnung, Überraschung, Anziehung, Angst oder Erkennen bedeuten. Der Körper spricht laut, aber in einer Sprache: <em>das eine zählt mehr als das andere</em>.'
   },
 
   fr: {
@@ -2049,6 +2073,7 @@ const I18N = {
     'What does this actually mean?': 'Qu\'est-ce que cela veut vraiment dire ?',
     'One-time — analysis of this reading': 'Unique — analyse de cette mesure',
 
+    'oracle_frame': 'Loits est un oracle au sens où il ne prédit pas l\'avenir et ne lit pas dans les pensées. Il révèle la réaction du corps — avant que l\'esprit n\'ait eu le temps de l\'expliquer.',
     'intro_p1': 'Loits est un instrument biométrique. La caméra de ton téléphone surveille ton visage — pouls, réflexes de clignement, micro-expressions — pendant que nous te montrons deux options en éclair. Ton système nerveux autonome réagit en millisecondes, avant que la pensée consciente puisse intervenir. Nous mesurons ces réactions et révélons quel chemin ton corps reconnaît.',
     'intro_p2': 'Rien n\'est téléchargé. Toute la mesure se fait sur ton appareil. Nous ne mesurons que ce qui est mesurable. Si les conditions ne sont pas réunies, nous te le disons. Nous ne devinons pas.',
     'intro_features': '<span>● Surveillance biométrique du visage</span><span>● Pouls via couleur de peau (rPPG)</span><span>● Suivi facial à 468 points</span><span>● Analyse de la réponse autonome</span>',
@@ -2076,7 +2101,7 @@ const I18N = {
     'method_04_method': '<strong>Méthode :</strong> Chaque essai mesure la latence de clignement, le delta d\'asymétrie et l\'accélération du BPM. Un score de confiance est calculé à partir de la cohérence entre les essais.',
     'method_04_limit': '<strong>Limite :</strong> En dessous de 60% de confiance, nous rapportons le résultat comme non concluant. Au-dessus de 75%, comme significatif.',
     '— What we do NOT do': '— Ce que nous ne faisons PAS',
-    'method_not_do': 'Nous ne lisons pas dans les pensées. Nous ne diagnostiquons pas. Nous ne sauvegardons pas ta vidéo et ne l\'envoyons nulle part. Nous mesurons uniquement l\'activation — et l\'activation peut signifier rejet, surprise, attraction, peur ou reconnaissance. Le corps parle fort, mais dans une langue : <em>ceci compte plus que cela</em>.'
+    'method_not_do': 'Nous ne lisons pas dans les pensées. Nous ne diagnostiquons pas. Nous ne sauvegardons pas ta vidéo et ne l\'envoyons nulle part. Nous mesurons uniquement l\'activation — et l\'activation peut signifier rejet, surprise, attraction, peur ou reconnaissance. Le corps parle fort, mais dans une langue : <em>l\'un compte plus que l\'autre</em>.'
   },
 
   es: {
@@ -2135,6 +2160,7 @@ const I18N = {
     'What does this actually mean?': '¿Qué significa esto realmente?',
     'One-time — analysis of this reading': 'Único — análisis de esta medición',
 
+    'oracle_frame': 'Loits es un oráculo en el sentido de que no predice el futuro ni lee mentes. Revela la reacción del cuerpo — antes de que la mente haya tenido tiempo de explicarla.',
     'intro_p1': 'Loits es un instrumento biométrico. La cámara de tu teléfono monitorea tu rostro — pulso, reflejos de parpadeo, microexpresiones — mientras te mostramos dos opciones en destellos. Tu sistema nervioso autónomo reacciona en milisegundos, antes de que el pensamiento consciente pueda intervenir. Medimos estas reacciones y revelamos qué camino reconoce tu cuerpo.',
     'intro_p2': 'Nada se sube a la nube. Toda la medición ocurre en tu dispositivo. Solo medimos lo medible. Si las condiciones no son adecuadas, te lo decimos. No adivinamos.',
     'intro_features': '<span>● Monitoreo biométrico facial</span><span>● Pulso vía color de piel (rPPG)</span><span>● Rastreo facial de 468 puntos</span><span>● Análisis de respuesta autónoma</span>',
@@ -2162,7 +2188,7 @@ const I18N = {
     'method_04_method': '<strong>Método:</strong> Cada ensayo mide latencia de parpadeo, delta de asimetría y aceleración de BPM. Un puntaje de confianza se calcula de la consistencia entre ensayos.',
     'method_04_limit': '<strong>Límite:</strong> Bajo 60% de confianza reportamos el resultado como no concluyente. Sobre 75% como significativo.',
     '— What we do NOT do': '— Lo que NO hacemos',
-    'method_not_do': 'No leemos mentes. No diagnosticamos. No guardamos tu video ni lo enviamos a ningún lado. Solo medimos activación — y activación puede significar rechazo, sorpresa, atracción, miedo o reconocimiento. El cuerpo habla fuerte, pero en un idioma: <em>esto importa más que aquello</em>.'
+    'method_not_do': 'No leemos mentes. No diagnosticamos. No guardamos tu video ni lo enviamos a ningún lado. Solo medimos activación — y activación puede significar rechazo, sorpresa, atracción, miedo o reconocimiento. El cuerpo habla fuerte, pero en un idioma: <em>uno importa más que el otro</em>.'
   },
 
   it: {
@@ -2221,6 +2247,7 @@ const I18N = {
     'What does this actually mean?': 'Cosa significa veramente questo?',
     'One-time — analysis of this reading': 'Una tantum — analisi di questa misurazione',
 
+    'oracle_frame': 'Loits è un oracolo nel senso che non prevede il futuro né legge nel pensiero. Rivela la reazione del corpo — prima che la mente abbia avuto tempo di spiegarla.',
     'intro_p1': 'Loits è uno strumento biometrico. La fotocamera del tuo telefono monitora il tuo viso — polso, riflessi di battito di ciglia, microespressioni — mentre ti mostriamo due opzioni in lampi. Il tuo sistema nervoso autonomo reagisce in millisecondi, prima che il pensiero cosciente possa intervenire. Misuriamo queste reazioni e riveliamo quale strada il tuo corpo riconosce.',
     'intro_p2': 'Niente viene caricato. Tutta la misurazione avviene sul tuo dispositivo. Misuriamo solo ciò che è misurabile. Se le condizioni non sono giuste, te lo diciamo. Non indoviniamo.',
     'intro_features': '<span>● Monitoraggio biometrico del viso</span><span>● Polso tramite colore della pelle (rPPG)</span><span>● Tracciamento facciale a 468 punti</span><span>● Analisi della risposta autonoma</span>',
@@ -2248,7 +2275,7 @@ const I18N = {
     'method_04_method': '<strong>Metodo:</strong> Ogni prova misura latenza del battito, delta di asimmetria e accelerazione BPM. Un punteggio di confidenza viene calcolato dalla coerenza tra le prove.',
     'method_04_limit': '<strong>Limite:</strong> Sotto il 60% di confidenza riportiamo il risultato come inconcludente. Sopra il 75% come significativo.',
     '— What we do NOT do': '— Cosa NON facciamo',
-    'method_not_do': 'Non leggiamo nel pensiero. Non diagnostichiamo. Non salviamo il tuo video né lo inviamo da nessuna parte. Misuriamo solo l\'attivazione — e l\'attivazione può significare rifiuto, sorpresa, attrazione, paura o riconoscimento. Il corpo parla forte, ma in una lingua: <em>questo conta più di quello</em>.'
+    'method_not_do': 'Non leggiamo nel pensiero. Non diagnostichiamo. Non salviamo il tuo video né lo inviamo da nessuna parte. Misuriamo solo l\'attivazione — e l\'attivazione può significare rifiuto, sorpresa, attrazione, paura o riconoscimento. Il corpo parla forte, ma in una lingua: <em>uno conta più dell\'altro</em>.'
   },
 
   pt: {
@@ -2307,6 +2334,7 @@ const I18N = {
     'What does this actually mean?': 'O que é que isto significa realmente?',
     'One-time — analysis of this reading': 'Único — análise desta medição',
 
+    'oracle_frame': 'Loits é um oráculo no sentido de que não prevê o futuro nem lê mentes. Revela a reação do corpo — antes que a mente tenha tido tempo de a explicar.',
     'intro_p1': 'Loits é um instrumento biométrico. A câmara do teu telemóvel monitoriza o teu rosto — pulsação, reflexos de piscar, microexpressões — enquanto te mostramos duas opções em lampejos. O teu sistema nervoso autónomo reage em milissegundos, antes que o pensamento consciente possa intervir. Medimos estas reações e revelamos qual o caminho que o teu corpo reconhece.',
     'intro_p2': 'Nada é enviado. Toda a medição acontece no teu dispositivo. Medimos apenas o mensurável. Se as condições não estiverem certas, dizemos. Não adivinhamos.',
     'intro_features': '<span>● Monitorização biométrica facial</span><span>● Pulsação via cor da pele (rPPG)</span><span>● Rastreamento facial de 468 pontos</span><span>● Análise de resposta autónoma</span>',
@@ -2334,7 +2362,7 @@ const I18N = {
     'method_04_method': '<strong>Método:</strong> Cada ensaio mede latência de piscar, delta de assimetria e aceleração de BPM. Uma pontuação de confiança é calculada a partir da consistência entre ensaios.',
     'method_04_limit': '<strong>Limite:</strong> Abaixo de 60% de confiança reportamos o resultado como inconclusivo. Acima de 75% como significativo.',
     '— What we do NOT do': '— O que NÃO fazemos',
-    'method_not_do': 'Não lemos mentes. Não diagnosticamos. Não guardamos o teu vídeo nem o enviamos para lado nenhum. Medimos apenas ativação — e ativação pode significar rejeição, surpresa, atração, medo ou reconhecimento. O corpo fala alto, mas numa só língua: <em>isto importa mais do que aquilo</em>.'
+    'method_not_do': 'Não lemos mentes. Não diagnosticamos. Não guardamos o teu vídeo nem o enviamos para lado nenhum. Medimos apenas ativação — e ativação pode significar rejeição, surpresa, atração, medo ou reconhecimento. O corpo fala alto, mas numa só língua: <em>um importa mais do que o outro</em>.'
   },
 
   nl: {
@@ -2392,6 +2420,7 @@ const I18N = {
     'What does this actually mean?': 'Wat betekent dit eigenlijk?',
     'One-time — analysis of this reading': 'Eenmalig — analyse van deze meting',
 
+    'oracle_frame': 'Loits is een orakel in de zin dat het de toekomst niet voorspelt en geen gedachten leest. Het onthult de reactie van het lichaam — voordat de geest tijd had om die weg te verklaren.',
     'intro_p1': 'Loits is een biometrisch instrument. De camera van je telefoon bewaakt je gezicht — pols, knipperreflexen, micro-expressies — terwijl we je twee opties laten flitsen. Je autonome zenuwstelsel reageert in milliseconden, voordat bewuste gedachten kunnen ingrijpen. We meten deze reacties en onthullen welk pad je lichaam herkent.',
     'intro_p2': 'Niets wordt geüpload. Alle metingen vinden plaats op je apparaat. We meten alleen wat meetbaar is. Als de omstandigheden niet kloppen, vertellen we het. We gokken niet.',
     'intro_features': '<span>● Biometrische gezichtsmonitoring</span><span>● Pols via huidkleur (rPPG)</span><span>● 468-punts gezichtsherkenning</span><span>● Analyse van autonome respons</span>',
@@ -2419,7 +2448,7 @@ const I18N = {
     'method_04_method': '<strong>Methode:</strong> Elke proef meet knipperlatentie, asymmetriedelta en BPM-versnelling. Een betrouwbaarheidsscore wordt berekend uit de consistentie tussen proeven.',
     'method_04_limit': '<strong>Limiet:</strong> Onder 60% betrouwbaarheid rapporteren we het resultaat als niet doorslaggevend. Boven 75% als significant.',
     '— What we do NOT do': '— Wat we NIET doen',
-    'method_not_do': 'We lezen geen gedachten. We diagnosticeren niet. We slaan je video niet op en sturen hem nergens heen. We meten alleen activering — en activering kan afwijzing, verrassing, aantrekking, angst of herkenning betekenen. Het lichaam spreekt luid, maar in één taal: <em>dit telt meer dan dat</em>.'
+    'method_not_do': 'We lezen geen gedachten. We diagnosticeren niet. We slaan je video niet op en sturen hem nergens heen. We meten alleen activering — en activering kan afwijzing, verrassing, aantrekking, angst of herkenning betekenen. Het lichaam spreekt luid, maar in één taal: <em>de een telt meer dan de ander</em>.'
   },
 
   pl: {
@@ -2478,6 +2507,7 @@ const I18N = {
     'What does this actually mean?': 'Co to właściwie znaczy?',
     'One-time — analysis of this reading': 'Jednorazowa — analiza tego pomiaru',
 
+    'oracle_frame': 'Loits jest wyrocznią w tym sensie, że nie przewiduje przyszłości ani nie czyta myśli. Ujawnia reakcję ciała — zanim umysł zdąży ją wytłumaczyć.',
     'intro_p1': 'Loits to instrument biometryczny. Kamera twojego telefonu monitoruje twoją twarz — puls, odruchy mrugania, mikroekspresje — gdy pokazujemy ci dwie opcje w błyskach. Twój autonomiczny układ nerwowy reaguje w milisekundach, zanim świadoma myśl zdąży interweniować. Mierzymy te reakcje i ujawniamy, którą drogę rozpoznaje twoje ciało.',
     'intro_p2': 'Nic nie jest wysyłane. Cały pomiar odbywa się na twoim urządzeniu. Mierzymy tylko to, co mierzalne. Jeśli warunki nie są odpowiednie, mówimy o tym. Nie zgadujemy.',
     'intro_features': '<span>● Biometryczny monitoring twarzy</span><span>● Puls przez kolor skóry (rPPG)</span><span>● Śledzenie twarzy w 468 punktach</span><span>● Analiza odpowiedzi autonomicznej</span>',
@@ -2505,7 +2535,7 @@ const I18N = {
     'method_04_method': '<strong>Metoda:</strong> Każda próba mierzy opóźnienie mrugania, delta asymetrii i przyspieszenie BPM. Wynik niezawodności jest obliczany na podstawie spójności między próbami.',
     'method_04_limit': '<strong>Ograniczenie:</strong> Poniżej 60% niezawodności raportujemy wynik jako nierozstrzygający. Powyżej 75% jako znaczący.',
     '— What we do NOT do': '— Czego NIE robimy',
-    'method_not_do': 'Nie czytamy w myślach. Nie diagnozujemy. Nie zapisujemy twojego wideo ani nie wysyłamy go nigdzie. Mierzymy tylko aktywację — a aktywacja może oznaczać odrzucenie, zaskoczenie, przyciąganie, strach lub rozpoznanie. Ciało mówi głośno, ale w jednym języku: <em>to znaczy więcej niż tamto</em>.'
+    'method_not_do': 'Nie czytamy w myślach. Nie diagnozujemy. Nie zapisujemy twojego wideo ani nie wysyłamy go nigdzie. Mierzymy tylko aktywację — a aktywacja może oznaczać odrzucenie, zaskoczenie, przyciąganie, strach lub rozpoznanie. Ciało mówi głośno, ale w jednym języku: <em>jedno znaczy więcej niż drugie</em>.'
   },
 
   lv: {
@@ -2555,6 +2585,7 @@ const I18N = {
     '— Deeper reading': '— Dziļāks mērījums',
     'What does this actually mean?': 'Ko tas patiesībā nozīmē?',
 
+    'oracle_frame': 'Loits ir orākuls tādā nozīmē, ka tas neparedz nākotni un nelasa domas. Tas atklāj ķermeņa reakciju — pirms prāts paspēj to izskaidrot.',
     'intro_p1': 'Loits ir biometrisks instruments. Tava telefona kamera novēro tavu seju — pulsu, mirkšķināšanas refleksus, mikroizteiksmes — kamēr mēs zibsnījam tev divus variantus. Tava autonomā nervu sistēma reaģē milisekundēs, pirms apzināta doma var iejaukties. Mēs mērām šīs reakcijas un atklājam, kuru ceļu tava ķermenis atpazīst.',
     'intro_p2': 'Nekas netiek augšupielādēts. Visa mērīšana notiek tavā ierīcē. Mēs mērām tikai mērāmo. Ja apstākļi nav pareizi, sakām to. Mēs neminam.',
     'intro_features': '<span>● Sejas biometriskā novērošana</span><span>● Pulss caur ādas krāsu (rPPG)</span><span>● 468-punktu sejas izsekošana</span><span>● Autonomās atbildes analīze</span>',
@@ -2582,7 +2613,7 @@ const I18N = {
     'method_04_method': '<strong>Metode:</strong> Katrs izmēģinājums mēra mirkšķināšanas latentumu, asimetrijas deltu un BPM paātrinājumu. Uzticamības rezultāts tiek aprēķināts no izmēģinājumu konsekvences.',
     'method_04_limit': '<strong>Ierobežojums:</strong> Zem 60% uzticamības ziņojam rezultātu kā nepārliecinošu. Virs 75% kā nozīmīgu.',
     '— What we do NOT do': '— Ko mēs NEDARĀM',
-    'method_not_do': 'Mēs neuzminam domas. Mēs nediagnosticējam. Mēs nesaglabājam tavu video un nesūtām to nekur. Mēs mērām tikai aktivāciju — un aktivācija var nozīmēt noraidīšanu, pārsteigumu, pievilkšanos, bailes vai atpazīšanu. Ķermenis runā skaļi, bet vienā valodā: <em>tas nozīmē vairāk nekā tas</em>.'
+    'method_not_do': 'Mēs neuzminam domas. Mēs nediagnosticējam. Mēs nesaglabājam tavu video un nesūtām to nekur. Mēs mērām tikai aktivāciju — un aktivācija var nozīmēt noraidīšanu, pārsteigumu, pievilkšanos, bailes vai atpazīšanu. Ķermenis runā skaļi, bet vienā valodā: <em>viens nozīmē vairāk nekā otrs</em>.'
   },
 
   lt: {
@@ -2632,6 +2663,7 @@ const I18N = {
     '— Deeper reading': '— Gilesnis matavimas',
     'What does this actually mean?': 'Ką tai iš tikrųjų reiškia?',
 
+    'oracle_frame': 'Loits yra orakulas ta prasme, kad nepranašauja ateities ir neskaito minčių. Jis atskleidžia kūno reakciją — prieš protui spėjant ją paaiškinti.',
     'intro_p1': 'Loits yra biometrinis instrumentas. Tavo telefono kamera stebi tavo veidą — pulsą, mirksėjimo refleksus, mikroišraiškas — kol mes rodome tau dvi parinktis blyksniais. Tavo autonominė nervų sistema reaguoja milisekundėmis, prieš sąmoningai mintims spėjant įsikišti. Mes matuojame šias reakcijas ir atskleidžiame, kurį kelią atpažįsta tavo kūnas.',
     'intro_p2': 'Niekas neįkeliama. Visas matavimas vyksta tavo įrenginyje. Mes matuojame tik tai, ką galima išmatuoti. Jei sąlygos netinkamos, pasakome. Mes nespėliojame.',
     'intro_features': '<span>● Veido biometrinis stebėjimas</span><span>● Pulsas per odos spalvą (rPPG)</span><span>● 468 taškų veido sekimas</span><span>● Autonominės reakcijos analizė</span>',
@@ -2659,7 +2691,7 @@ const I18N = {
     'method_04_method': '<strong>Metodas:</strong> Kiekvienas bandymas matuoja mirksėjimo vėlavimą, asimetrijos deltą ir BPM pagreitį. Patikimumo balas apskaičiuojamas iš bandymų nuoseklumo.',
     'method_04_limit': '<strong>Apribojimas:</strong> Žemiau 60% patikimumo pranešame rezultatą kaip neaiškų. Virš 75% kaip reikšmingą.',
     '— What we do NOT do': '— Ko mes NEDAROME',
-    'method_not_do': 'Mes neskaitome minčių. Mes nediagnozuojame. Mes neišsaugome tavo vaizdo įrašo ir nieks niekur jo nesiunčiame. Matuojame tik aktyvavimą — o aktyvavimas gali reikšti atmetimą, nuostabą, trauką, baimę ar atpažinimą. Kūnas kalba garsiai, bet viena kalba: <em>tai svarbiau už tai</em>.'
+    'method_not_do': 'Mes neskaitome minčių. Mes nediagnozuojame. Mes neišsaugome tavo vaizdo įrašo ir nieks niekur jo nesiunčiame. Matuojame tik aktyvavimą — o aktyvavimas gali reikšti atmetimą, nuostabą, trauką, baimę ar atpažinimą. Kūnas kalba garsiai, bet viena kalba: <em>vienas svarbesnis už kitą</em>.'
   },
 
   ru: {
@@ -2718,6 +2750,7 @@ const I18N = {
     'What does this actually mean?': 'Что это на самом деле значит?',
     'One-time — analysis of this reading': 'Разовое — анализ этого измерения',
 
+    'oracle_frame': 'Loits — оракул в том смысле, что он не предсказывает будущее и не читает мысли. Он раскрывает реакцию тела — прежде чем разум успевает её объяснить.',
     'intro_p1': 'Loits — биометрический инструмент. Камера твоего телефона мониторит твоё лицо — пульс, рефлексы моргания, микровыражения — пока мы показываем тебе две опции вспышками. Твоя автономная нервная система реагирует за миллисекунды, прежде чем сознательная мысль успевает вмешаться. Мы измеряем эти реакции и раскрываем, какой путь распознаёт твоё тело.',
     'intro_p2': 'Ничего не загружается. Все измерения происходят на твоём устройстве. Мы измеряем только измеримое. Если условия неподходящие, мы говорим об этом. Мы не угадываем.',
     'intro_features': '<span>● Биометрический мониторинг лица</span><span>● Пульс через цвет кожи (rPPG)</span><span>● Отслеживание лица в 468 точках</span><span>● Анализ автономного ответа</span>',
@@ -2745,7 +2778,7 @@ const I18N = {
     'method_04_method': '<strong>Метод:</strong> Каждое испытание измеряет латентность моргания, дельту асимметрии и ускорение BPM. Показатель достоверности вычисляется из согласованности между испытаниями.',
     'method_04_limit': '<strong>Ограничение:</strong> Ниже 60% достоверности сообщаем результат как неопределённый. Выше 75% — как значимый.',
     '— What we do NOT do': '— Что мы НЕ делаем',
-    'method_not_do': 'Мы не читаем мысли. Мы не диагностируем. Мы не сохраняем твоё видео и никуда его не отправляем. Мы измеряем только активацию — а активация может означать отвержение, удивление, влечение, страх или узнавание. Тело говорит громко, но на одном языке: <em>это важнее того</em>.'
+    'method_not_do': 'Мы не читаем мысли. Мы не диагностируем. Мы не сохраняем твоё видео и никуда его не отправляем. Мы измеряем только активацию — а активация может означать отвержение, удивление, влечение, страх или узнавание. Тело говорит громко, но на одном языке: <em>одно важнее другого</em>.'
   },
 
   uk: {
@@ -2804,6 +2837,7 @@ const I18N = {
     'What does this actually mean?': 'Що це насправді означає?',
     'One-time — analysis of this reading': 'Разове — аналіз цього вимірювання',
 
+    'oracle_frame': 'Loits — оракул у тому сенсі, що він не передбачає майбутнього й не читає думок. Він розкриває реакцію тіла — перш ніж розум встигне її пояснити.',
     'intro_p1': 'Loits — біометричний інструмент. Камера твого телефону моніторить твоє обличчя — пульс, рефлекси кліпання, мікровирази — поки ми показуємо тобі два варіанти спалахами. Твоя автономна нервова система реагує за мілісекунди, перш ніж свідома думка встигає втрутитися. Ми вимірюємо ці реакції та розкриваємо, який шлях розпізнає твоє тіло.',
     'intro_p2': 'Нічого не завантажується. Усі вимірювання відбуваються на твоєму пристрої. Ми вимірюємо лише вимірне. Якщо умови не підходять, ми кажемо про це. Ми не вгадуємо.',
     'intro_features': '<span>● Біометричний моніторинг обличчя</span><span>● Пульс через колір шкіри (rPPG)</span><span>● Відстеження обличчя у 468 точках</span><span>● Аналіз автономної відповіді</span>',
@@ -2831,7 +2865,7 @@ const I18N = {
     'method_04_method': '<strong>Метод:</strong> Кожне випробування вимірює латентність кліпання, дельту асиметрії та прискорення BPM. Показник достовірності обчислюється з узгодженості між випробуваннями.',
     'method_04_limit': '<strong>Обмеження:</strong> Нижче 60% достовірності повідомляємо результат як невизначений. Вище 75% — як значущий.',
     '— What we do NOT do': '— Що ми НЕ робимо',
-    'method_not_do': 'Ми не читаємо думки. Ми не діагностуємо. Ми не зберігаємо твоє відео й нікуди його не відправляємо. Ми вимірюємо лише активацію — а активація може означати відторгнення, здивування, тяжіння, страх чи впізнавання. Тіло говорить голосно, але однією мовою: <em>це важливіше за те</em>.'
+    'method_not_do': 'Ми не читаємо думки. Ми не діагностуємо. Ми не зберігаємо твоє відео й нікуди його не відправляємо. Ми вимірюємо лише активацію — а активація може означати відторгнення, здивування, тяжіння, страх чи впізнавання. Тіло говорить голосно, але однією мовою: <em>одне важливіше за інше</em>.'
   }
 };
 
