@@ -77,7 +77,7 @@
     color: var(--fg);
     text-transform: uppercase;
   }
-  .topbar .status { display: flex; align-items: center; gap: 8px; }
+  .topbar .status { display: flex; align-items: center; gap: 12px; }
   .topbar .dot {
     width: 6px; height: 6px;
     background: var(--good);
@@ -88,6 +88,133 @@
   @keyframes pulse-dot {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
+  }
+
+  /* Language selector — diskreetne nupp topbaris */
+  .lang-selector-btn {
+    background: transparent;
+    border: 1px solid var(--dim2);
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    padding: 4px 9px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .lang-selector-btn:hover,
+  .lang-selector-btn:active {
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+
+  /* Language picker bottom sheet */
+  #lang-picker-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 11000;
+    display: none;
+    justify-content: center;
+    align-items: flex-end;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: fadeIn 0.25s ease;
+  }
+  #lang-picker-overlay.active { display: flex; }
+  #lang-picker-sheet {
+    width: 100%;
+    max-width: 540px;
+    background: #0a0a0a;
+    border-top: 1px solid var(--accent);
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .lang-picker-header {
+    padding: 20px 22px 14px;
+    border-bottom: 1px solid var(--dim2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: #0a0a0a;
+    z-index: 1;
+  }
+  .lang-picker-title {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    color: var(--fg);
+    font-weight: 400;
+  }
+  .lang-picker-close {
+    background: transparent;
+    border: 1px solid var(--dim2);
+    color: var(--dim);
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .lang-list {
+    padding: 8px 0 24px;
+  }
+  .lang-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    font-family: var(--mono);
+    color: var(--fg);
+    text-align: left;
+    transition: background 0.15s;
+  }
+  .lang-item:active {
+    background: rgba(255,41,41,0.06);
+  }
+  .lang-item.selected {
+    background: rgba(255,41,41,0.04);
+  }
+  .lang-item.selected::after {
+    content: '✓';
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 14px;
+  }
+  .lang-flag {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .lang-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .lang-native {
+    font-size: 14px;
+    color: var(--fg);
+    letter-spacing: 0.02em;
+  }
+  .lang-eng {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
   }
 
   .stage {
@@ -985,6 +1112,7 @@
 <div class="topbar">
   <div class="logo">LOITS</div>
   <div class="status">
+    <button id="lang-selector-current" class="lang-selector-btn" onclick="showLangPicker()" aria-label="Language">EN ▾</button>
     <span>v2.0 / build 0003</span>
     <span class="dot"></span>
   </div>
@@ -993,19 +1121,19 @@
 <div class="stage">
 
   <div class="screen active" id="screen-intro">
-    <div style="font-size: 10px; color: var(--dim); letter-spacing: 0.25em; margin-bottom: 16px;">
+    <div style="font-size: 10px; color: var(--dim); letter-spacing: 0.25em; margin-bottom: 16px;" data-i18n="— REAL-TIME BIOMETRIC ORACLE">
       — REAL-TIME BIOMETRIC ORACLE
     </div>
-    <h1 class="intro-title">Your body knows<br>before <em>your mind</em><br>admits.</h1>
-    <p class="intro-sub">
+    <h1 class="intro-title" data-i18n-html="Your body knows before <em>your mind</em> admits."><span>Your body knows<br>before <em>your mind</em><br>admits.</span></h1>
+    <p class="intro-sub" data-i18n="Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.">
       Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.
     </p>
-    <p class="intro-sub" style="margin-bottom: 24px;">
+    <p class="intro-sub" style="margin-bottom: 24px;" data-i18n="We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.">
       We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.
     </p>
-    <button class="btn-main" onclick="goToMethod()">How It Works →</button>
-    <button class="btn-secondary" onclick="goToInput()">Skip — Begin Reading</button>
-    <div class="disclaimer">
+    <button class="btn-main" onclick="goToMethod()" data-i18n="How It Works →">How It Works →</button>
+    <button class="btn-secondary" onclick="goToInput()" data-i18n="Skip — Begin Reading">Skip — Begin Reading</button>
+    <div class="disclaimer" data-i18n="An instrument of self-reflection. Not a diagnostic tool.">
       An instrument of self-reflection. Not a diagnostic tool.
     </div>
   </div>
@@ -1055,27 +1183,27 @@
       <p>We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure activation only — and activation can mean rejection, surprise, attraction, fear, or recognition. The body speaks loudly, but it speaks in one language: <em>this matters more than that</em>.</p>
     </div>
 
-    <button class="btn-main" onclick="goToInput()">I Understand — Begin Reading →</button>
-    <button class="btn-secondary" onclick="goTo('screen-intro')">Back</button>
+    <button class="btn-main" onclick="goToInput()" data-i18n="I Understand — Begin Reading →">I Understand — Begin Reading →</button>
+    <button class="btn-secondary" onclick="goTo('screen-intro')" data-i18n="Back">Back</button>
   </div>
 
   <div class="screen" id="screen-input">
-    <div class="input-label">— Step 01 / Specify the dilemma</div>
-    <h2 class="input-question">What two paths are tearing you?</h2>
+    <div class="input-label" data-i18n="— Step 01 / Specify the dilemma">— Step 01 / Specify the dilemma</div>
+    <h2 class="input-question" data-i18n="What two paths are tearing you?">What two paths are tearing you?</h2>
 
     <div class="option-block">
       <span class="option-prefix">A —</span>
-      <textarea id="optionA" class="option-input" placeholder="e.g. text him back, or describe in two sentences what option A really means to you" maxlength="200" rows="2" autocomplete="off"></textarea>
+      <textarea id="optionA" class="option-input" placeholder="e.g. text him back" maxlength="200" rows="2" autocomplete="off" data-i18n-placeholder="e.g. text him back"></textarea>
       <div class="option-counter" id="counterA">0 / 200</div>
     </div>
     <div class="option-block">
       <span class="option-prefix">B —</span>
-      <textarea id="optionB" class="option-input" placeholder="e.g. let it die, or describe the other path in your own words" maxlength="200" rows="2" autocomplete="off"></textarea>
+      <textarea id="optionB" class="option-input" placeholder="e.g. let it die" maxlength="200" rows="2" autocomplete="off" data-i18n-placeholder="e.g. let it die"></textarea>
       <div class="option-counter" id="counterB">0 / 200</div>
     </div>
 
-    <button class="btn-main" onclick="startScan()">Read My Body →</button>
-    <button class="btn-secondary" onclick="goTo('screen-intro')">Back</button>
+    <button class="btn-main" onclick="startScan()" data-i18n="Read My Body →">Read My Body →</button>
+    <button class="btn-secondary" onclick="goTo('screen-intro')" data-i18n="Back">Back</button>
   </div>
 
 </div>
@@ -1166,8 +1294,741 @@ const state = {
 };
 
 // ============================================
-// TIER SYSTEM — localStorage persistence
+// I18N — 18 languages
+// Keys are English (default + fallback). Other languages override via I18N[lang][key].
+// If a translation is missing, English is used. Call t('key') to read.
 // ============================================
+
+const LANGUAGES = [
+  { code: 'en', name: 'English',    flag: '🇬🇧', native: 'English' },
+  { code: 'et', name: 'Estonian',   flag: '🇪🇪', native: 'Eesti' },
+  { code: 'fi', name: 'Finnish',    flag: '🇫🇮', native: 'Suomi' },
+  { code: 'sv', name: 'Swedish',    flag: '🇸🇪', native: 'Svenska' },
+  { code: 'no', name: 'Norwegian',  flag: '🇳🇴', native: 'Norsk' },
+  { code: 'da', name: 'Danish',     flag: '🇩🇰', native: 'Dansk' },
+  { code: 'is', name: 'Icelandic',  flag: '🇮🇸', native: 'Íslenska' },
+  { code: 'de', name: 'German',     flag: '🇩🇪', native: 'Deutsch' },
+  { code: 'fr', name: 'French',     flag: '🇫🇷', native: 'Français' },
+  { code: 'es', name: 'Spanish',    flag: '🇪🇸', native: 'Español' },
+  { code: 'it', name: 'Italian',    flag: '🇮🇹', native: 'Italiano' },
+  { code: 'pt', name: 'Portuguese', flag: '🇵🇹', native: 'Português' },
+  { code: 'nl', name: 'Dutch',      flag: '🇳🇱', native: 'Nederlands' },
+  { code: 'pl', name: 'Polish',     flag: '🇵🇱', native: 'Polski' },
+  { code: 'lv', name: 'Latvian',    flag: '🇱🇻', native: 'Latviešu' },
+  { code: 'lt', name: 'Lithuanian', flag: '🇱🇹', native: 'Lietuvių' },
+  { code: 'ru', name: 'Russian',    flag: '🇷🇺', native: 'Русский' },
+  { code: 'uk', name: 'Ukrainian',  flag: '🇺🇦', native: 'Українська' }
+];
+
+// All UI strings — English keys are also their English values.
+// Other languages override individual keys.
+const I18N = {
+  en: {}, // base — every key returns its own name
+
+  et: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— REAALAJA BIOMEETRILINE ORAAKEL',
+    'Your body knows before <em>your mind</em> admits.': 'Su keha teab enne kui <em>su meel</em> tunnistab.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Kirjuta kaks teed. Vilgutame kumbagi viis korda juhuslikus järjekorras. Su keha vastab millisekundites — enne kui meel selle maskeerida jõuab. Mõõdame erinevuse ja ütleme, mille su keha valis.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Mõõdame ainult seda, mis on mõõdetav. Kui tingimused pole õiged, ütleme seda. Me ei oleta.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Eneserefleksiooni instrument. Mitte diagnostikavahend.',
+    'e.g. text him back': 'nt vasta talle',
+    'e.g. let it die': 'nt lase sel surra',
+    'What two paths are tearing you?': 'Millised kaks teed sind lõhestavad?',
+    'Read My Body →': 'Loe mu keha →',
+    'How It Works →': 'Kuidas see töötab →',
+    'Skip — Begin Reading': 'Jäta vahele — alusta lugemist',
+    'I Understand — Begin Reading →': 'Saan aru — alusta lugemist →',
+    '— Step 01 / Specify the dilemma': '— Samm 01 / Täpsusta dilemma',
+    'Back': 'Tagasi',
+    'Hold gaze': 'Hoia pilku',
+    'TRIAL': 'KATSE',
+    'Please fill in both options.': 'Palun täida mõlemad valikud.',
+    '— Free reading used': '— Tasuta lugemine kasutatud',
+    'Choose your path forward': 'Vali oma edasine tee',
+    'Most popular': 'Kõige populaarsem',
+    'Unlock this analysis': 'Ava see analüüs',
+    'Five more readings': 'Viis veel lugemist',
+    'For those who ask often': 'Nendele, kes küsivad sageli',
+    'Best value · save 49%': 'Parim väärtus · säästa 49%',
+    'Unlimited monthly': 'Piiramatu kuu',
+    'Unlimited annual': 'Piiramatu aasta',
+    'per month': 'kuus',
+    'per year': 'aastas',
+    'Close': 'Sulge',
+    'Cancel anytime': 'Tühista igal ajal',
+    'Continue to payment': 'Jätka maksega',
+    'Secure payment via Stripe · Cancel anytime': 'Turvaline makse läbi Stripe · Tühista igal ajal',
+    '— What this means': '— Mida see tähendab',
+    '— What you get': '— Mida sa saad',
+    '— Sample · what an analysis looks like': '— Näide · kuidas analüüs välja näeb',
+    'Anonymous example. Yours will be written for your specific dilemma.': 'Anonüümne näide. Sinu oma kirjutatakse sinu konkreetsele dilemmale.',
+    'No account required. No data sold or shared.': 'Kontot pole vaja. Andmeid ei müüda ega jagata.',
+    'Body signals indicate physiological activation, not validated truth.': 'Keha signaalid näitavad füsioloogilist aktivatsiooni, mitte tõestatud tõde.',
+    'Consult a licensed professional for serious choices.': 'Tõsiste valikute puhul pöördu litsentseeritud spetsialisti poole.',
+    '— Deeper reading': '— Sügavam lugemine',
+    'What does this actually mean?': 'Mida see tegelikult tähendab?',
+    'One-time — analysis of this reading': 'Ühekordne — selle lugemise analüüs',
+    'New Reading': 'Uus lugemine',
+    '— Verdict': '— Otsus',
+    'Signal strength': 'Signaali tugevus',
+    'Differential': 'Erinevus',
+    'Confidence': 'Kindlus',
+    'low': 'madal',
+    'moderate': 'keskmine',
+    'high': 'kõrge',
+    'Your body reacted more strongly to': 'Su keha reageeris tugevamini valikule',
+    'It wants the other path': 'See tahab teist teed',
+    'low confidence': 'madal kindlus',
+    'moderate confidence': 'keskmine kindlus',
+    'high confidence': 'kõrge kindlus',
+    'Free explainer 1': 'Enne kui su meel otsustab, reageerib su keha. Kui sa nägid valikut <strong>"{rejected}"</strong>, aktiveerus su autonoomne süsteem tugevamini — kiiremad pilgutused, mikropinge, südamerütmi muutus.',
+    'Free explainer 2': 'See tähendab tavaliselt <strong>vältimist</strong>, mitte soovi. Keha märgib midagi kulukat, ohtlikku või soovimatut selles tees.',
+    'Free explainer 3': 'Erinevus <strong>{diff}%</strong> tähendab kahe vastuse vahet. Suurem = selgem keha signaal. Kindlus <strong>{conf}</strong> näitab, kui palju mõõtmisi olid ühel meelel.',
+    'Free explainer 4': 'See on keha esimene reaktsioon — mitte tõe-otsus. Konkreetse interpretatsiooni jaoks oma dilemmale vaata sügavamat lugemist allpool.'
+  },
+
+  fi: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— REAALIAIKAINEN BIOMETRINEN ORAAKKELI',
+    'Your body knows before <em>your mind</em> admits.': 'Kehosi tietää ennen kuin <em>mielesi</em> myöntää.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Kirjoita kaksi polkua. Välähdytämme kumpaakin viisi kertaa satunnaisessa järjestyksessä. Kehosi vastaa millisekunneissa — ennen kuin mieli ehtii peittää. Mittaamme eron ja kerromme, minkä kehosi valitsi.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Mittaamme vain mitattavaa. Jos olosuhteet eivät ole oikeat, kerromme sen. Emme arvaa.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Itsetutkiskelun väline. Ei diagnostiikkatyökalu.',
+    'e.g. text him back': 'esim. vastaa hänelle',
+    'e.g. let it die': 'esim. anna sen kuolla',
+    'What two paths are tearing you?': 'Mitkä kaksi polkua repivät sinua?',
+    'Read My Body →': 'Lue kehoni →',
+    'How It Works →': 'Miten se toimii →',
+    'Skip — Begin Reading': 'Ohita — aloita lukeminen',
+    'I Understand — Begin Reading →': 'Ymmärrän — aloita lukeminen →',
+    '— Step 01 / Specify the dilemma': '— Vaihe 01 / Määrittele dilemma',
+    'Back': 'Takaisin',
+    'Hold gaze': 'Pidä katse',
+    'TRIAL': 'KOE',
+    'Please fill in both options.': 'Täytä molemmat vaihtoehdot.',
+    '— Free reading used': '— Ilmainen lukeminen käytetty',
+    'Choose your path forward': 'Valitse polkusi eteenpäin',
+    'Most popular': 'Suosituin',
+    'Unlock this analysis': 'Avaa tämä analyysi',
+    'Five more readings': 'Viisi lisää lukemista',
+    'For those who ask often': 'Niille, jotka kysyvät usein',
+    'Best value · save 49%': 'Paras arvo · säästä 49%',
+    'Unlimited monthly': 'Rajaton kuukausi',
+    'Unlimited annual': 'Rajaton vuosi',
+    'per month': 'kuukaudessa',
+    'per year': 'vuodessa',
+    'Close': 'Sulje',
+    'Cancel anytime': 'Peruuta milloin tahansa',
+    'Continue to payment': 'Jatka maksuun',
+    'Secure payment via Stripe · Cancel anytime': 'Turvallinen maksu Stripen kautta · Peruuta milloin tahansa',
+    '— What this means': '— Mitä tämä tarkoittaa',
+    '— What you get': '— Mitä saat',
+    '— Sample · what an analysis looks like': '— Näyte · miltä analyysi näyttää',
+    'Anonymous example. Yours will be written for your specific dilemma.': 'Anonyymi esimerkki. Sinun kirjoitetaan sinun erityiseen dilemmaasi.',
+    'No account required. No data sold or shared.': 'Tiliä ei tarvita. Tietoja ei myydä eikä jaeta.',
+    'Body signals indicate physiological activation, not validated truth.': 'Kehon signaalit osoittavat fysiologista aktivaatiota, ei vahvistettua totuutta.',
+    'Consult a licensed professional for serious choices.': 'Konsultoi lisensoitua ammattilaista vakavissa valinnoissa.',
+    '— Deeper reading': '— Syvempi lukeminen',
+    'What does this actually mean?': 'Mitä tämä todella tarkoittaa?',
+    'One-time — analysis of this reading': 'Kertaluonteinen — tämän lukemisen analyysi',
+    'New Reading': 'Uusi lukeminen',
+    '— Verdict': '— Tuomio',
+    'Signal strength': 'Signaalin voimakkuus',
+    'Differential': 'Ero',
+    'Confidence': 'Luottamus',
+    'low': 'matala',
+    'moderate': 'kohtalainen',
+    'high': 'korkea',
+    'Your body reacted more strongly to': 'Kehosi reagoi voimakkaammin valintaan',
+    'It wants the other path': 'Se haluaa toista polkua',
+    'low confidence': 'matala luottamus',
+    'moderate confidence': 'kohtalainen luottamus',
+    'high confidence': 'korkea luottamus'
+  },
+
+  sv: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— REALTIDS BIOMETRISKT ORAKEL',
+    'Your body knows before <em>your mind</em> admits.': 'Din kropp vet innan <em>ditt sinne</em> erkänner.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Skriv två vägar. Vi blixtrar varje fem gånger i slumpvis ordning. Din kropp svarar i millisekunder — innan ditt sinne kan maskera det. Vi mäter skillnaden och berättar vad din kropp valde.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Vi mäter bara det mätbara. Om förhållandena inte stämmer säger vi det. Vi gissar inte.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Ett instrument för självreflektion. Inte ett diagnostiskt verktyg.',
+    'e.g. text him back': 't.ex. sms:a tillbaka',
+    'e.g. let it die': 't.ex. låt det dö',
+    'What two paths are tearing you?': 'Vilka två vägar river dig?',
+    'Read My Body →': 'Läs min kropp →',
+    'How It Works →': 'Hur det fungerar →',
+    'Skip — Begin Reading': 'Hoppa över — börja läsa',
+    'I Understand — Begin Reading →': 'Jag förstår — börja läsa →',
+    '— Step 01 / Specify the dilemma': '— Steg 01 / Specificera dilemmat',
+    'Back': 'Tillbaka',
+    'Hold gaze': 'Håll blicken',
+    'TRIAL': 'FÖRSÖK',
+    'Please fill in both options.': 'Fyll i båda alternativen.',
+    '— Free reading used': '— Gratis läsning använd',
+    'Choose your path forward': 'Välj din väg framåt',
+    'Most popular': 'Mest populär',
+    'Unlock this analysis': 'Lås upp denna analys',
+    'Five more readings': 'Fem läsningar till',
+    'For those who ask often': 'För dem som frågar ofta',
+    'Best value · save 49%': 'Bästa värde · spara 49%',
+    'Unlimited monthly': 'Obegränsad månad',
+    'Unlimited annual': 'Obegränsad år',
+    'per month': 'per månad',
+    'per year': 'per år',
+    'Close': 'Stäng',
+    'Cancel anytime': 'Avbryt när som helst',
+    'Continue to payment': 'Fortsätt till betalning',
+    'Secure payment via Stripe · Cancel anytime': 'Säker betalning via Stripe · Avbryt när som helst',
+    '— What this means': '— Vad detta betyder',
+    '— What you get': '— Vad du får',
+    '— Sample · what an analysis looks like': '— Exempel · hur en analys ser ut',
+    'Anonymous example. Yours will be written for your specific dilemma.': 'Anonymt exempel. Din kommer att skrivas för ditt specifika dilemma.',
+    'No account required. No data sold or shared.': 'Inget konto krävs. Inga data säljs eller delas.',
+    'Body signals indicate physiological activation, not validated truth.': 'Kroppssignaler indikerar fysiologisk aktivering, inte validerad sanning.',
+    'Consult a licensed professional for serious choices.': 'Konsultera en licensierad professionell för allvarliga val.',
+    '— Deeper reading': '— Djupare läsning',
+    'What does this actually mean?': 'Vad betyder detta egentligen?',
+    'One-time — analysis of this reading': 'Engångs — analys av denna läsning',
+    'New Reading': 'Ny läsning',
+    'Your body reacted more strongly to': 'Din kropp reagerade starkare på',
+    'It wants the other path': 'Den vill ha den andra vägen'
+  },
+
+  no: {
+    'What two paths are tearing you?': 'Hvilke to veier river deg?',
+    'Read My Body →': 'Les kroppen min →',
+    'How It Works →': 'Hvordan det fungerer →',
+    'Skip — Begin Reading': 'Hopp over — begynn lesning',
+    'I Understand — Begin Reading →': 'Jeg forstår — begynn lesning →',
+    'Back': 'Tilbake',
+    'Hold gaze': 'Hold blikket',
+    '— Free reading used': '— Gratis lesning brukt',
+    'Choose your path forward': 'Velg din vei fremover',
+    'Most popular': 'Mest populær',
+    'Unlock this analysis': 'Lås opp denne analysen',
+    'Five more readings': 'Fem flere lesninger',
+    'For those who ask often': 'For dem som spør ofte',
+    'Best value · save 49%': 'Beste verdi · spar 49%',
+    'per month': 'per måned',
+    'per year': 'per år',
+    'Close': 'Lukk',
+    'Continue to payment': 'Fortsett til betaling',
+    'Your body reacted more strongly to': 'Kroppen din reagerte sterkere på',
+    'It wants the other path': 'Den vil ha den andre veien',
+    'New Reading': 'Ny lesning'
+  },
+
+  da: {
+    'What two paths are tearing you?': 'Hvilke to veje river dig?',
+    'Read My Body →': 'Læs min krop →',
+    'How It Works →': 'Hvordan det fungerer →',
+    'Skip — Begin Reading': 'Spring over — begynd læsning',
+    'I Understand — Begin Reading →': 'Jeg forstår — begynd læsning →',
+    'Back': 'Tilbage',
+    'Hold gaze': 'Hold blikket',
+    '— Free reading used': '— Gratis læsning brugt',
+    'Choose your path forward': 'Vælg din vej fremad',
+    'Most popular': 'Mest populær',
+    'Unlock this analysis': 'Lås op for denne analyse',
+    'Five more readings': 'Fem flere læsninger',
+    'For those who ask often': 'For dem der spørger ofte',
+    'Best value · save 49%': 'Bedste værdi · spar 49%',
+    'per month': 'pr. måned',
+    'per year': 'pr. år',
+    'Close': 'Luk',
+    'Continue to payment': 'Fortsæt til betaling',
+    'Your body reacted more strongly to': 'Din krop reagerede stærkere på',
+    'It wants the other path': 'Den vil have den anden vej',
+    'New Reading': 'Ny læsning'
+  },
+
+  is: {
+    'What two paths are tearing you?': 'Hvaða tveir vegir rífa þig?',
+    'Read My Body →': 'Lestu líkamann minn →',
+    'How It Works →': 'Hvernig það virkar →',
+    'Skip — Begin Reading': 'Sleppa — byrja lestur',
+    'I Understand — Begin Reading →': 'Ég skil — byrja lestur →',
+    'Back': 'Til baka',
+    'Hold gaze': 'Haltu augnaráði',
+    '— Free reading used': '— Ókeypis lestur notaður',
+    'Choose your path forward': 'Veldu þína leið áfram',
+    'Most popular': 'Vinsælast',
+    'Unlock this analysis': 'Opnaðu þessa greiningu',
+    'Five more readings': 'Fimm fleiri lestrar',
+    'per month': 'á mánuði',
+    'per year': 'á ári',
+    'Close': 'Loka',
+    'Continue to payment': 'Halda áfram að greiðslu',
+    'Your body reacted more strongly to': 'Líkaminn þinn brást sterkari við',
+    'It wants the other path': 'Hann vill hina leiðina',
+    'New Reading': 'Nýr lestur'
+  },
+
+  de: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— ECHTZEIT-BIOMETRISCHES ORAKEL',
+    'Your body knows before <em>your mind</em> admits.': 'Dein Körper weiß, bevor <em>dein Geist</em> es zugibt.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Tippe zwei Wege. Wir blinken jeden fünfmal in zufälliger Reihenfolge. Dein Körper reagiert in Millisekunden — bevor der Geist es maskieren kann. Wir messen den Unterschied und sagen dir, was dein Körper gewählt hat.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Wir messen nur das Messbare. Wenn die Bedingungen nicht stimmen, sagen wir es. Wir raten nicht.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Ein Instrument der Selbstreflexion. Kein Diagnosewerkzeug.',
+    'e.g. text him back': 'z.B. ihm zurückschreiben',
+    'e.g. let it die': 'z.B. es sterben lassen',
+    'What two paths are tearing you?': 'Welche zwei Wege zerreißen dich?',
+    'Read My Body →': 'Lies meinen Körper →',
+    'How It Works →': 'Wie es funktioniert →',
+    'Skip — Begin Reading': 'Überspringen — Lesung beginnen',
+    'I Understand — Begin Reading →': 'Ich verstehe — Lesung beginnen →',
+    '— Step 01 / Specify the dilemma': '— Schritt 01 / Dilemma präzisieren',
+    'Back': 'Zurück',
+    'Hold gaze': 'Blick halten',
+    'TRIAL': 'VERSUCH',
+    'Please fill in both options.': 'Bitte beide Optionen ausfüllen.',
+    '— Free reading used': '— Kostenlose Lesung verbraucht',
+    'Choose your path forward': 'Wähle deinen Weg nach vorn',
+    'Most popular': 'Am beliebtesten',
+    'Unlock this analysis': 'Diese Analyse freischalten',
+    'Five more readings': 'Fünf weitere Lesungen',
+    'For those who ask often': 'Für die, die oft fragen',
+    'Best value · save 49%': 'Bestes Angebot · spare 49%',
+    'Unlimited monthly': 'Unbegrenzt monatlich',
+    'Unlimited annual': 'Unbegrenzt jährlich',
+    'per month': 'pro Monat',
+    'per year': 'pro Jahr',
+    'Close': 'Schließen',
+    'Cancel anytime': 'Jederzeit kündbar',
+    'Continue to payment': 'Weiter zur Zahlung',
+    'Secure payment via Stripe · Cancel anytime': 'Sichere Zahlung über Stripe · Jederzeit kündbar',
+    '— What this means': '— Was das bedeutet',
+    '— What you get': '— Was du bekommst',
+    '— Sample · what an analysis looks like': '— Beispiel · wie eine Analyse aussieht',
+    'Anonymous example. Yours will be written for your specific dilemma.': 'Anonymes Beispiel. Deine wird für dein spezifisches Dilemma geschrieben.',
+    'Body signals indicate physiological activation, not validated truth.': 'Körpersignale zeigen physiologische Aktivierung an, keine bestätigte Wahrheit.',
+    'Consult a licensed professional for serious choices.': 'Konsultiere einen lizenzierten Fachmann bei wichtigen Entscheidungen.',
+    'Your body reacted more strongly to': 'Dein Körper reagierte stärker auf',
+    'It wants the other path': 'Er will den anderen Weg',
+    'New Reading': 'Neue Lesung'
+  },
+
+  fr: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— ORACLE BIOMÉTRIQUE EN TEMPS RÉEL',
+    'Your body knows before <em>your mind</em> admits.': 'Ton corps sait avant que <em>ton esprit</em> n\'admette.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Tape deux chemins. Nous flashons chacun cinq fois dans un ordre aléatoire. Ton corps répond en millisecondes — avant que l\'esprit ne puisse le masquer. Nous mesurons la différence et te disons ce que ton corps a choisi.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Nous mesurons seulement ce qui est mesurable. Si les conditions ne sont pas réunies, nous te le disons. Nous ne devinons pas.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Un instrument d\'auto-réflexion. Pas un outil de diagnostic.',
+    'e.g. text him back': 'ex. lui répondre',
+    'e.g. let it die': 'ex. laisser mourir',
+    'What two paths are tearing you?': 'Quels deux chemins te déchirent ?',
+    'Read My Body →': 'Lis mon corps →',
+    'How It Works →': 'Comment ça marche →',
+    'Skip — Begin Reading': 'Passer — commencer la lecture',
+    'I Understand — Begin Reading →': 'Je comprends — commencer la lecture →',
+    '— Step 01 / Specify the dilemma': '— Étape 01 / Précise le dilemme',
+    'Back': 'Retour',
+    'Hold gaze': 'Maintiens le regard',
+    'TRIAL': 'ESSAI',
+    'Please fill in both options.': 'Veuillez remplir les deux options.',
+    '— Free reading used': '— Lecture gratuite utilisée',
+    'Choose your path forward': 'Choisis ta voie',
+    'Most popular': 'Plus populaire',
+    'Unlock this analysis': 'Débloque cette analyse',
+    'Five more readings': 'Cinq lectures de plus',
+    'For those who ask often': 'Pour ceux qui demandent souvent',
+    'Best value · save 49%': 'Meilleure valeur · économise 49%',
+    'Unlimited monthly': 'Illimité mensuel',
+    'Unlimited annual': 'Illimité annuel',
+    'per month': 'par mois',
+    'per year': 'par an',
+    'Close': 'Fermer',
+    'Cancel anytime': 'Annule à tout moment',
+    'Continue to payment': 'Continuer au paiement',
+    'Secure payment via Stripe · Cancel anytime': 'Paiement sécurisé via Stripe · Annule à tout moment',
+    '— What this means': '— Ce que cela signifie',
+    '— What you get': '— Ce que tu obtiens',
+    '— Sample · what an analysis looks like': '— Échantillon · à quoi ressemble une analyse',
+    'Body signals indicate physiological activation, not validated truth.': 'Les signaux corporels indiquent une activation physiologique, pas une vérité validée.',
+    'Your body reacted more strongly to': 'Ton corps a réagi plus fortement à',
+    'It wants the other path': 'Il veut l\'autre chemin',
+    'New Reading': 'Nouvelle lecture'
+  },
+
+  es: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— ORÁCULO BIOMÉTRICO EN TIEMPO REAL',
+    'Your body knows before <em>your mind</em> admits.': 'Tu cuerpo sabe antes de que <em>tu mente</em> lo admita.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Escribe dos caminos. Mostramos cada uno cinco veces en orden aleatorio. Tu cuerpo responde en milisegundos — antes de que la mente lo enmascare. Medimos la diferencia y te decimos lo que tu cuerpo eligió.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Medimos solo lo medible. Si las condiciones no son adecuadas, te lo decimos. No adivinamos.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Un instrumento de autorreflexión. No una herramienta de diagnóstico.',
+    'e.g. text him back': 'ej. respóndele',
+    'e.g. let it die': 'ej. déjalo morir',
+    'What two paths are tearing you?': '¿Qué dos caminos te desgarran?',
+    'Read My Body →': 'Lee mi cuerpo →',
+    'How It Works →': 'Cómo funciona →',
+    'Skip — Begin Reading': 'Saltar — comenzar lectura',
+    'I Understand — Begin Reading →': 'Entiendo — comenzar lectura →',
+    '— Step 01 / Specify the dilemma': '— Paso 01 / Especifica el dilema',
+    'Back': 'Atrás',
+    'Hold gaze': 'Mantén la mirada',
+    'TRIAL': 'ENSAYO',
+    'Please fill in both options.': 'Por favor completa ambas opciones.',
+    '— Free reading used': '— Lectura gratis usada',
+    'Choose your path forward': 'Elige tu camino',
+    'Most popular': 'Más popular',
+    'Unlock this analysis': 'Desbloquea este análisis',
+    'Five more readings': 'Cinco lecturas más',
+    'For those who ask often': 'Para los que preguntan a menudo',
+    'Best value · save 49%': 'Mejor valor · ahorra 49%',
+    'Unlimited monthly': 'Ilimitado mensual',
+    'Unlimited annual': 'Ilimitado anual',
+    'per month': 'al mes',
+    'per year': 'al año',
+    'Close': 'Cerrar',
+    'Cancel anytime': 'Cancela cuando quieras',
+    'Continue to payment': 'Continuar al pago',
+    'Secure payment via Stripe · Cancel anytime': 'Pago seguro vía Stripe · Cancela cuando quieras',
+    '— What this means': '— Lo que esto significa',
+    '— What you get': '— Lo que obtienes',
+    '— Sample · what an analysis looks like': '— Ejemplo · cómo se ve un análisis',
+    'Body signals indicate physiological activation, not validated truth.': 'Las señales corporales indican activación fisiológica, no verdad validada.',
+    'Your body reacted more strongly to': 'Tu cuerpo reaccionó con más fuerza a',
+    'It wants the other path': 'Quiere el otro camino',
+    'New Reading': 'Nueva lectura'
+  },
+
+  it: {
+    'What two paths are tearing you?': 'Quali due strade ti lacerano?',
+    'Read My Body →': 'Leggi il mio corpo →',
+    'How It Works →': 'Come funziona →',
+    'Skip — Begin Reading': 'Salta — inizia lettura',
+    'I Understand — Begin Reading →': 'Capisco — inizia lettura →',
+    'Back': 'Indietro',
+    'Hold gaze': 'Mantieni lo sguardo',
+    '— Free reading used': '— Lettura gratuita usata',
+    'Choose your path forward': 'Scegli la tua strada',
+    'Most popular': 'Più popolare',
+    'Unlock this analysis': 'Sblocca questa analisi',
+    'Five more readings': 'Cinque letture in più',
+    'For those who ask often': 'Per chi chiede spesso',
+    'Best value · save 49%': 'Miglior valore · risparmia 49%',
+    'per month': 'al mese',
+    'per year': 'all\'anno',
+    'Close': 'Chiudi',
+    'Continue to payment': 'Continua al pagamento',
+    'Your body reacted more strongly to': 'Il tuo corpo ha reagito più fortemente a',
+    'It wants the other path': 'Vuole l\'altra strada',
+    'New Reading': 'Nuova lettura'
+  },
+
+  pt: {
+    'What two paths are tearing you?': 'Quais dois caminhos te dilaceram?',
+    'Read My Body →': 'Lê o meu corpo →',
+    'How It Works →': 'Como funciona →',
+    'Skip — Begin Reading': 'Saltar — começar leitura',
+    'I Understand — Begin Reading →': 'Compreendo — começar leitura →',
+    'Back': 'Voltar',
+    'Hold gaze': 'Mantém o olhar',
+    '— Free reading used': '— Leitura grátis usada',
+    'Choose your path forward': 'Escolhe o teu caminho',
+    'Most popular': 'Mais popular',
+    'Unlock this analysis': 'Desbloqueia esta análise',
+    'Five more readings': 'Cinco leituras a mais',
+    'For those who ask often': 'Para os que perguntam muitas vezes',
+    'Best value · save 49%': 'Melhor valor · poupa 49%',
+    'per month': 'por mês',
+    'per year': 'por ano',
+    'Close': 'Fechar',
+    'Continue to payment': 'Continuar para pagamento',
+    'Your body reacted more strongly to': 'O teu corpo reagiu mais fortemente a',
+    'It wants the other path': 'Quer o outro caminho',
+    'New Reading': 'Nova leitura'
+  },
+
+  nl: {
+    'What two paths are tearing you?': 'Welke twee paden verscheuren je?',
+    'Read My Body →': 'Lees mijn lichaam →',
+    'How It Works →': 'Hoe het werkt →',
+    'Skip — Begin Reading': 'Overslaan — begin lezing',
+    'I Understand — Begin Reading →': 'Ik begrijp het — begin lezing →',
+    'Back': 'Terug',
+    'Hold gaze': 'Houd blik vast',
+    '— Free reading used': '— Gratis lezing gebruikt',
+    'Choose your path forward': 'Kies je pad voorwaarts',
+    'Most popular': 'Meest populair',
+    'Unlock this analysis': 'Ontgrendel deze analyse',
+    'Five more readings': 'Vijf lezingen meer',
+    'For those who ask often': 'Voor wie vaak vraagt',
+    'Best value · save 49%': 'Beste waarde · bespaar 49%',
+    'per month': 'per maand',
+    'per year': 'per jaar',
+    'Close': 'Sluiten',
+    'Continue to payment': 'Verder naar betaling',
+    'Your body reacted more strongly to': 'Je lichaam reageerde sterker op',
+    'It wants the other path': 'Het wil het andere pad',
+    'New Reading': 'Nieuwe lezing'
+  },
+
+  pl: {
+    'What two paths are tearing you?': 'Które dwie ścieżki cię rozdzierają?',
+    'Read My Body →': 'Przeczytaj moje ciało →',
+    'How It Works →': 'Jak to działa →',
+    'Skip — Begin Reading': 'Pomiń — zacznij czytanie',
+    'I Understand — Begin Reading →': 'Rozumiem — zacznij czytanie →',
+    '— Step 01 / Specify the dilemma': '— Krok 01 / Sprecyzuj dylemat',
+    'Back': 'Wstecz',
+    'Hold gaze': 'Utrzymaj wzrok',
+    'TRIAL': 'PRÓBA',
+    '— Free reading used': '— Darmowe czytanie wykorzystane',
+    'Choose your path forward': 'Wybierz swoją drogę',
+    'Most popular': 'Najpopularniejszy',
+    'Unlock this analysis': 'Odblokuj tę analizę',
+    'Five more readings': 'Pięć więcej czytań',
+    'For those who ask often': 'Dla tych, którzy pytają często',
+    'Best value · save 49%': 'Najlepsza wartość · zaoszczędź 49%',
+    'Unlimited monthly': 'Nielimitowane miesięcznie',
+    'Unlimited annual': 'Nielimitowane rocznie',
+    'per month': 'miesięcznie',
+    'per year': 'rocznie',
+    'Close': 'Zamknij',
+    'Cancel anytime': 'Anuluj w dowolnym momencie',
+    'Continue to payment': 'Przejdź do płatności',
+    'Body signals indicate physiological activation, not validated truth.': 'Sygnały ciała wskazują na aktywację fizjologiczną, nie na potwierdzoną prawdę.',
+    'Your body reacted more strongly to': 'Twoje ciało zareagowało silniej na',
+    'It wants the other path': 'Chce drugiej drogi',
+    'New Reading': 'Nowe czytanie'
+  },
+
+  lv: {
+    'What two paths are tearing you?': 'Kuri divi ceļi tevi plosa?',
+    'Read My Body →': 'Lasi manu ķermeni →',
+    'How It Works →': 'Kā tas darbojas →',
+    'Skip — Begin Reading': 'Izlaist — sākt lasīšanu',
+    'I Understand — Begin Reading →': 'Saprotu — sākt lasīšanu →',
+    'Back': 'Atpakaļ',
+    'Hold gaze': 'Turi skatienu',
+    '— Free reading used': '— Bezmaksas lasījums izmantots',
+    'Choose your path forward': 'Izvēlies savu ceļu',
+    'Most popular': 'Populārākais',
+    'Unlock this analysis': 'Atbloķēt šo analīzi',
+    'Five more readings': 'Pieci vairāk lasījumi',
+    'For those who ask often': 'Tiem, kas jautā bieži',
+    'Best value · save 49%': 'Labākā vērtība · ietaupi 49%',
+    'per month': 'mēnesī',
+    'per year': 'gadā',
+    'Close': 'Aizvērt',
+    'Continue to payment': 'Turpināt uz maksājumu',
+    'Your body reacted more strongly to': 'Tavs ķermenis reaģēja spēcīgāk uz',
+    'It wants the other path': 'Tas grib otru ceļu',
+    'New Reading': 'Jauns lasījums'
+  },
+
+  lt: {
+    'What two paths are tearing you?': 'Kurie du keliai tave plėšo?',
+    'Read My Body →': 'Skaityk mano kūną →',
+    'How It Works →': 'Kaip tai veikia →',
+    'Skip — Begin Reading': 'Praleisti — pradėti skaitymą',
+    'I Understand — Begin Reading →': 'Suprantu — pradėti skaitymą →',
+    'Back': 'Atgal',
+    'Hold gaze': 'Laikyk žvilgsnį',
+    '— Free reading used': '— Nemokamas skaitymas panaudotas',
+    'Choose your path forward': 'Pasirink savo kelią',
+    'Most popular': 'Populiariausias',
+    'Unlock this analysis': 'Atrakink šią analizę',
+    'Five more readings': 'Penki daugiau skaitymų',
+    'For those who ask often': 'Tiems, kurie klausia dažnai',
+    'Best value · save 49%': 'Geriausia vertė · sutaupyk 49%',
+    'per month': 'per mėnesį',
+    'per year': 'per metus',
+    'Close': 'Uždaryti',
+    'Continue to payment': 'Tęsti į mokėjimą',
+    'Your body reacted more strongly to': 'Tavo kūnas stipriau reagavo į',
+    'It wants the other path': 'Jis nori kito kelio',
+    'New Reading': 'Naujas skaitymas'
+  },
+
+  ru: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— БИОМЕТРИЧЕСКИЙ ОРАКУЛ В РЕАЛЬНОМ ВРЕМЕНИ',
+    'Your body knows before <em>your mind</em> admits.': 'Твоё тело знает до того, как <em>ум</em> признаёт.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Введи два пути. Мы мигаем каждым пять раз в случайном порядке. Тело отвечает в миллисекундах — до того, как ум успеет это замаскировать. Мы измеряем разницу и говорим, что выбрало тело.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Измеряем только измеримое. Если условия не подходят, мы скажем. Мы не угадываем.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Инструмент саморефлексии. Не диагностический инструмент.',
+    'e.g. text him back': 'напр. ответить ему',
+    'e.g. let it die': 'напр. пусть умрёт',
+    'What two paths are tearing you?': 'Какие два пути тебя разрывают?',
+    'Read My Body →': 'Читай моё тело →',
+    'How It Works →': 'Как это работает →',
+    'Skip — Begin Reading': 'Пропустить — начать чтение',
+    'I Understand — Begin Reading →': 'Я понимаю — начать чтение →',
+    '— Step 01 / Specify the dilemma': '— Шаг 01 / Уточни дилемму',
+    'Back': 'Назад',
+    'Hold gaze': 'Держи взгляд',
+    'TRIAL': 'ПРОБА',
+    'Please fill in both options.': 'Заполни оба варианта.',
+    '— Free reading used': '— Бесплатное чтение использовано',
+    'Choose your path forward': 'Выбери свой путь',
+    'Most popular': 'Самый популярный',
+    'Unlock this analysis': 'Открой этот анализ',
+    'Five more readings': 'Пять чтений ещё',
+    'For those who ask often': 'Для тех, кто спрашивает часто',
+    'Best value · save 49%': 'Лучшая цена · сэкономь 49%',
+    'Unlimited monthly': 'Безлимит в месяц',
+    'Unlimited annual': 'Безлимит в год',
+    'per month': 'в месяц',
+    'per year': 'в год',
+    'Close': 'Закрыть',
+    'Cancel anytime': 'Отмени в любое время',
+    'Continue to payment': 'Перейти к оплате',
+    'Secure payment via Stripe · Cancel anytime': 'Безопасная оплата через Stripe · Отмени в любое время',
+    '— What this means': '— Что это значит',
+    '— What you get': '— Что ты получаешь',
+    '— Sample · what an analysis looks like': '— Пример · как выглядит анализ',
+    'Body signals indicate physiological activation, not validated truth.': 'Сигналы тела указывают на физиологическую активацию, а не на подтверждённую истину.',
+    'Your body reacted more strongly to': 'Твоё тело отреагировало сильнее на',
+    'It wants the other path': 'Оно хочет другой путь',
+    'New Reading': 'Новое чтение'
+  },
+
+  uk: {
+    '— REAL-TIME BIOMETRIC ORACLE': '— БІОМЕТРИЧНИЙ ОРАКУЛ У РЕАЛЬНОМУ ЧАСІ',
+    'Your body knows before <em>your mind</em> admits.': 'Твоє тіло знає раніше, ніж <em>розум</em> визнає.',
+    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Введи два шляхи. Ми блимаємо кожним п\'ять разів у випадковому порядку. Тіло відповідає за мілісекунди — раніше, ніж розум встигне приховати. Ми вимірюємо різницю і кажемо, що обрало тіло.',
+    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Вимірюємо тільки те, що можна виміряти. Якщо умови не підходять, скажемо. Ми не вгадуємо.',
+    'An instrument of self-reflection. Not a diagnostic tool.': 'Інструмент саморефлексії. Не діагностичний інструмент.',
+    'e.g. text him back': 'напр. відповісти йому',
+    'e.g. let it die': 'напр. нехай помре',
+    'What two paths are tearing you?': 'Які два шляхи тебе розривають?',
+    'Read My Body →': 'Читай моє тіло →',
+    'How It Works →': 'Як це працює →',
+    'Skip — Begin Reading': 'Пропустити — почати читання',
+    'I Understand — Begin Reading →': 'Я розумію — почати читання →',
+    '— Step 01 / Specify the dilemma': '— Крок 01 / Уточни дилему',
+    'Back': 'Назад',
+    'Hold gaze': 'Тримай погляд',
+    'TRIAL': 'СПРОБА',
+    'Please fill in both options.': 'Заповни обидва варіанти.',
+    '— Free reading used': '— Безкоштовне читання використане',
+    'Choose your path forward': 'Обери свій шлях',
+    'Most popular': 'Найпопулярніший',
+    'Unlock this analysis': 'Відкрий цей аналіз',
+    'Five more readings': 'П\'ять читань більше',
+    'For those who ask often': 'Для тих, хто питає часто',
+    'Best value · save 49%': 'Найкраща ціна · зекономь 49%',
+    'Unlimited monthly': 'Безліміт на місяць',
+    'Unlimited annual': 'Безліміт на рік',
+    'per month': 'на місяць',
+    'per year': 'на рік',
+    'Close': 'Закрити',
+    'Cancel anytime': 'Скасуй у будь-який час',
+    'Continue to payment': 'Перейти до оплати',
+    'Secure payment via Stripe · Cancel anytime': 'Безпечна оплата через Stripe · Скасуй у будь-який час',
+    'Body signals indicate physiological activation, not validated truth.': 'Сигнали тіла вказують на фізіологічну активацію, а не на підтверджену істину.',
+    'Your body reacted more strongly to': 'Твоє тіло зреагувало сильніше на',
+    'It wants the other path': 'Воно хоче інший шлях',
+    'New Reading': 'Нове читання'
+  }
+};
+
+// Current language — defaults to English, persists in localStorage
+let CURRENT_LANG = (function() {
+  try {
+    const saved = localStorage.getItem('loits_lang');
+    if (saved && LANGUAGES.find(l => l.code === saved)) return saved;
+  } catch (e) {}
+  return 'en';
+})();
+
+// Translate function — returns translation or English fallback
+function t(key, vars) {
+  let str = (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][key]) || key;
+  if (vars) {
+    Object.keys(vars).forEach(k => {
+      str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
+    });
+  }
+  return str;
+}
+
+// Switch language and rebuild all UI text
+function setLanguage(code) {
+  if (!LANGUAGES.find(l => l.code === code)) return;
+  CURRENT_LANG = code;
+  try { localStorage.setItem('loits_lang', code); } catch (e) {}
+  document.documentElement.lang = code;
+  applyTranslations();
+  // Update language selector display
+  const sel = document.getElementById('lang-selector-current');
+  if (sel) {
+    const lang = LANGUAGES.find(l => l.code === code);
+    sel.textContent = lang.code.toUpperCase() + ' ▾';
+  }
+}
+
+// Apply all translations to DOM elements with data-i18n attribute
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    el.innerHTML = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.setAttribute('placeholder', t(key));
+  });
+}
+
+// Show language picker bottom sheet
+function showLangPicker() {
+  // Remove any existing
+  const existing = document.getElementById('lang-picker-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'lang-picker-overlay';
+  overlay.className = 'active';
+
+  const itemsHTML = LANGUAGES.map(lang => `
+    <button class="lang-item ${lang.code === CURRENT_LANG ? 'selected' : ''}" data-lang="${lang.code}">
+      <span class="lang-flag">${lang.flag}</span>
+      <span class="lang-text">
+        <span class="lang-native">${lang.native}</span>
+        <span class="lang-eng">${lang.name}</span>
+      </span>
+    </button>
+  `).join('');
+
+  overlay.innerHTML = `
+    <div id="lang-picker-sheet">
+      <div class="lang-picker-header">
+        <div class="lang-picker-title">Language · Keel · Язык</div>
+        <button class="lang-picker-close" id="lang-picker-close-btn">Close</button>
+      </div>
+      <div class="lang-list">
+        ${itemsHTML}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Wire up items
+  overlay.querySelectorAll('.lang-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.getAttribute('data-lang');
+      setLanguage(code);
+      overlay.remove();
+    });
+  });
+
+  // Close button
+  overlay.querySelector('#lang-picker-close-btn').addEventListener('click', () => {
+    overlay.remove();
+  });
+
+  // Click backdrop to close
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+
 const TIER = {
   FREE: 'free',
   BASIC: 'basic',        // €4.99 — 5 readings, no AI analysis
@@ -2299,6 +3160,7 @@ async function fetchAndDisplayAIAnalysis(v) {
       return;
     }
 
+    const langInfo = LANGUAGES.find(l => l.code === CURRENT_LANG) || LANGUAGES[0];
     const response = await fetch(AI_WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2306,7 +3168,10 @@ async function fetchAndDisplayAIAnalysis(v) {
         optionA: state.optionA,
         optionB: state.optionB,
         verdict: v,
-        sessionId: state.sessionId
+        sessionId: state.sessionId,
+        language: CURRENT_LANG,
+        languageName: langInfo.name,
+        languageNative: langInfo.native
       })
     });
 
@@ -2869,6 +3734,9 @@ function resetApp() {
 // INIT — handle Stripe returns, check reading credits
 // ============================================
 (function init() {
+  // Initialize language — apply current language translations and update selector
+  setLanguage(CURRENT_LANG);
+
   // Handle Stripe payment return
   handleStripeReturn();
 

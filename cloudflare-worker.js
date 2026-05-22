@@ -1,4 +1,4 @@
-// Loits AI Worker
+// Loits AI Worker — v2 with multi-language support
 // Deploy this to Cloudflare Workers (free tier — 100k requests/day)
 //
 // Setup:
@@ -11,7 +11,6 @@
 //
 // Model: claude-sonnet-4-6 (May 2026 latest)
 // Cost per analysis: ~€0.01-0.02 — roughly 800 input + 400 output tokens
-// To reduce cost: switch to claude-haiku-4-5-20251001 (~10x cheaper, slightly less nuanced)
 
 export default {
   async fetch(request, env) {
@@ -32,7 +31,7 @@ export default {
 
     try {
       const body = await request.json();
-      const { optionA, optionB, verdict } = body;
+      const { optionA, optionB, verdict, language, languageName, languageNative } = body;
 
       if (!optionA || !optionB || !verdict) {
         return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -41,9 +40,14 @@ export default {
         });
       }
 
+      // Default to English if no language provided
+      const langCode = language || 'en';
+      const langName = languageName || 'English';
+      const langNative = languageNative || 'English';
+
       // Build context for Claude
       const dataDescription = buildDataDescription(verdict);
-      const prompt = buildPrompt(optionA, optionB, verdict, dataDescription);
+      const prompt = buildPrompt(optionA, optionB, verdict, dataDescription, langCode, langName, langNative);
 
       // Call Claude API
       const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -55,7 +59,7 @@ export default {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: 800,
+          max_tokens: 900,
           messages: [{ role: 'user', content: prompt }]
         })
       });
@@ -73,7 +77,8 @@ export default {
       const analysisText = data.content?.[0]?.text || '';
 
       return new Response(JSON.stringify({
-        analysis: analysisText
+        analysis: analysisText,
+        language: langCode
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
@@ -99,7 +104,6 @@ function buildDataDescription(v) {
   if (v.differential !== undefined) lines.push(`Differential between A and B response scores: ${v.differential}%`);
   if (v.aScore !== undefined) lines.push(`A response score: ${v.aScore}, B response score: ${v.bScore}`);
 
-  // Metric details
   if (v.aBlinkAvg !== null && v.aBlinkAvg !== undefined) {
     lines.push(`A blink latency: ${Math.round(v.aBlinkAvg)} ms`);
   } else {
@@ -134,8 +138,13 @@ function buildDataDescription(v) {
   return lines.join('\n');
 }
 
-function buildPrompt(optionA, optionB, v, dataDescription) {
-  return `You are an analyst for Loits, an instrument that measures the body's autonomic response to a binary choice. The user has just completed a reading.
+function buildPrompt(optionA, optionB, v, dataDescription, langCode, langName, langNative) {
+  // Language directive — placed at top so Claude knows immediately how to respond
+  const languageInstruction = langCode === 'en'
+    ? ''
+    : `\n\nCRITICAL LANGUAGE INSTRUCTION:\nYou MUST write your entire response in ${langName} (${langNative}). Every word, every sentence. The user has chosen ${langNative} as their language. Do NOT respond in English. Do NOT mix languages. Use natural, fluent ${langNative} appropriate for an educated reader. Use the correct script and diacritical marks.\n`;
+
+  return `You are an analyst for Loits, an instrument that measures the body's autonomic response to a binary choice. The user has just completed a reading.${languageInstruction}
 
 OPTION A: "${optionA}"
 OPTION B: "${optionB}"
@@ -154,7 +163,7 @@ Write a personal, psychologically perceptive analysis of this reading. The user 
 
 Constraints:
 - 150-280 words
-- Use the specific options the user typed (paraphrase them if needed for flow, but reference them)
+- Use the specific options the user typed (paraphrase them if needed for flow, but reference them) — keep the original wording if it is short, translate or rephrase naturally if needed
 - Acknowledge ambiguity where ambiguity exists (the autonomic system signals "this matters" but does not always distinguish desire from fear)
 - Do NOT prescribe. Do NOT make decisions for them.
 - Do NOT pretend to know more than the measurements say
@@ -162,6 +171,7 @@ Constraints:
 - End with a question or framing that helps them think — not an answer
 - Write in second person ("you")
 - Tone: serious, intimate, calm. Like a perceptive friend who studies neuroscience.
+${langCode !== 'en' ? `- WRITE IN ${langNative.toUpperCase()} ONLY.` : ''}
 
 Do not include any preamble. Begin directly with the analysis.`;
 }
