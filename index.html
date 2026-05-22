@@ -252,6 +252,24 @@
     margin-bottom: 32px;
   }
 
+  .intro-features {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding: 16px 18px;
+    border: 1px solid var(--dim2);
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .intro-features span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--dim);
+    text-transform: uppercase;
+    line-height: 1.5;
+  }
+
   .input-label {
     font-size: 10px;
     letter-spacing: 0.25em;
@@ -1125,12 +1143,18 @@
       — REAL-TIME BIOMETRIC ORACLE
     </div>
     <h1 class="intro-title" data-i18n-html="Your body knows before <em>your mind</em> admits."><span>Your body knows<br>before <em>your mind</em><br>admits.</span></h1>
-    <p class="intro-sub" data-i18n="Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.">
-      Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.
+    <p class="intro-sub" data-i18n="intro_p1">
+      Loits is a biometric instrument. Your phone's camera monitors your face — pulse, blink reflexes, micro-expressions — while we flash you two options. Your autonomic nervous system reacts in milliseconds, before conscious thought can intervene. We measure those reactions and reveal which path your body recognizes.
     </p>
-    <p class="intro-sub" style="margin-bottom: 24px;" data-i18n="We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.">
-      We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.
+    <p class="intro-sub" data-i18n="intro_p2">
+      Nothing is uploaded. All measurement happens on your device. We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.
     </p>
+    <div class="intro-features" data-i18n-html="intro_features">
+      <span>● Facial biometric monitoring</span>
+      <span>● Heart rate via skin color (rPPG)</span>
+      <span>● 468-point face tracking</span>
+      <span>● Autonomic response analysis</span>
+    </div>
     <button class="btn-main" onclick="goToMethod()" data-i18n="How It Works →">How It Works →</button>
     <button class="btn-secondary" onclick="goToInput()" data-i18n="Skip — Begin Reading">Skip — Begin Reading</button>
     <div class="disclaimer" data-i18n="An instrument of self-reflection. Not a diagnostic tool.">
@@ -1139,48 +1163,48 @@
   </div>
 
   <div class="screen" id="screen-method">
-    <div class="input-label">— Methodology</div>
-    <h2 class="input-question" style="margin-bottom: 24px;">What we measure.</h2>
+    <div class="input-label" data-i18n="— Methodology">— Methodology</div>
+    <h2 class="input-question" style="margin-bottom: 24px;" data-i18n="What we measure.">What we measure.</h2>
 
-    <p class="intro-sub" style="margin-bottom: 32px;">
+    <p class="intro-sub" style="margin-bottom: 32px;" data-i18n="method_intro">
       We use your phone's camera and frontier AI vision models to read four signals from your face. Everything happens on your device. Nothing is uploaded.
     </p>
 
     <div class="method-section">
-      <div class="method-tag">— 01 / Heart Rate (rPPG)</div>
-      <h3>Pulse from skin color</h3>
-      <p>With each heartbeat, blood briefly enters your facial capillaries, changing your skin color microscopically. Your camera detects this.</p>
-      <p><strong>Method:</strong> Green channel analysis of forehead and both cheeks, sampled at 30fps, detrended, bandpass-filtered to the cardiac frequency range (0.7–2.5 Hz). Three independent regions are compared.</p>
-      <p><strong>Limit:</strong> Requires good light and stillness. We report your BPM, change after stimulus, and signal confidence.</p>
+      <div class="method-tag" data-i18n="— 01 / Heart Rate (rPPG)">— 01 / Heart Rate (rPPG)</div>
+      <h3 data-i18n="Pulse from skin color">Pulse from skin color</h3>
+      <p data-i18n="method_01_p1">With each heartbeat, blood briefly enters your facial capillaries, changing your skin color microscopically. Your camera detects this.</p>
+      <p data-i18n-html="method_01_method"><strong>Method:</strong> Green channel analysis of forehead and both cheeks, sampled at 30fps, detrended, bandpass-filtered to the cardiac frequency range (0.7–2.5 Hz). Three independent regions are compared.</p>
+      <p data-i18n-html="method_01_limit"><strong>Limit:</strong> Requires good light and stillness. We report your BPM, change after stimulus, and signal confidence.</p>
     </div>
 
     <div class="method-section">
-      <div class="method-tag">— 02 / Blink Response</div>
-      <h3>The eye reflex</h3>
-      <p>The orienting reflex closes your eyelids faster when you see something your autonomic system wants to reject. A natural blink takes 100–150ms; a reflexive one occurs 200–400ms after the stimulus.</p>
-      <p><strong>Method:</strong> Google MediaPipe FaceLandmarker tracks 468 facial points at 30fps. Blink onset is detected by eyeBlinkLeft + eyeBlinkRight blendshape scores crossing your personal baseline.</p>
-      <p><strong>Limit:</strong> If you do not blink within 600ms of the stimulus, we report "no detectable response." We do not invent one.</p>
+      <div class="method-tag" data-i18n="— 02 / Blink Response">— 02 / Blink Response</div>
+      <h3 data-i18n="The eye reflex">The eye reflex</h3>
+      <p data-i18n="method_02_p1">The orienting reflex closes your eyelids faster when you see something your autonomic system wants to reject. A natural blink takes 100–150ms; a reflexive one occurs 200–400ms after the stimulus.</p>
+      <p data-i18n-html="method_02_method"><strong>Method:</strong> Google MediaPipe FaceLandmarker tracks 468 facial points at 30fps. Blink onset is detected by eyeBlinkLeft + eyeBlinkRight blendshape scores crossing your personal baseline.</p>
+      <p data-i18n-html="method_02_limit"><strong>Limit:</strong> If you do not blink within 600ms of the stimulus, we report "no detectable response." We do not invent one.</p>
     </div>
 
     <div class="method-section">
-      <div class="method-tag">— 03 / Micro-Expression Asymmetry</div>
-      <h3>What leaks before masking</h3>
-      <p>The face is controlled by two hemispheres. Genuine emotional reactions appear asymmetrically (one side first) in 200–500ms. Voluntary expressions are symmetric.</p>
-      <p><strong>Method:</strong> The difference between mouthSmileLeft / mouthSmileRight, browInnerUp, and jawForward blendshape scores, sampled 60ms intervals after stimulus.</p>
-      <p><strong>Limit:</strong> Beards, makeup, and glasses reduce sensitivity. We report this as the Asymmetry Index.</p>
+      <div class="method-tag" data-i18n="— 03 / Micro-Expression Asymmetry">— 03 / Micro-Expression Asymmetry</div>
+      <h3 data-i18n="What leaks before masking">What leaks before masking</h3>
+      <p data-i18n="method_03_p1">The face is controlled by two hemispheres. Genuine emotional reactions appear asymmetrically (one side first) in 200–500ms. Voluntary expressions are symmetric.</p>
+      <p data-i18n-html="method_03_method"><strong>Method:</strong> The difference between mouthSmileLeft / mouthSmileRight, browInnerUp, and jawForward blendshape scores, sampled 60ms intervals after stimulus.</p>
+      <p data-i18n-html="method_03_limit"><strong>Limit:</strong> Beards, makeup, and glasses reduce sensitivity. We report this as the Asymmetry Index.</p>
     </div>
 
     <div class="method-section">
-      <div class="method-tag">— 04 / Trial Design</div>
-      <h3>Five flashes, not one</h3>
-      <p>One flash cannot prove anything. We flash each option twice and a neutral control word once, in randomized order with 2-second gaps. Your A-responses are compared to your B-responses, with the control as baseline.</p>
-      <p><strong>Method:</strong> Each trial measures blink latency, asymmetry delta, and BPM acceleration. A confidence score is computed from the consistency between trials.</p>
-      <p><strong>Limit:</strong> Below 60% confidence we report the result as inconclusive. Above 75% we report it as significant.</p>
+      <div class="method-tag" data-i18n="— 04 / Trial Design">— 04 / Trial Design</div>
+      <h3 data-i18n="Five flashes, not one">Five flashes, not one</h3>
+      <p data-i18n="method_04_p1">One flash cannot prove anything. We flash each option twice and a neutral control word once, in randomized order with 2-second gaps. Your A-responses are compared to your B-responses, with the control as baseline.</p>
+      <p data-i18n-html="method_04_method"><strong>Method:</strong> Each trial measures blink latency, asymmetry delta, and BPM acceleration. A confidence score is computed from the consistency between trials.</p>
+      <p data-i18n-html="method_04_limit"><strong>Limit:</strong> Below 60% confidence we report the result as inconclusive. Above 75% we report it as significant.</p>
     </div>
 
     <div class="method-warning">
-      <div class="label">— What we do NOT do</div>
-      <p>We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure activation only — and activation can mean rejection, surprise, attraction, fear, or recognition. The body speaks loudly, but it speaks in one language: <em>this matters more than that</em>.</p>
+      <div class="label" data-i18n="— What we do NOT do">— What we do NOT do</div>
+      <p data-i18n-html="method_not_do">We do not read minds. We do not diagnose. We do not save your video or send it anywhere. We measure activation only — and activation can mean rejection, surprise, attraction, fear, or recognition. The body speaks loudly, but it speaks in one language: <em>this matters more than that</em>.</p>
     </div>
 
     <button class="btn-main" onclick="goToInput()" data-i18n="I Understand — Begin Reading →">I Understand — Begin Reading →</button>
@@ -1336,13 +1360,45 @@ const I18N = {
     // — INTRO SCREEN
     '— REAL-TIME BIOMETRIC ORACLE': '— REAALAJA BIOMEETRILINE ORAAKEL',
     'Your body knows before <em>your mind</em> admits.': 'Su keha teab enne, kui <em>su teadvus</em> möönab.',
-    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Kirjuta kaks teed. Vilgutame kummagi viis korda juhuslikus järjekorras. Su keha vastab millisekundites — enne kui teadvus jõuab seda peita. Mõõdame erinevuse ja ütleme, mille su keha valis.',
-    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Mõõdame ainult seda, mis on mõõdetav. Kui tingimused pole õiged, ütleme seda. Me ei arva.',
+    'intro_p1': 'Loits on biomeetriline instrument. Sinu telefoni kaamera monitoorib su nägu — pulssi, silmade pilgutusreflekse, mikroväljendusi — sel ajal kui vilgutame sulle kaks valikut. Su autonoomne närvisüsteem reageerib millisekundite jooksul, enne kui teadvus jõuab sekkuda. Mõõdame need reaktsioonid ja paljastame, millise tee su keha ära tunneb.',
+    'intro_p2': 'Mitte midagi ei laeta üles. Kogu mõõtmine toimub sinu seadmes. Mõõdame ainult seda, mis on mõõdetav. Kui tingimused pole õiged, ütleme seda. Me ei arva.',
+    'intro_features': '<span>● Näo biomeetriline monitooring</span><span>● Südamerütm naha värvi kaudu (rPPG)</span><span>● 468-punktiline näojälgimine</span><span>● Autonoomse vastuse analüüs</span>',
     'How It Works →': 'Kuidas see töötab →',
     'Skip — Begin Reading': 'Jäta vahele — alusta mõõtmist',
     'An instrument of self-reflection. Not a diagnostic tool.': 'Eneserefleksiooni tööriist. Mitte diagnostikavahend.',
 
-    // — METHOD SCREEN
+    // — METHODOLOGY SCREEN
+    '— Methodology': '— Metoodika',
+    'What we measure.': 'Mida me mõõdame.',
+    'method_intro': 'Kasutame su telefoni kaamerat ja tipptasemel tehisintellekti nägemismudeleid, et lugeda neli signaali sinu näolt. Kõik toimub sinu seadmes. Midagi ei laeta üles.',
+
+    '— 01 / Heart Rate (rPPG)': '— 01 / Südamerütm (rPPG)',
+    'Pulse from skin color': 'Pulss naha värvi järgi',
+    'method_01_p1': 'Iga südamelöögiga voolab veri korraks su näokapillaaridesse, muutes naha värvi mikroskoopiliselt. Kaamera tuvastab seda.',
+    'method_01_method': '<strong>Meetod:</strong> Rohelise kanali analüüs otsmikul ja mõlemal põsel, kogutud 30 kaadrit sekundis, trendi-eemaldatud, ribafiltri abil filtreeritud kardiaalsesse sagedusvahemikku (0,7–2,5 Hz). Võrdleme kolme sõltumatut piirkonda.',
+    'method_01_limit': '<strong>Piir:</strong> Vajab head valgust ja paigalseismist. Edastame su BPM-i, muutuse pärast stiimulit ja signaali kindluse.',
+
+    '— 02 / Blink Response': '— 02 / Pilgutusreaktsioon',
+    'The eye reflex': 'Silmarefleks',
+    'method_02_p1': 'Orienteerumisrefleks sulgeb silmalaud kiiremini, kui näed midagi, mida su autonoomne süsteem tahab tõrjuda. Loomulik pilgutus võtab 100–150ms; refleksiivne toimub 200–400ms pärast stiimulit.',
+    'method_02_method': '<strong>Meetod:</strong> Google MediaPipe FaceLandmarker jälgib 468 näopunkti 30 kaadrit sekundis. Pilgutuse algust tuvastame, kui eyeBlinkLeft + eyeBlinkRight blendshape-skoorid ületavad sinu personaalse baasväärtuse.',
+    'method_02_limit': '<strong>Piir:</strong> Kui sa ei pilguta 600ms jooksul pärast stiimulit, edastame "vastust ei tuvastatud". Me ei mõtle vastust välja.',
+
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroväljenduse asümmeetria',
+    'What leaks before masking': 'Mis lekib enne maskeerimist',
+    'method_03_p1': 'Nägu kontrollivad kaks ajupoolkera. Ehedad emotsionaalsed reaktsioonid ilmuvad asümmeetriliselt (üks pool enne) 200–500ms jooksul. Tahtlikud väljendused on sümmeetrilised.',
+    'method_03_method': '<strong>Meetod:</strong> Vahe mouthSmileLeft / mouthSmileRight, browInnerUp ja jawForward blendshape-skooride vahel, kogutud 60ms intervallidena pärast stiimulit.',
+    'method_03_limit': '<strong>Piir:</strong> Habe, meik ja prillid vähendavad tundlikkust. Edastame seda Asümmeetria Indeksina.',
+
+    '— 04 / Trial Design': '— 04 / Katse ülesehitus',
+    'Five flashes, not one': 'Viis vilkumist, mitte üks',
+    'method_04_p1': 'Üks vilkumine ei tõenda midagi. Vilgutame kummagi valiku kaks korda ja neutraalse kontroll-sõna ühe korra, juhuslikus järjekorras 2-sekundiliste pausidega. Võrdleme su A-vastuseid B-vastustega, kontroll on baasväärtus.',
+    'method_04_method': '<strong>Meetod:</strong> Iga katse mõõdab pilgutuslatentsust, asümmeetria erinevust ja BPM-i kiirenemist. Kindluse skoor arvutatakse katsete järjepidevuse põhjal.',
+    'method_04_limit': '<strong>Piir:</strong> Alla 60% kindluse puhul edastame tulemuse kui ebaselge. Üle 75% kui oluline.',
+
+    '— What we do NOT do': '— Mida me EI tee',
+    'method_not_do': 'Me ei loe mõtteid. Me ei diagnoosi. Me ei salvesta sinu videot ega saada seda kuhugi. Me mõõdame ainult aktivatsiooni — ja aktivatsioon võib tähendada tõrjumist, üllatust, tõmmet, hirmu või äratundmist. Keha räägib valjult, aga ühes keeles: <em>see loeb rohkem kui see</em>.',
+
     'I Understand — Begin Reading →': 'Saan aru — alusta mõõtmist →',
 
     // — INPUT SCREEN
@@ -1405,11 +1461,45 @@ const I18N = {
     // — INTRO
     '— REAL-TIME BIOMETRIC ORACLE': '— REAALIAIKAINEN BIOMETRINEN ORAAKKELI',
     'Your body knows before <em>your mind</em> admits.': 'Kehosi tietää ennen kuin <em>tietoisuutesi</em> myöntää.',
-    'Type two paths. We flash each one five times in random order. Your body responds in milliseconds — before your mind can mask it. We measure the difference, and tell you what your body chose.': 'Kirjoita kaksi polkua. Välähdytämme molempia viisi kertaa satunnaisessa järjestyksessä. Kehosi vastaa millisekunneissa — ennen kuin tietoisuus ehtii peittää sen. Mittaamme eron ja kerromme, kumman kehosi valitsi.',
-    "We measure only what is measurable. If conditions aren't right, we tell you. We don't guess.": 'Mittaamme vain sen, mikä on mitattavissa. Jos olosuhteet eivät ole oikeat, kerromme sen. Emme arvaile.',
+    'intro_p1': 'Loits on biometrinen instrumentti. Puhelimesi kamera tarkkailee kasvojasi — sykettä, silmien räpäysreflexejä, mikroilmeitä — sillä aikaa kun välähdytämme sinulle kaksi vaihtoehtoa. Autonominen hermostosi reagoi millisekunneissa, ennen kuin tietoinen ajattelu ehtii puuttua. Mittaamme nämä reaktiot ja paljastamme, minkä polun kehosi tunnistaa.',
+    'intro_p2': 'Mitään ei lähetetä ulos. Kaikki mittaus tapahtuu laitteellasi. Mittaamme vain mitattavissa olevaa. Jos olosuhteet eivät ole oikeat, kerromme sen. Emme arvaile.',
+    'intro_features': '<span>● Kasvojen biometrinen tarkkailu</span><span>● Syke ihon värin kautta (rPPG)</span><span>● 468-pisteen kasvoseuranta</span><span>● Autonomisen vasteen analyysi</span>',
     'How It Works →': 'Miten se toimii →',
     'Skip — Begin Reading': 'Ohita — aloita mittaus',
     'An instrument of self-reflection. Not a diagnostic tool.': 'Itsetutkiskelun väline. Ei diagnostinen työkalu.',
+
+    // — METHODOLOGY
+    '— Methodology': '— Metodologia',
+    'What we measure.': 'Mitä mittaamme.',
+    'method_intro': 'Käytämme puhelimesi kameraa ja huipputason tekoälyn näkömalleja lukeaksemme neljä signaalia kasvoiltasi. Kaikki tapahtuu laitteellasi. Mitään ei lähetetä ulos.',
+
+    '— 01 / Heart Rate (rPPG)': '— 01 / Syke (rPPG)',
+    'Pulse from skin color': 'Syke ihon värin perusteella',
+    'method_01_p1': 'Jokaisen sydämenlyönnin yhteydessä veri virtaa hetkeksi kasvojesi kapillaareihin muuttaen ihon väriä mikroskooppisesti. Kamera havaitsee tämän.',
+    'method_01_method': '<strong>Menetelmä:</strong> Vihreän kanavan analyysi otsalta ja molemmilta poskilta, 30 kuvaa sekunnissa, trendipoistettuna, kaistanpäästösuodatettuna sydämen taajuusalueelle (0,7–2,5 Hz). Kolmea itsenäistä aluetta verrataan.',
+    'method_01_limit': '<strong>Rajoitus:</strong> Vaatii hyvän valon ja paikallaan pysymisen. Raportoimme BPM:si, muutoksen ärsykkeen jälkeen ja signaalin luotettavuuden.',
+
+    '— 02 / Blink Response': '— 02 / Räpäysvaste',
+    'The eye reflex': 'Silmärefleksi',
+    'method_02_p1': 'Orientoitumisrefleksi sulkee silmäluomet nopeammin, kun näet jotain mitä autonominen järjestelmä haluaa torjua. Luonnollinen räpäys kestää 100–150ms; refleksiivinen tapahtuu 200–400ms ärsykkeen jälkeen.',
+    'method_02_method': '<strong>Menetelmä:</strong> Google MediaPipe FaceLandmarker seuraa 468 kasvopistettä 30 kuvaa sekunnissa. Räpäyksen alku havaitaan, kun eyeBlinkLeft + eyeBlinkRight blendshape-pisteet ylittävät henkilökohtaisen perustasosi.',
+    'method_02_limit': '<strong>Rajoitus:</strong> Jos et räpäytä 600ms kuluessa ärsykkeestä, raportoimme "ei havaittavaa vastetta". Emme keksi vastetta.',
+
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroilmeen epäsymmetria',
+    'What leaks before masking': 'Mikä vuotaa ennen peittämistä',
+    'method_03_p1': 'Kasvoja ohjaa kaksi aivopuoliskoa. Aidot tunnereaktiot ilmestyvät epäsymmetrisesti (toinen puoli ensin) 200–500ms kuluessa. Tahdonalaiset ilmeet ovat symmetrisiä.',
+    'method_03_method': '<strong>Menetelmä:</strong> Ero mouthSmileLeft / mouthSmileRight, browInnerUp ja jawForward blendshape-pisteiden välillä, näytteenotto 60ms välein ärsykkeen jälkeen.',
+    'method_03_limit': '<strong>Rajoitus:</strong> Parta, meikki ja silmälasit vähentävät herkkyyttä. Raportoimme tämän Epäsymmetria-indeksinä.',
+
+    '— 04 / Trial Design': '— 04 / Kokeen rakenne',
+    'Five flashes, not one': 'Viisi välähdystä, ei yhtä',
+    'method_04_p1': 'Yksi välähdys ei todista mitään. Välähdytämme kumpaakin vaihtoehtoa kaksi kertaa ja neutraalin kontrollisanan kerran, satunnaisessa järjestyksessä 2-sekunnin tauoilla. A-vasteita verrataan B-vasteisiin, kontrolli on perustasona.',
+    'method_04_method': '<strong>Menetelmä:</strong> Jokainen koe mittaa räpäysviivettä, epäsymmetria-eroa ja BPM-kiihtyvyyttä. Luotettavuuspiste lasketaan kokeiden välisestä yhdenmukaisuudesta.',
+    'method_04_limit': '<strong>Rajoitus:</strong> Alle 60% luotettavuudella raportoimme tuloksen epäselvänä. Yli 75% merkittävänä.',
+
+    '— What we do NOT do': '— Mitä EMME tee',
+    'method_not_do': 'Emme lue mieliä. Emme diagnosoi. Emme tallenna videotasi tai lähetä sitä mihinkään. Mittaamme vain aktivaatiota — ja aktivaatio voi tarkoittaa torjuntaa, yllätystä, vetoa, pelkoa tai tunnistusta. Keho puhuu kovaa, mutta yhdellä kielellä: <em>tämä merkitsee enemmän kuin tämä</em>.',
+
     'I Understand — Begin Reading →': 'Ymmärrän — aloita mittaus →',
 
     '— Step 01 / Specify the dilemma': '— Vaihe 01 / Määrittele dilemma',
@@ -1513,7 +1603,37 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Konsultera en licensierad expert för viktiga val.',
     '— Deeper reading': '— Djupare mätning',
     'What does this actually mean?': 'Vad betyder detta egentligen?',
-    'One-time — analysis of this reading': 'Engångs — analys av denna mätning'
+    'One-time — analysis of this reading': 'Engångs — analys av denna mätning',
+
+    // — IMPROVED INTRO + METHODOLOGY
+    'intro_p1': 'Loits är ett biometriskt instrument. Telefonens kamera övervakar ditt ansikte — puls, blinkreflexer, mikrouttryck — medan vi blixtrar två val. Ditt autonoma nervsystem reagerar i millisekunder, innan medveten tanke hinner ingripa. Vi mäter dessa reaktioner och avslöjar vilken väg din kropp känner igen.',
+    'intro_p2': 'Inget laddas upp. All mätning sker på din enhet. Vi mäter bara det mätbara. Om förhållandena inte är rätt säger vi det. Vi gissar inte.',
+    'intro_features': '<span>● Biometrisk ansiktsövervakning</span><span>● Puls via hudfärg (rPPG)</span><span>● 468-punkts ansiktsspårning</span><span>● Analys av autonomt svar</span>',
+    '— Methodology': '— Metodologi',
+    'What we measure.': 'Vad vi mäter.',
+    'method_intro': 'Vi använder telefonens kamera och avancerade AI-visionsmodeller för att läsa fyra signaler från ditt ansikte. Allt sker på din enhet. Inget laddas upp.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Hjärtfrekvens (rPPG)',
+    'Pulse from skin color': 'Puls från hudfärg',
+    'method_01_p1': 'Vid varje hjärtslag flödar blod kort in i ansiktets kapillärer och förändrar hudfärgen mikroskopiskt. Kameran upptäcker detta.',
+    'method_01_method': '<strong>Metod:</strong> Analys av grön kanal på panna och båda kinder, samplat 30 bilder per sekund, trendborttagen, bandpassfiltrerad till hjärtfrekvensintervallet (0,7–2,5 Hz). Tre oberoende regioner jämförs.',
+    'method_01_limit': '<strong>Begränsning:</strong> Kräver bra ljus och stillhet. Vi rapporterar din BPM, förändring efter stimulus och signaltillförlitlighet.',
+    '— 02 / Blink Response': '— 02 / Blinkrespons',
+    'The eye reflex': 'Ögats reflex',
+    'method_02_p1': 'Orienteringsreflexen stänger ögonlocken snabbare när du ser något som ditt autonoma system vill avvisa. En naturlig blinkning tar 100–150ms; en reflexiv sker 200–400ms efter stimulus.',
+    'method_02_method': '<strong>Metod:</strong> Google MediaPipe FaceLandmarker spårar 468 ansiktspunkter vid 30 bilder per sekund. Blinkstart upptäcks när eyeBlinkLeft + eyeBlinkRight blendshape-poäng överskrider din personliga baslinje.',
+    'method_02_limit': '<strong>Begränsning:</strong> Om du inte blinkar inom 600ms efter stimulus rapporterar vi "ingen detekterbar respons". Vi hittar inte på en.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikrouttrycksasymmetri',
+    'What leaks before masking': 'Vad som läcker innan maskering',
+    'method_03_p1': 'Ansiktet styrs av två hjärnhalvor. Äkta känsloreaktioner uppstår asymmetriskt (ena sidan först) inom 200–500ms. Frivilliga uttryck är symmetriska.',
+    'method_03_method': '<strong>Metod:</strong> Skillnaden mellan mouthSmileLeft / mouthSmileRight, browInnerUp och jawForward blendshape-poäng, samplat 60ms efter stimulus.',
+    'method_03_limit': '<strong>Begränsning:</strong> Skägg, smink och glasögon minskar känsligheten. Vi rapporterar detta som Asymmetri-index.',
+    '— 04 / Trial Design': '— 04 / Försöksdesign',
+    'Five flashes, not one': 'Fem blixtar, inte en',
+    'method_04_p1': 'En blixt bevisar ingenting. Vi blixtrar varje val två gånger och ett neutralt kontrollord en gång, i slumpvis ordning med 2-sekunders pauser. Dina A-svar jämförs med dina B-svar, med kontrollen som baslinje.',
+    'method_04_method': '<strong>Metod:</strong> Varje försök mäter blinkfördröjning, asymmetridelta och BPM-acceleration. En tillförlitlighetspoäng beräknas från konsistensen mellan försök.',
+    'method_04_limit': '<strong>Begränsning:</strong> Under 60% tillförlitlighet rapporterar vi resultatet som inte slutgiltigt. Över 75% rapporterar vi som signifikant.',
+    '— What we do NOT do': '— Vad vi INTE gör',
+    'method_not_do': 'Vi läser inte tankar. Vi diagnostiserar inte. Vi sparar inte din video eller skickar den någonstans. Vi mäter bara aktivering — och aktivering kan betyda avvisning, förvåning, dragning, rädsla eller igenkänning. Kroppen talar högt, men på ett språk: <em>detta betyder mer än det där</em>.'
   },
 
   no: {
@@ -1569,7 +1689,36 @@ const I18N = {
     'Body signals indicate physiological activation, not validated truth.': 'Kroppssignaler indikerer fysiologisk aktivering, ikke bekreftet sannhet.',
     '— Deeper reading': '— Dypere måling',
     'What does this actually mean?': 'Hva betyr dette egentlig?',
-    'One-time — analysis of this reading': 'Engangs — analyse av denne målingen'
+    'One-time — analysis of this reading': 'Engangs — analyse av denne målingen',
+
+    'intro_p1': 'Loits er et biometrisk instrument. Telefonens kamera overvåker ansiktet ditt — puls, blinkrefleksjon, mikrouttrykk — mens vi blinker to valg. Det autonome nervesystemet ditt reagerer på millisekunder, før bevisst tanke rekker å gripe inn. Vi måler disse reaksjonene og avslører hvilken vei kroppen din gjenkjenner.',
+    'intro_p2': 'Ingenting lastes opp. All måling skjer på enheten din. Vi måler bare det målbare. Hvis forholdene ikke er riktige, sier vi det. Vi gjetter ikke.',
+    'intro_features': '<span>● Biometrisk ansiktsovervåkning</span><span>● Puls via hudfarge (rPPG)</span><span>● 468-punkts ansiktssporing</span><span>● Analyse av autonom respons</span>',
+    '— Methodology': '— Metodologi',
+    'What we measure.': 'Hva vi måler.',
+    'method_intro': 'Vi bruker telefonens kamera og avanserte AI-visjonsmodeller for å lese fire signaler fra ansiktet ditt. Alt skjer på enheten din. Ingenting lastes opp.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Hjertefrekvens (rPPG)',
+    'Pulse from skin color': 'Puls fra hudfarge',
+    'method_01_p1': 'Ved hvert hjerteslag strømmer blod kort inn i ansiktets kapillærer og endrer hudfargen mikroskopisk. Kameraet oppdager dette.',
+    'method_01_method': '<strong>Metode:</strong> Analyse av grønn kanal på panne og begge kinn, samplet 30 bilder per sekund, trendfjernet, båndpassfiltrert til hjertefrekvensområdet (0,7–2,5 Hz). Tre uavhengige regioner sammenlignes.',
+    'method_01_limit': '<strong>Begrensning:</strong> Krever godt lys og stillhet. Vi rapporterer BPM, endring etter stimulus og signaltillit.',
+    '— 02 / Blink Response': '— 02 / Blinkrespons',
+    'The eye reflex': 'Øyets refleks',
+    'method_02_p1': 'Orienteringsreflexen lukker øyelokkene raskere når du ser noe det autonome systemet vil avvise. En naturlig blink tar 100–150ms; en refleksiv skjer 200–400ms etter stimulus.',
+    'method_02_method': '<strong>Metode:</strong> Google MediaPipe FaceLandmarker sporer 468 ansiktspunkter ved 30 bilder per sekund. Blinkstart oppdages når eyeBlinkLeft + eyeBlinkRight blendshape-skår krysser din personlige baseline.',
+    'method_02_limit': '<strong>Begrensning:</strong> Hvis du ikke blinker innen 600ms etter stimulus, rapporterer vi "ingen påvisbar respons". Vi finner ikke på en.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikrouttrykk-asymmetri',
+    'What leaks before masking': 'Hva som lekker før maskering',
+    'method_03_p1': 'Ansiktet styres av to hjernehalvdeler. Ekte følelsesreaksjoner oppstår asymmetrisk (én side først) innen 200–500ms. Frivillige uttrykk er symmetriske.',
+    'method_03_method': '<strong>Metode:</strong> Forskjellen mellom mouthSmileLeft / mouthSmileRight, browInnerUp og jawForward blendshape-skår, samplet 60ms etter stimulus.',
+    'method_03_limit': '<strong>Begrensning:</strong> Skjegg, sminke og briller reduserer sensitiviteten. Vi rapporterer dette som Asymmetri-indeks.',
+    '— 04 / Trial Design': '— 04 / Forsøksdesign',
+    'Five flashes, not one': 'Fem blink, ikke ett',
+    'method_04_p1': 'Ett blink beviser ingenting. Vi blinker hvert valg to ganger og et nøytralt kontrollord én gang, i tilfeldig rekkefølge med 2-sekunders pauser. A-svarene dine sammenlignes med B-svarene, med kontrollen som baseline.',
+    'method_04_method': '<strong>Metode:</strong> Hvert forsøk måler blinkforsinkelse, asymmetridelta og BPM-akselerasjon. En tillitsscore beregnes fra konsistens mellom forsøk.',
+    'method_04_limit': '<strong>Begrensning:</strong> Under 60% tillit rapporterer vi resultatet som ikke avgjørende. Over 75% som signifikant.',
+    '— What we do NOT do': '— Hva vi IKKE gjør',
+    'method_not_do': 'Vi leser ikke tanker. Vi diagnostiserer ikke. Vi lagrer ikke videoen din eller sender den noe sted. Vi måler bare aktivering — og aktivering kan bety avvisning, overraskelse, tiltrekning, frykt eller gjenkjennelse. Kroppen snakker høyt, men på ett språk: <em>dette betyr mer enn det der</em>.'
   },
 
   da: {
@@ -1625,7 +1774,36 @@ const I18N = {
     'Body signals indicate physiological activation, not validated truth.': 'Kropssignaler angiver fysiologisk aktivering, ikke valideret sandhed.',
     '— Deeper reading': '— Dybere måling',
     'What does this actually mean?': 'Hvad betyder dette egentlig?',
-    'One-time — analysis of this reading': 'Engangs — analyse af denne måling'
+    'One-time — analysis of this reading': 'Engangs — analyse af denne måling',
+
+    'intro_p1': 'Loits er et biometrisk instrument. Telefonens kamera overvåger dit ansigt — puls, blinkrefleks, mikroudtryk — mens vi blinker to valg. Dit autonome nervesystem reagerer på millisekunder, før bevidst tanke kan gribe ind. Vi måler disse reaktioner og afslører hvilken vej din krop genkender.',
+    'intro_p2': 'Intet uploades. Al måling sker på din enhed. Vi måler kun det målbare. Hvis forholdene ikke er rigtige, siger vi det. Vi gætter ikke.',
+    'intro_features': '<span>● Biometrisk ansigtsovervågning</span><span>● Puls via hudfarve (rPPG)</span><span>● 468-punkts ansigtssporing</span><span>● Analyse af autonom respons</span>',
+    '— Methodology': '— Metodologi',
+    'What we measure.': 'Hvad vi måler.',
+    'method_intro': 'Vi bruger telefonens kamera og avancerede AI-visionsmodeller til at læse fire signaler fra dit ansigt. Alt sker på din enhed. Intet uploades.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Hjertefrekvens (rPPG)',
+    'Pulse from skin color': 'Puls fra hudfarve',
+    'method_01_p1': 'Ved hvert hjerteslag strømmer blod kort ind i ansigtets kapillærer og ændrer hudfarven mikroskopisk. Kameraet opdager dette.',
+    'method_01_method': '<strong>Metode:</strong> Analyse af grøn kanal på pande og begge kinder, samplet 30 billeder pr. sekund, trendfjernet, båndpassfiltret til hjertefrekvensområdet (0,7–2,5 Hz). Tre uafhængige regioner sammenlignes.',
+    'method_01_limit': '<strong>Begrænsning:</strong> Kræver godt lys og stilhed. Vi rapporterer BPM, ændring efter stimulus og signaltillid.',
+    '— 02 / Blink Response': '— 02 / Blinkrespons',
+    'The eye reflex': 'Øjets refleks',
+    'method_02_p1': 'Orienteringsreflexen lukker øjenlågene hurtigere, når du ser noget det autonome system vil afvise. Et naturligt blink tager 100–150ms; et refleksivt sker 200–400ms efter stimulus.',
+    'method_02_method': '<strong>Metode:</strong> Google MediaPipe FaceLandmarker sporer 468 ansigtspunkter ved 30 billeder pr. sekund. Blinkstart opdages, når eyeBlinkLeft + eyeBlinkRight blendshape-score krydser din personlige baseline.',
+    'method_02_limit': '<strong>Begrænsning:</strong> Hvis du ikke blinker inden for 600ms efter stimulus, rapporterer vi "ingen detekterbar respons". Vi opfinder ikke en.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroudtryks-asymmetri',
+    'What leaks before masking': 'Hvad der lækker før maskering',
+    'method_03_p1': 'Ansigtet styres af to hjernehalvdele. Ægte følelsesreaktioner opstår asymmetrisk (én side først) inden for 200–500ms. Frivillige udtryk er symmetriske.',
+    'method_03_method': '<strong>Metode:</strong> Forskellen mellem mouthSmileLeft / mouthSmileRight, browInnerUp og jawForward blendshape-score, samplet 60ms efter stimulus.',
+    'method_03_limit': '<strong>Begrænsning:</strong> Skæg, makeup og briller reducerer følsomheden. Vi rapporterer dette som Asymmetri-indeks.',
+    '— 04 / Trial Design': '— 04 / Forsøgsdesign',
+    'Five flashes, not one': 'Fem blink, ikke ét',
+    'method_04_p1': 'Ét blink beviser intet. Vi blinker hvert valg to gange og et neutralt kontrolord én gang, i tilfældig rækkefølge med 2-sekunders pauser. Dine A-svar sammenlignes med dine B-svar, med kontrollen som baseline.',
+    'method_04_method': '<strong>Metode:</strong> Hvert forsøg måler blinkforsinkelse, asymmetridelta og BPM-acceleration. En tillidsscore beregnes ud fra konsistens mellem forsøg.',
+    'method_04_limit': '<strong>Begrænsning:</strong> Under 60% tillid rapporterer vi resultatet som inkonklusivt. Over 75% som signifikant.',
+    '— What we do NOT do': '— Hvad vi IKKE gør',
+    'method_not_do': 'Vi læser ikke tanker. Vi diagnosticerer ikke. Vi gemmer ikke din video eller sender den nogetsteds. Vi måler kun aktivering — og aktivering kan betyde afvisning, overraskelse, tiltrækning, frygt eller genkendelse. Kroppen taler højt, men på ét sprog: <em>dette betyder mere end det der</em>.'
   },
 
   is: {
@@ -1673,7 +1851,36 @@ const I18N = {
     '— What you get': '— Hvað þú færð',
     'Body signals indicate physiological activation, not validated truth.': 'Líkamsmerki gefa til kynna lífeðlisfræðilega virkjun, ekki staðfestan sannleika.',
     '— Deeper reading': '— Dýpri mæling',
-    'What does this actually mean?': 'Hvað þýðir þetta í raun?'
+    'What does this actually mean?': 'Hvað þýðir þetta í raun?',
+
+    'intro_p1': 'Loits er lífmæliskt tæki. Myndavél símans fylgist með andliti þínu — púls, augnviðbrögð, smáhreyfingar — meðan við blikkum tvo valkosti. Sjálfvirka taugakerfið þitt bregst við á millisekúndum, áður en meðvituð hugsun nær að grípa inn í. Við mælum þessi viðbrögð og afhjúpum hvaða leið líkaminn þekkir.',
+    'intro_p2': 'Ekkert er sent upp. Öll mæling fer fram á tækinu þínu. Við mælum aðeins það mælanlega. Ef aðstæður eru ekki réttar segjum við þér það. Við giskum ekki.',
+    'intro_features': '<span>● Lífmælislegt eftirlit andlits</span><span>● Púls í gegnum húðlit (rPPG)</span><span>● 468-punkta andlitsmæling</span><span>● Greining sjálfvirkrar svörunar</span>',
+    '— Methodology': '— Aðferðafræði',
+    'What we measure.': 'Hvað við mælum.',
+    'method_intro': 'Við notum myndavél símans og fullkomnar gervigreindar sjónlíkön til að lesa fjögur merki úr andliti þínu. Allt gerist á tækinu þínu. Ekkert er sent upp.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Hjartsláttur (rPPG)',
+    'Pulse from skin color': 'Púls úr húðlit',
+    'method_01_p1': 'Við hvert hjartaslag rennur blóð snöggt inn í háræðar í andliti og breytir húðlit smásætt. Myndavélin nemur þetta.',
+    'method_01_method': '<strong>Aðferð:</strong> Greining á græna litasviðinu á enni og báðum kinnum, sýnt á 30 römmum á sekúndu, leiðréttu, bandbreiddarsíað á hjartsláttartíðnisvið (0,7–2,5 Hz). Þrjú sjálfstæð svæði eru borin saman.',
+    'method_01_limit': '<strong>Takmörkun:</strong> Krefst góðrar birtu og kyrrðar. Við sýnum BPM, breytingu eftir áreiti og merkjaöryggi.',
+    '— 02 / Blink Response': '— 02 / Augnviðbrögð',
+    'The eye reflex': 'Augnviðbragð',
+    'method_02_p1': 'Áttunarviðbragðið lokar augnlokum hraðar þegar þú sérð eitthvað sem sjálfvirka kerfið vill hafna. Náttúrulegt augnablik tekur 100–150ms; viðbragðsefli gerist 200–400ms eftir áreiti.',
+    'method_02_method': '<strong>Aðferð:</strong> Google MediaPipe FaceLandmarker fylgist með 468 andlitspunktum á 30 römmum á sekúndu. Upphaf augnabliks greinist þegar eyeBlinkLeft + eyeBlinkRight blendshape-stig fara yfir persónulegan grunn.',
+    'method_02_limit': '<strong>Takmörkun:</strong> Ef þú blikkir ekki innan 600ms frá áreiti, segjum við "engin greinanleg svörun". Við finnum ekki upp svörun.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Smátjáning ósamhverfa',
+    'What leaks before masking': 'Hvað lekur áður en grímum er sett',
+    'method_03_p1': 'Andlitinu er stjórnað af tveimur heilahvelum. Ósviknar tilfinningasvaranir koma fram ósamhverft (önnur hliðin fyrst) á 200–500ms. Sjálfviljug tjáning er samhverf.',
+    'method_03_method': '<strong>Aðferð:</strong> Munurinn á mouthSmileLeft / mouthSmileRight, browInnerUp og jawForward blendshape-stigum, sýndur á 60ms millibili eftir áreiti.',
+    'method_03_limit': '<strong>Takmörkun:</strong> Skegg, förðun og gleraugu draga úr næmni. Við sýnum þetta sem Ósamhverfu-vísitölu.',
+    '— 04 / Trial Design': '— 04 / Tilraunahönnun',
+    'Five flashes, not one': 'Fimm blikk, ekki eitt',
+    'method_04_p1': 'Eitt blikk sannar ekkert. Við blikkum hvern valkost tvisvar og hlutlaust eftirlitsorð einu sinni, í tilviljanakenndri röð með 2-sekúndna hléum. A-svörin þín eru borin saman við B-svörin, með eftirlitið sem grunn.',
+    'method_04_method': '<strong>Aðferð:</strong> Hver tilraun mælir augnabliksfresti, ósamhverfu-mismun og BPM-hröðun. Öryggisstig er reiknað út frá samkvæmni milli tilrauna.',
+    'method_04_limit': '<strong>Takmörkun:</strong> Undir 60% öryggi sýnum við niðurstöðu sem óljósa. Yfir 75% sem marktækan.',
+    '— What we do NOT do': '— Hvað við gerum EKKI',
+    'method_not_do': 'Við lesum ekki huga. Við gerum ekki greiningar. Við vistum ekki myndband þitt eða sendum það neitt. Við mælum aðeins virkjun — og virkjun getur þýtt höfnun, undrun, aðdráttarafl, ótta eða þekkingu. Líkaminn talar hátt, en á einu tungumáli: <em>þetta skiptir meira máli en hitt</em>.'
   },
 
   de: {
@@ -1730,7 +1937,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Bei wichtigen Entscheidungen einen lizenzierten Fachmann konsultieren.',
     '— Deeper reading': '— Tiefere Messung',
     'What does this actually mean?': 'Was bedeutet das eigentlich?',
-    'One-time — analysis of this reading': 'Einmalig — Analyse dieser Messung'
+    'One-time — analysis of this reading': 'Einmalig — Analyse dieser Messung',
+
+    'intro_p1': 'Loits ist ein biometrisches Instrument. Die Kamera deines Telefons überwacht dein Gesicht — Puls, Lidschlagreflexe, Mikroausdrücke — während wir dir zwei Optionen aufblitzen lassen. Dein autonomes Nervensystem reagiert in Millisekunden, bevor bewusstes Denken eingreifen kann. Wir messen diese Reaktionen und enthüllen, welchen Weg dein Körper erkennt.',
+    'intro_p2': 'Nichts wird hochgeladen. Die gesamte Messung erfolgt auf deinem Gerät. Wir messen nur das Messbare. Wenn die Bedingungen nicht stimmen, sagen wir es. Wir raten nicht.',
+    'intro_features': '<span>● Biometrische Gesichtsüberwachung</span><span>● Puls über Hautfarbe (rPPG)</span><span>● 468-Punkte-Gesichtsverfolgung</span><span>● Analyse der autonomen Reaktion</span>',
+    '— Methodology': '— Methodologie',
+    'What we measure.': 'Was wir messen.',
+    'method_intro': 'Wir nutzen die Kamera deines Telefons und fortschrittliche KI-Bildverarbeitungsmodelle, um vier Signale von deinem Gesicht zu lesen. Alles geschieht auf deinem Gerät. Nichts wird hochgeladen.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Herzfrequenz (rPPG)',
+    'Pulse from skin color': 'Puls aus Hautfarbe',
+    'method_01_p1': 'Bei jedem Herzschlag fließt Blut kurz in die Gesichtskapillaren und verändert die Hautfarbe mikroskopisch. Die Kamera erkennt das.',
+    'method_01_method': '<strong>Methode:</strong> Analyse des Grünkanals auf Stirn und beiden Wangen, mit 30 Bildern pro Sekunde abgetastet, trendbereinigt, bandpassgefiltert auf den Herzfrequenzbereich (0,7–2,5 Hz). Drei unabhängige Regionen werden verglichen.',
+    'method_01_limit': '<strong>Grenze:</strong> Erfordert gutes Licht und Stillhalten. Wir melden deinen BPM, die Veränderung nach Reiz und die Signalsicherheit.',
+    '— 02 / Blink Response': '— 02 / Lidschlagreaktion',
+    'The eye reflex': 'Der Augenreflex',
+    'method_02_p1': 'Der Orientierungsreflex schließt deine Augenlider schneller, wenn du etwas siehst, was dein autonomes System abweisen will. Ein natürlicher Lidschlag dauert 100–150ms; ein reflexiver tritt 200–400ms nach dem Reiz auf.',
+    'method_02_method': '<strong>Methode:</strong> Google MediaPipe FaceLandmarker verfolgt 468 Gesichtspunkte bei 30 Bildern pro Sekunde. Der Lidschlagbeginn wird erkannt, wenn die eyeBlinkLeft + eyeBlinkRight Blendshape-Werte deine persönliche Basislinie überschreiten.',
+    'method_02_limit': '<strong>Grenze:</strong> Wenn du innerhalb von 600ms nach dem Reiz nicht blinzelst, melden wir „keine erkennbare Reaktion". Wir erfinden keine.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroausdrucks-Asymmetrie',
+    'What leaks before masking': 'Was vor der Maskierung durchsickert',
+    'method_03_p1': 'Das Gesicht wird von zwei Hirnhälften gesteuert. Echte emotionale Reaktionen erscheinen asymmetrisch (eine Seite zuerst) innerhalb von 200–500ms. Willkürliche Ausdrücke sind symmetrisch.',
+    'method_03_method': '<strong>Methode:</strong> Der Unterschied zwischen mouthSmileLeft / mouthSmileRight, browInnerUp und jawForward Blendshape-Werten, in 60ms-Intervallen nach dem Reiz abgetastet.',
+    'method_03_limit': '<strong>Grenze:</strong> Bärte, Make-up und Brillen verringern die Empfindlichkeit. Wir melden dies als Asymmetrie-Index.',
+    '— 04 / Trial Design': '— 04 / Versuchsdesign',
+    'Five flashes, not one': 'Fünf Aufblitze, nicht einer',
+    'method_04_p1': 'Ein Aufblitz beweist nichts. Wir lassen jede Option zweimal und ein neutrales Kontrollwort einmal aufblitzen, in zufälliger Reihenfolge mit 2-Sekunden-Pausen. Deine A-Reaktionen werden mit deinen B-Reaktionen verglichen, mit der Kontrolle als Basislinie.',
+    'method_04_method': '<strong>Methode:</strong> Jeder Versuch misst Lidschlaglatenz, Asymmetriedelta und BPM-Beschleunigung. Eine Vertrauensbewertung wird aus der Konsistenz zwischen Versuchen berechnet.',
+    'method_04_limit': '<strong>Grenze:</strong> Unter 60% Vertrauen melden wir das Ergebnis als nicht schlüssig. Über 75% als signifikant.',
+    '— What we do NOT do': '— Was wir NICHT tun',
+    'method_not_do': 'Wir lesen keine Gedanken. Wir diagnostizieren nicht. Wir speichern dein Video nicht und senden es nirgendwohin. Wir messen nur Aktivierung — und Aktivierung kann Ablehnung, Überraschung, Anziehung, Angst oder Erkennen bedeuten. Der Körper spricht laut, aber in einer Sprache: <em>das zählt mehr als das</em>.'
   },
 
   fr: {
@@ -1787,7 +2023,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Consulte un professionnel agréé pour des choix importants.',
     '— Deeper reading': '— Mesure plus profonde',
     'What does this actually mean?': 'Qu\'est-ce que cela veut vraiment dire ?',
-    'One-time — analysis of this reading': 'Unique — analyse de cette mesure'
+    'One-time — analysis of this reading': 'Unique — analyse de cette mesure',
+
+    'intro_p1': 'Loits est un instrument biométrique. La caméra de ton téléphone surveille ton visage — pouls, réflexes de clignement, micro-expressions — pendant que nous te montrons deux options en éclair. Ton système nerveux autonome réagit en millisecondes, avant que la pensée consciente puisse intervenir. Nous mesurons ces réactions et révélons quel chemin ton corps reconnaît.',
+    'intro_p2': 'Rien n\'est téléchargé. Toute la mesure se fait sur ton appareil. Nous ne mesurons que ce qui est mesurable. Si les conditions ne sont pas réunies, nous te le disons. Nous ne devinons pas.',
+    'intro_features': '<span>● Surveillance biométrique du visage</span><span>● Pouls via couleur de peau (rPPG)</span><span>● Suivi facial à 468 points</span><span>● Analyse de la réponse autonome</span>',
+    '— Methodology': '— Méthodologie',
+    'What we measure.': 'Ce que nous mesurons.',
+    'method_intro': 'Nous utilisons la caméra de ton téléphone et des modèles de vision IA de pointe pour lire quatre signaux sur ton visage. Tout se passe sur ton appareil. Rien n\'est téléchargé.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Fréquence cardiaque (rPPG)',
+    'Pulse from skin color': 'Pouls par couleur de peau',
+    'method_01_p1': 'À chaque battement cardiaque, le sang entre brièvement dans les capillaires du visage, changeant la couleur de la peau de manière microscopique. Ta caméra le détecte.',
+    'method_01_method': '<strong>Méthode :</strong> Analyse du canal vert sur le front et les deux joues, échantillonnée à 30 images par seconde, dégradée, filtrée passe-bande à la plage de fréquence cardiaque (0,7–2,5 Hz). Trois régions indépendantes sont comparées.',
+    'method_01_limit': '<strong>Limite :</strong> Nécessite une bonne lumière et de l\'immobilité. Nous rapportons ton BPM, le changement après stimulus, et la confiance du signal.',
+    '— 02 / Blink Response': '— 02 / Réponse de clignement',
+    'The eye reflex': 'Le réflexe oculaire',
+    'method_02_p1': 'Le réflexe d\'orientation ferme les paupières plus vite quand tu vois quelque chose que ton système autonome veut rejeter. Un clignement naturel prend 100–150ms ; un réflexif se produit 200–400ms après le stimulus.',
+    'method_02_method': '<strong>Méthode :</strong> Google MediaPipe FaceLandmarker suit 468 points faciaux à 30 images par seconde. Le début du clignement est détecté quand les scores blendshape eyeBlinkLeft + eyeBlinkRight dépassent ta ligne de base personnelle.',
+    'method_02_limit': '<strong>Limite :</strong> Si tu ne clignes pas dans les 600ms suivant le stimulus, nous rapportons "aucune réponse détectable". Nous n\'en inventons pas.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Asymétrie des micro-expressions',
+    'What leaks before masking': 'Ce qui fuit avant le masquage',
+    'method_03_p1': 'Le visage est contrôlé par deux hémisphères. Les réactions émotionnelles authentiques apparaissent de manière asymétrique (un côté d\'abord) en 200–500ms. Les expressions volontaires sont symétriques.',
+    'method_03_method': '<strong>Méthode :</strong> La différence entre les scores blendshape mouthSmileLeft / mouthSmileRight, browInnerUp et jawForward, échantillonnée à intervalles de 60ms après le stimulus.',
+    'method_03_limit': '<strong>Limite :</strong> Barbes, maquillage et lunettes réduisent la sensibilité. Nous rapportons ceci comme Indice d\'Asymétrie.',
+    '— 04 / Trial Design': '— 04 / Conception de l\'essai',
+    'Five flashes, not one': 'Cinq éclairs, pas un',
+    'method_04_p1': 'Un éclair ne prouve rien. Nous faisons clignoter chaque option deux fois et un mot de contrôle neutre une fois, dans un ordre aléatoire avec des pauses de 2 secondes. Tes réponses A sont comparées à tes réponses B, avec le contrôle comme ligne de base.',
+    'method_04_method': '<strong>Méthode :</strong> Chaque essai mesure la latence de clignement, le delta d\'asymétrie et l\'accélération du BPM. Un score de confiance est calculé à partir de la cohérence entre les essais.',
+    'method_04_limit': '<strong>Limite :</strong> En dessous de 60% de confiance, nous rapportons le résultat comme non concluant. Au-dessus de 75%, comme significatif.',
+    '— What we do NOT do': '— Ce que nous ne faisons PAS',
+    'method_not_do': 'Nous ne lisons pas dans les pensées. Nous ne diagnostiquons pas. Nous ne sauvegardons pas ta vidéo et ne l\'envoyons nulle part. Nous mesurons uniquement l\'activation — et l\'activation peut signifier rejet, surprise, attraction, peur ou reconnaissance. Le corps parle fort, mais dans une langue : <em>ceci compte plus que cela</em>.'
   },
 
   es: {
@@ -1844,7 +2109,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Consulta a un profesional licenciado para decisiones serias.',
     '— Deeper reading': '— Medición más profunda',
     'What does this actually mean?': '¿Qué significa esto realmente?',
-    'One-time — analysis of this reading': 'Único — análisis de esta medición'
+    'One-time — analysis of this reading': 'Único — análisis de esta medición',
+
+    'intro_p1': 'Loits es un instrumento biométrico. La cámara de tu teléfono monitorea tu rostro — pulso, reflejos de parpadeo, microexpresiones — mientras te mostramos dos opciones en destellos. Tu sistema nervioso autónomo reacciona en milisegundos, antes de que el pensamiento consciente pueda intervenir. Medimos estas reacciones y revelamos qué camino reconoce tu cuerpo.',
+    'intro_p2': 'Nada se sube a la nube. Toda la medición ocurre en tu dispositivo. Solo medimos lo medible. Si las condiciones no son adecuadas, te lo decimos. No adivinamos.',
+    'intro_features': '<span>● Monitoreo biométrico facial</span><span>● Pulso vía color de piel (rPPG)</span><span>● Rastreo facial de 468 puntos</span><span>● Análisis de respuesta autónoma</span>',
+    '— Methodology': '— Metodología',
+    'What we measure.': 'Lo que medimos.',
+    'method_intro': 'Usamos la cámara de tu teléfono y modelos de visión de IA de vanguardia para leer cuatro señales de tu rostro. Todo sucede en tu dispositivo. Nada se sube.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Frecuencia cardíaca (rPPG)',
+    'Pulse from skin color': 'Pulso por color de piel',
+    'method_01_p1': 'Con cada latido, la sangre entra brevemente en los capilares faciales, cambiando el color de la piel microscópicamente. Tu cámara lo detecta.',
+    'method_01_method': '<strong>Método:</strong> Análisis del canal verde en frente y ambas mejillas, muestreado a 30 fps, sin tendencia, filtrado paso banda al rango de frecuencia cardíaca (0,7–2,5 Hz). Tres regiones independientes se comparan.',
+    'method_01_limit': '<strong>Límite:</strong> Requiere buena luz y quietud. Reportamos tu BPM, cambio tras estímulo y confianza de señal.',
+    '— 02 / Blink Response': '— 02 / Respuesta de parpadeo',
+    'The eye reflex': 'El reflejo ocular',
+    'method_02_p1': 'El reflejo de orientación cierra los párpados más rápido cuando ves algo que tu sistema autónomo quiere rechazar. Un parpadeo natural toma 100–150ms; uno reflejo ocurre 200–400ms tras el estímulo.',
+    'method_02_method': '<strong>Método:</strong> Google MediaPipe FaceLandmarker rastrea 468 puntos faciales a 30 fps. El inicio del parpadeo se detecta cuando los puntajes blendshape eyeBlinkLeft + eyeBlinkRight cruzan tu línea base personal.',
+    'method_02_limit': '<strong>Límite:</strong> Si no parpadeas en 600ms tras el estímulo, reportamos "sin respuesta detectable". No inventamos una.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Asimetría de microexpresión',
+    'What leaks before masking': 'Lo que se escapa antes del enmascaramiento',
+    'method_03_p1': 'El rostro está controlado por dos hemisferios. Las reacciones emocionales genuinas aparecen asimétricamente (un lado primero) en 200–500ms. Las expresiones voluntarias son simétricas.',
+    'method_03_method': '<strong>Método:</strong> La diferencia entre los puntajes blendshape mouthSmileLeft / mouthSmileRight, browInnerUp y jawForward, muestreada en intervalos de 60ms tras el estímulo.',
+    'method_03_limit': '<strong>Límite:</strong> Barba, maquillaje y gafas reducen la sensibilidad. Reportamos esto como Índice de Asimetría.',
+    '— 04 / Trial Design': '— 04 / Diseño del ensayo',
+    'Five flashes, not one': 'Cinco destellos, no uno',
+    'method_04_p1': 'Un destello no prueba nada. Mostramos cada opción dos veces y una palabra de control neutral una vez, en orden aleatorio con pausas de 2 segundos. Tus respuestas A se comparan con las B, con el control como línea base.',
+    'method_04_method': '<strong>Método:</strong> Cada ensayo mide latencia de parpadeo, delta de asimetría y aceleración de BPM. Un puntaje de confianza se calcula de la consistencia entre ensayos.',
+    'method_04_limit': '<strong>Límite:</strong> Bajo 60% de confianza reportamos el resultado como no concluyente. Sobre 75% como significativo.',
+    '— What we do NOT do': '— Lo que NO hacemos',
+    'method_not_do': 'No leemos mentes. No diagnosticamos. No guardamos tu video ni lo enviamos a ningún lado. Solo medimos activación — y activación puede significar rechazo, sorpresa, atracción, miedo o reconocimiento. El cuerpo habla fuerte, pero en un idioma: <em>esto importa más que aquello</em>.'
   },
 
   it: {
@@ -1901,7 +2195,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Consulta un professionista qualificato per decisioni importanti.',
     '— Deeper reading': '— Misurazione più profonda',
     'What does this actually mean?': 'Cosa significa veramente questo?',
-    'One-time — analysis of this reading': 'Una tantum — analisi di questa misurazione'
+    'One-time — analysis of this reading': 'Una tantum — analisi di questa misurazione',
+
+    'intro_p1': 'Loits è uno strumento biometrico. La fotocamera del tuo telefono monitora il tuo viso — polso, riflessi di battito di ciglia, microespressioni — mentre ti mostriamo due opzioni in lampi. Il tuo sistema nervoso autonomo reagisce in millisecondi, prima che il pensiero cosciente possa intervenire. Misuriamo queste reazioni e riveliamo quale strada il tuo corpo riconosce.',
+    'intro_p2': 'Niente viene caricato. Tutta la misurazione avviene sul tuo dispositivo. Misuriamo solo ciò che è misurabile. Se le condizioni non sono giuste, te lo diciamo. Non indoviniamo.',
+    'intro_features': '<span>● Monitoraggio biometrico del viso</span><span>● Polso tramite colore della pelle (rPPG)</span><span>● Tracciamento facciale a 468 punti</span><span>● Analisi della risposta autonoma</span>',
+    '— Methodology': '— Metodologia',
+    'What we measure.': 'Cosa misuriamo.',
+    'method_intro': 'Usiamo la fotocamera del tuo telefono e modelli di visione IA all\'avanguardia per leggere quattro segnali dal tuo viso. Tutto avviene sul tuo dispositivo. Niente viene caricato.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Frequenza cardiaca (rPPG)',
+    'Pulse from skin color': 'Polso dal colore della pelle',
+    'method_01_p1': 'A ogni battito cardiaco, il sangue entra brevemente nei capillari facciali, cambiando microscopicamente il colore della pelle. La tua fotocamera lo rileva.',
+    'method_01_method': '<strong>Metodo:</strong> Analisi del canale verde su fronte e entrambe le guance, campionato a 30fps, detrendizzato, filtrato passa-banda all\'intervallo di frequenza cardiaca (0,7–2,5 Hz). Tre regioni indipendenti vengono confrontate.',
+    'method_01_limit': '<strong>Limite:</strong> Richiede buona luce e immobilità. Riportiamo il tuo BPM, il cambiamento dopo lo stimolo e l\'affidabilità del segnale.',
+    '— 02 / Blink Response': '— 02 / Risposta al battito di ciglia',
+    'The eye reflex': 'Il riflesso oculare',
+    'method_02_p1': 'Il riflesso di orientamento chiude le palpebre più velocemente quando vedi qualcosa che il tuo sistema autonomo vuole respingere. Un battito di ciglia naturale dura 100–150ms; uno riflesso si verifica 200–400ms dopo lo stimolo.',
+    'method_02_method': '<strong>Metodo:</strong> Google MediaPipe FaceLandmarker traccia 468 punti facciali a 30fps. L\'inizio del battito viene rilevato quando i punteggi blendshape eyeBlinkLeft + eyeBlinkRight superano la tua baseline personale.',
+    'method_02_limit': '<strong>Limite:</strong> Se non batti le ciglia entro 600ms dallo stimolo, riportiamo "nessuna risposta rilevabile". Non ne inventiamo.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Asimmetria della microespressione',
+    'What leaks before masking': 'Ciò che trapela prima del mascheramento',
+    'method_03_p1': 'Il viso è controllato da due emisferi. Le reazioni emotive autentiche appaiono asimmetricamente (un lato prima) in 200–500ms. Le espressioni volontarie sono simmetriche.',
+    'method_03_method': '<strong>Metodo:</strong> La differenza tra i punteggi blendshape mouthSmileLeft / mouthSmileRight, browInnerUp e jawForward, campionata a intervalli di 60ms dopo lo stimolo.',
+    'method_03_limit': '<strong>Limite:</strong> Barba, trucco e occhiali riducono la sensibilità. Riportiamo questo come Indice di Asimmetria.',
+    '— 04 / Trial Design': '— 04 / Disegno della prova',
+    'Five flashes, not one': 'Cinque lampi, non uno',
+    'method_04_p1': 'Un lampo non prova nulla. Mostriamo ogni opzione due volte e una parola di controllo neutra una volta, in ordine casuale con pause di 2 secondi. Le tue risposte A vengono confrontate con quelle B, con il controllo come baseline.',
+    'method_04_method': '<strong>Metodo:</strong> Ogni prova misura latenza del battito, delta di asimmetria e accelerazione BPM. Un punteggio di confidenza viene calcolato dalla coerenza tra le prove.',
+    'method_04_limit': '<strong>Limite:</strong> Sotto il 60% di confidenza riportiamo il risultato come inconcludente. Sopra il 75% come significativo.',
+    '— What we do NOT do': '— Cosa NON facciamo',
+    'method_not_do': 'Non leggiamo nel pensiero. Non diagnostichiamo. Non salviamo il tuo video né lo inviamo da nessuna parte. Misuriamo solo l\'attivazione — e l\'attivazione può significare rifiuto, sorpresa, attrazione, paura o riconoscimento. Il corpo parla forte, ma in una lingua: <em>questo conta più di quello</em>.'
   },
 
   pt: {
@@ -1958,7 +2281,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Consulta um profissional licenciado para escolhas sérias.',
     '— Deeper reading': '— Medição mais profunda',
     'What does this actually mean?': 'O que é que isto significa realmente?',
-    'One-time — analysis of this reading': 'Único — análise desta medição'
+    'One-time — analysis of this reading': 'Único — análise desta medição',
+
+    'intro_p1': 'Loits é um instrumento biométrico. A câmara do teu telemóvel monitoriza o teu rosto — pulsação, reflexos de piscar, microexpressões — enquanto te mostramos duas opções em lampejos. O teu sistema nervoso autónomo reage em milissegundos, antes que o pensamento consciente possa intervir. Medimos estas reações e revelamos qual o caminho que o teu corpo reconhece.',
+    'intro_p2': 'Nada é enviado. Toda a medição acontece no teu dispositivo. Medimos apenas o mensurável. Se as condições não estiverem certas, dizemos. Não adivinhamos.',
+    'intro_features': '<span>● Monitorização biométrica facial</span><span>● Pulsação via cor da pele (rPPG)</span><span>● Rastreamento facial de 468 pontos</span><span>● Análise de resposta autónoma</span>',
+    '— Methodology': '— Metodologia',
+    'What we measure.': 'O que medimos.',
+    'method_intro': 'Usamos a câmara do teu telemóvel e modelos de visão de IA de ponta para ler quatro sinais do teu rosto. Tudo acontece no teu dispositivo. Nada é enviado.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Frequência cardíaca (rPPG)',
+    'Pulse from skin color': 'Pulsação pela cor da pele',
+    'method_01_p1': 'A cada batimento cardíaco, o sangue entra brevemente nos capilares faciais, mudando a cor da pele microscopicamente. A tua câmara deteta isto.',
+    'method_01_method': '<strong>Método:</strong> Análise do canal verde na testa e ambas as bochechas, amostrada a 30 fps, sem tendência, filtrada passa-banda na faixa de frequência cardíaca (0,7–2,5 Hz). Três regiões independentes são comparadas.',
+    'method_01_limit': '<strong>Limite:</strong> Requer boa luz e imobilidade. Reportamos os teus BPM, mudança após estímulo e confiança do sinal.',
+    '— 02 / Blink Response': '— 02 / Resposta de piscar',
+    'The eye reflex': 'O reflexo ocular',
+    'method_02_p1': 'O reflexo de orientação fecha as pálpebras mais rápido quando vês algo que o teu sistema autónomo quer rejeitar. Um piscar natural leva 100–150ms; um reflexivo ocorre 200–400ms após o estímulo.',
+    'method_02_method': '<strong>Método:</strong> Google MediaPipe FaceLandmarker segue 468 pontos faciais a 30 fps. O início do piscar é detetado quando as pontuações blendshape eyeBlinkLeft + eyeBlinkRight cruzam a tua baseline pessoal.',
+    'method_02_limit': '<strong>Limite:</strong> Se não piscares em 600ms após o estímulo, reportamos "sem resposta detetável". Não inventamos uma.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Assimetria de microexpressão',
+    'What leaks before masking': 'O que escapa antes do mascaramento',
+    'method_03_p1': 'O rosto é controlado por dois hemisférios. Reações emocionais genuínas aparecem assimetricamente (um lado primeiro) em 200–500ms. Expressões voluntárias são simétricas.',
+    'method_03_method': '<strong>Método:</strong> A diferença entre pontuações blendshape mouthSmileLeft / mouthSmileRight, browInnerUp e jawForward, amostrada em intervalos de 60ms após o estímulo.',
+    'method_03_limit': '<strong>Limite:</strong> Barbas, maquilhagem e óculos reduzem a sensibilidade. Reportamos isto como Índice de Assimetria.',
+    '— 04 / Trial Design': '— 04 / Conceção do ensaio',
+    'Five flashes, not one': 'Cinco lampejos, não um',
+    'method_04_p1': 'Um lampejo não prova nada. Mostramos cada opção duas vezes e uma palavra de controlo neutra uma vez, em ordem aleatória com pausas de 2 segundos. As tuas respostas A são comparadas com as B, com o controlo como baseline.',
+    'method_04_method': '<strong>Método:</strong> Cada ensaio mede latência de piscar, delta de assimetria e aceleração de BPM. Uma pontuação de confiança é calculada a partir da consistência entre ensaios.',
+    'method_04_limit': '<strong>Limite:</strong> Abaixo de 60% de confiança reportamos o resultado como inconclusivo. Acima de 75% como significativo.',
+    '— What we do NOT do': '— O que NÃO fazemos',
+    'method_not_do': 'Não lemos mentes. Não diagnosticamos. Não guardamos o teu vídeo nem o enviamos para lado nenhum. Medimos apenas ativação — e ativação pode significar rejeição, surpresa, atração, medo ou reconhecimento. O corpo fala alto, mas numa só língua: <em>isto importa mais do que aquilo</em>.'
   },
 
   nl: {
@@ -2014,7 +2366,36 @@ const I18N = {
     'Body signals indicate physiological activation, not validated truth.': 'Lichaamssignalen wijzen op fysiologische activering, geen gevalideerde waarheid.',
     '— Deeper reading': '— Diepere meting',
     'What does this actually mean?': 'Wat betekent dit eigenlijk?',
-    'One-time — analysis of this reading': 'Eenmalig — analyse van deze meting'
+    'One-time — analysis of this reading': 'Eenmalig — analyse van deze meting',
+
+    'intro_p1': 'Loits is een biometrisch instrument. De camera van je telefoon bewaakt je gezicht — pols, knipperreflexen, micro-expressies — terwijl we je twee opties laten flitsen. Je autonome zenuwstelsel reageert in milliseconden, voordat bewuste gedachten kunnen ingrijpen. We meten deze reacties en onthullen welk pad je lichaam herkent.',
+    'intro_p2': 'Niets wordt geüpload. Alle metingen vinden plaats op je apparaat. We meten alleen wat meetbaar is. Als de omstandigheden niet kloppen, vertellen we het. We gokken niet.',
+    'intro_features': '<span>● Biometrische gezichtsmonitoring</span><span>● Pols via huidkleur (rPPG)</span><span>● 468-punts gezichtsherkenning</span><span>● Analyse van autonome respons</span>',
+    '— Methodology': '— Methodologie',
+    'What we measure.': 'Wat we meten.',
+    'method_intro': 'We gebruiken de camera van je telefoon en geavanceerde AI-visiemodellen om vier signalen van je gezicht te lezen. Alles gebeurt op je apparaat. Niets wordt geüpload.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Hartslag (rPPG)',
+    'Pulse from skin color': 'Pols uit huidkleur',
+    'method_01_p1': 'Bij elke hartslag stroomt bloed kort in de gezichtscapillairen, waardoor de huidkleur microscopisch verandert. Je camera detecteert dit.',
+    'method_01_method': '<strong>Methode:</strong> Analyse van het groene kanaal op voorhoofd en beide wangen, bemonsterd op 30 fps, ontgaand, bandpassgefilterd op het cardiale frequentiebereik (0,7–2,5 Hz). Drie onafhankelijke regio\'s worden vergeleken.',
+    'method_01_limit': '<strong>Limiet:</strong> Vereist goed licht en stilte. We rapporteren je BPM, verandering na stimulus en signaalbetrouwbaarheid.',
+    '— 02 / Blink Response': '— 02 / Knipperrespons',
+    'The eye reflex': 'De oogreflex',
+    'method_02_p1': 'De oriëntatiereflex sluit je oogleden sneller wanneer je iets ziet dat je autonome systeem wil afwijzen. Een natuurlijke knippering duurt 100–150ms; een reflexieve gebeurt 200–400ms na de stimulus.',
+    'method_02_method': '<strong>Methode:</strong> Google MediaPipe FaceLandmarker volgt 468 gezichtspunten op 30 fps. Knipperbegin wordt gedetecteerd wanneer eyeBlinkLeft + eyeBlinkRight blendshape-scores je persoonlijke baseline overschrijden.',
+    'method_02_limit': '<strong>Limiet:</strong> Als je niet knippert binnen 600ms na de stimulus, rapporteren we "geen detecteerbare respons". We verzinnen er geen.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Micro-expressie asymmetrie',
+    'What leaks before masking': 'Wat lekt voor het maskeren',
+    'method_03_p1': 'Het gezicht wordt bestuurd door twee hersenhelften. Echte emotionele reacties verschijnen asymmetrisch (één kant eerst) binnen 200–500ms. Vrijwillige uitdrukkingen zijn symmetrisch.',
+    'method_03_method': '<strong>Methode:</strong> Het verschil tussen mouthSmileLeft / mouthSmileRight, browInnerUp en jawForward blendshape-scores, bemonsterd op intervallen van 60ms na de stimulus.',
+    'method_03_limit': '<strong>Limiet:</strong> Baarden, make-up en brillen verminderen de gevoeligheid. We rapporteren dit als Asymmetrie-Index.',
+    '— 04 / Trial Design': '— 04 / Proefontwerp',
+    'Five flashes, not one': 'Vijf flitsen, niet één',
+    'method_04_p1': 'Eén flits bewijst niets. We laten elke optie tweemaal flitsen en een neutraal controlewoord eenmaal, in willekeurige volgorde met pauzes van 2 seconden. Je A-reacties worden vergeleken met je B-reacties, met de controle als baseline.',
+    'method_04_method': '<strong>Methode:</strong> Elke proef meet knipperlatentie, asymmetriedelta en BPM-versnelling. Een betrouwbaarheidsscore wordt berekend uit de consistentie tussen proeven.',
+    'method_04_limit': '<strong>Limiet:</strong> Onder 60% betrouwbaarheid rapporteren we het resultaat als niet doorslaggevend. Boven 75% als significant.',
+    '— What we do NOT do': '— Wat we NIET doen',
+    'method_not_do': 'We lezen geen gedachten. We diagnosticeren niet. We slaan je video niet op en sturen hem nergens heen. We meten alleen activering — en activering kan afwijzing, verrassing, aantrekking, angst of herkenning betekenen. Het lichaam spreekt luid, maar in één taal: <em>dit telt meer dan dat</em>.'
   },
 
   pl: {
@@ -2071,7 +2452,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'Skonsultuj się z licencjonowanym specjalistą w przypadku poważnych decyzji.',
     '— Deeper reading': '— Głębszy pomiar',
     'What does this actually mean?': 'Co to właściwie znaczy?',
-    'One-time — analysis of this reading': 'Jednorazowa — analiza tego pomiaru'
+    'One-time — analysis of this reading': 'Jednorazowa — analiza tego pomiaru',
+
+    'intro_p1': 'Loits to instrument biometryczny. Kamera twojego telefonu monitoruje twoją twarz — puls, odruchy mrugania, mikroekspresje — gdy pokazujemy ci dwie opcje w błyskach. Twój autonomiczny układ nerwowy reaguje w milisekundach, zanim świadoma myśl zdąży interweniować. Mierzymy te reakcje i ujawniamy, którą drogę rozpoznaje twoje ciało.',
+    'intro_p2': 'Nic nie jest wysyłane. Cały pomiar odbywa się na twoim urządzeniu. Mierzymy tylko to, co mierzalne. Jeśli warunki nie są odpowiednie, mówimy o tym. Nie zgadujemy.',
+    'intro_features': '<span>● Biometryczny monitoring twarzy</span><span>● Puls przez kolor skóry (rPPG)</span><span>● Śledzenie twarzy w 468 punktach</span><span>● Analiza odpowiedzi autonomicznej</span>',
+    '— Methodology': '— Metodologia',
+    'What we measure.': 'Co mierzymy.',
+    'method_intro': 'Używamy kamery twojego telefonu i zaawansowanych modeli wizji AI, aby odczytać cztery sygnały z twojej twarzy. Wszystko dzieje się na twoim urządzeniu. Nic nie jest wysyłane.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Tętno (rPPG)',
+    'Pulse from skin color': 'Puls z koloru skóry',
+    'method_01_p1': 'Przy każdym uderzeniu serca krew na krótko wpływa do kapilarów twarzy, mikroskopowo zmieniając kolor skóry. Twoja kamera to wykrywa.',
+    'method_01_method': '<strong>Metoda:</strong> Analiza zielonego kanału na czole i obu policzkach, próbkowana z 30 klatkami na sekundę, odtrendowana, filtrowana pasmowo do zakresu częstotliwości sercowej (0,7–2,5 Hz). Trzy niezależne regiony są porównywane.',
+    'method_01_limit': '<strong>Ograniczenie:</strong> Wymaga dobrego światła i bezruchu. Raportujemy twój BPM, zmianę po bodźcu i niezawodność sygnału.',
+    '— 02 / Blink Response': '— 02 / Odpowiedź mrugania',
+    'The eye reflex': 'Odruch oka',
+    'method_02_p1': 'Odruch orientacji zamyka powieki szybciej, gdy widzisz coś, co twój autonomiczny system chce odrzucić. Naturalne mrugnięcie zajmuje 100–150ms; odruchowe występuje 200–400ms po bodźcu.',
+    'method_02_method': '<strong>Metoda:</strong> Google MediaPipe FaceLandmarker śledzi 468 punktów twarzy z 30 klatkami na sekundę. Początek mrugnięcia jest wykrywany, gdy wyniki blendshape eyeBlinkLeft + eyeBlinkRight przekraczają twoją osobistą linię bazową.',
+    'method_02_limit': '<strong>Ograniczenie:</strong> Jeśli nie mrugniesz w ciągu 600ms od bodźca, raportujemy "brak wykrywalnej odpowiedzi". Nie wymyślamy odpowiedzi.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Asymetria mikroekspresji',
+    'What leaks before masking': 'Co wycieka przed maskowaniem',
+    'method_03_p1': 'Twarz jest kontrolowana przez dwie półkule. Prawdziwe reakcje emocjonalne pojawiają się asymetrycznie (jedna strona pierwsza) w 200–500ms. Świadome wyrazy są symetryczne.',
+    'method_03_method': '<strong>Metoda:</strong> Różnica między wynikami blendshape mouthSmileLeft / mouthSmileRight, browInnerUp i jawForward, próbkowana w odstępach 60ms po bodźcu.',
+    'method_03_limit': '<strong>Ograniczenie:</strong> Brody, makijaż i okulary zmniejszają wrażliwość. Raportujemy to jako Indeks Asymetrii.',
+    '— 04 / Trial Design': '— 04 / Projekt próby',
+    'Five flashes, not one': 'Pięć błysków, nie jeden',
+    'method_04_p1': 'Jeden błysk niczego nie udowadnia. Pokazujemy każdą opcję dwa razy i neutralne słowo kontrolne raz, w losowej kolejności z 2-sekundowymi przerwami. Twoje odpowiedzi A są porównywane z odpowiedziami B, z kontrolą jako linią bazową.',
+    'method_04_method': '<strong>Metoda:</strong> Każda próba mierzy opóźnienie mrugania, delta asymetrii i przyspieszenie BPM. Wynik niezawodności jest obliczany na podstawie spójności między próbami.',
+    'method_04_limit': '<strong>Ograniczenie:</strong> Poniżej 60% niezawodności raportujemy wynik jako nierozstrzygający. Powyżej 75% jako znaczący.',
+    '— What we do NOT do': '— Czego NIE robimy',
+    'method_not_do': 'Nie czytamy w myślach. Nie diagnozujemy. Nie zapisujemy twojego wideo ani nie wysyłamy go nigdzie. Mierzymy tylko aktywację — a aktywacja może oznaczać odrzucenie, zaskoczenie, przyciąganie, strach lub rozpoznanie. Ciało mówi głośno, ale w jednym języku: <em>to znaczy więcej niż tamto</em>.'
   },
 
   lv: {
@@ -2119,7 +2529,36 @@ const I18N = {
     '— What you get': '— Ko tu saņem',
     'Body signals indicate physiological activation, not validated truth.': 'Ķermeņa signāli norāda uz fizioloģisku aktivāciju, nevis apstiprinātu patiesību.',
     '— Deeper reading': '— Dziļāks mērījums',
-    'What does this actually mean?': 'Ko tas patiesībā nozīmē?'
+    'What does this actually mean?': 'Ko tas patiesībā nozīmē?',
+
+    'intro_p1': 'Loits ir biometrisks instruments. Tava telefona kamera novēro tavu seju — pulsu, mirkšķināšanas refleksus, mikroizteiksmes — kamēr mēs zibsnījam tev divus variantus. Tava autonomā nervu sistēma reaģē milisekundēs, pirms apzināta doma var iejaukties. Mēs mērām šīs reakcijas un atklājam, kuru ceļu tava ķermenis atpazīst.',
+    'intro_p2': 'Nekas netiek augšupielādēts. Visa mērīšana notiek tavā ierīcē. Mēs mērām tikai mērāmo. Ja apstākļi nav pareizi, sakām to. Mēs neminam.',
+    'intro_features': '<span>● Sejas biometriskā novērošana</span><span>● Pulss caur ādas krāsu (rPPG)</span><span>● 468-punktu sejas izsekošana</span><span>● Autonomās atbildes analīze</span>',
+    '— Methodology': '— Metodoloģija',
+    'What we measure.': 'Ko mēs mērām.',
+    'method_intro': 'Mēs izmantojam tava telefona kameru un modernus mākslīgā intelekta redzes modeļus, lai nolasītu četrus signālus no tavas sejas. Viss notiek tavā ierīcē. Nekas netiek augšupielādēts.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Sirdsdarbība (rPPG)',
+    'Pulse from skin color': 'Pulss no ādas krāsas',
+    'method_01_p1': 'Ar katru sirdspukstu asinis īsi ieplūst sejas kapilāros, mikroskopiski mainot ādas krāsu. Tava kamera to atklāj.',
+    'method_01_method': '<strong>Metode:</strong> Zaļā kanāla analīze uz pieres un abiem vaigiem, paraugiem 30 kadri sekundē, tendences noņemtas, joslas caurlaides filtrēta sirdsdarbības frekvences diapazonam (0,7–2,5 Hz). Trīs neatkarīgi reģioni tiek salīdzināti.',
+    'method_01_limit': '<strong>Ierobežojums:</strong> Nepieciešama laba gaisma un mierīgums. Mēs ziņojam tavu BPM, izmaiņas pēc stimula un signāla uzticamību.',
+    '— 02 / Blink Response': '— 02 / Mirkšķināšanas atbilde',
+    'The eye reflex': 'Acu reflekss',
+    'method_02_p1': 'Orientācijas reflekss ātrāk aizver plakstiņus, kad redzi kaut ko, ko tava autonomā sistēma vēlas noraidīt. Dabisks mirklis aizņem 100–150ms; refleksīvs notiek 200–400ms pēc stimula.',
+    'method_02_method': '<strong>Metode:</strong> Google MediaPipe FaceLandmarker izseko 468 sejas punktus pie 30 kadriem sekundē. Mirkšķināšanas sākums tiek atklāts, kad eyeBlinkLeft + eyeBlinkRight blendshape vērtējumi pārsniedz tavu personisko bāzes līniju.',
+    'method_02_limit': '<strong>Ierobežojums:</strong> Ja nemirkšķini 600ms laikā pēc stimula, ziņojam "nav atklājamas atbildes". Mēs to neizdomājam.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroizteiksmes asimetrija',
+    'What leaks before masking': 'Kas izplūst pirms maskēšanas',
+    'method_03_p1': 'Seju kontrolē divas puslodes. Patiesas emocionālas reakcijas parādās asimetriski (viena puse vispirms) 200–500ms laikā. Brīvprātīgas izteiksmes ir simetriskas.',
+    'method_03_method': '<strong>Metode:</strong> Atšķirība starp mouthSmileLeft / mouthSmileRight, browInnerUp un jawForward blendshape vērtējumiem, paraugiem 60ms intervālos pēc stimula.',
+    'method_03_limit': '<strong>Ierobežojums:</strong> Bārdas, kosmētika un brilles samazina jutību. Mēs to ziņojam kā Asimetrijas Indeksu.',
+    '— 04 / Trial Design': '— 04 / Izmēģinājuma dizains',
+    'Five flashes, not one': 'Pieci zibsnīji, nevis viens',
+    'method_04_p1': 'Viens zibsnis neko nepierāda. Mēs zibsnījam katru variantu divreiz un neitrālu kontroles vārdu vienreiz, nejaušā secībā ar 2 sekunžu pauzēm. Tavas A atbildes tiek salīdzinātas ar B atbildēm, ar kontroli kā bāzes līniju.',
+    'method_04_method': '<strong>Metode:</strong> Katrs izmēģinājums mēra mirkšķināšanas latentumu, asimetrijas deltu un BPM paātrinājumu. Uzticamības rezultāts tiek aprēķināts no izmēģinājumu konsekvences.',
+    'method_04_limit': '<strong>Ierobežojums:</strong> Zem 60% uzticamības ziņojam rezultātu kā nepārliecinošu. Virs 75% kā nozīmīgu.',
+    '— What we do NOT do': '— Ko mēs NEDARĀM',
+    'method_not_do': 'Mēs neuzminam domas. Mēs nediagnosticējam. Mēs nesaglabājam tavu video un nesūtām to nekur. Mēs mērām tikai aktivāciju — un aktivācija var nozīmēt noraidīšanu, pārsteigumu, pievilkšanos, bailes vai atpazīšanu. Ķermenis runā skaļi, bet vienā valodā: <em>tas nozīmē vairāk nekā tas</em>.'
   },
 
   lt: {
@@ -2167,7 +2606,36 @@ const I18N = {
     '— What you get': '— Ką gauni',
     'Body signals indicate physiological activation, not validated truth.': 'Kūno signalai rodo fiziologinį aktyvavimą, ne patvirtintą tiesą.',
     '— Deeper reading': '— Gilesnis matavimas',
-    'What does this actually mean?': 'Ką tai iš tikrųjų reiškia?'
+    'What does this actually mean?': 'Ką tai iš tikrųjų reiškia?',
+
+    'intro_p1': 'Loits yra biometrinis instrumentas. Tavo telefono kamera stebi tavo veidą — pulsą, mirksėjimo refleksus, mikroišraiškas — kol mes rodome tau dvi parinktis blyksniais. Tavo autonominė nervų sistema reaguoja milisekundėmis, prieš sąmoningai mintims spėjant įsikišti. Mes matuojame šias reakcijas ir atskleidžiame, kurį kelią atpažįsta tavo kūnas.',
+    'intro_p2': 'Niekas neįkeliama. Visas matavimas vyksta tavo įrenginyje. Mes matuojame tik tai, ką galima išmatuoti. Jei sąlygos netinkamos, pasakome. Mes nespėliojame.',
+    'intro_features': '<span>● Veido biometrinis stebėjimas</span><span>● Pulsas per odos spalvą (rPPG)</span><span>● 468 taškų veido sekimas</span><span>● Autonominės reakcijos analizė</span>',
+    '— Methodology': '— Metodologija',
+    'What we measure.': 'Ką mes matuojame.',
+    'method_intro': 'Naudojame tavo telefono kamerą ir pažangius dirbtinio intelekto regos modelius, kad nuskaitytume keturis signalus iš tavo veido. Viskas vyksta tavo įrenginyje. Niekas neįkeliama.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Širdies ritmas (rPPG)',
+    'Pulse from skin color': 'Pulsas iš odos spalvos',
+    'method_01_p1': 'Su kiekvienu širdies dūžiu kraujas trumpai patenka į veido kapiliarus, mikroskopiniu lygiu pakeisdamas odos spalvą. Tavo kamera tai aptinka.',
+    'method_01_method': '<strong>Metodas:</strong> Žaliosios juostos analizė ant kaktos ir abiejų skruostų, mėginiai 30 kadrų per sekundę, pašalinant tendencijas, filtruojant į širdies dažnio diapazoną (0,7–2,5 Hz). Trys nepriklausomos sritys palyginamos.',
+    'method_01_limit': '<strong>Apribojimas:</strong> Reikalinga gera šviesa ir ramybė. Pranešame tavo BPM, pokytį po stimulo ir signalo patikimumą.',
+    '— 02 / Blink Response': '— 02 / Mirksėjimo atsakas',
+    'The eye reflex': 'Akies refleksas',
+    'method_02_p1': 'Orientacijos refleksas greičiau užmerkia akių vokus, kai matai kažką, ką autonominė sistema nori atmesti. Natūralus mirksėjimas trunka 100–150ms; refleksinis vyksta 200–400ms po stimulo.',
+    'method_02_method': '<strong>Metodas:</strong> Google MediaPipe FaceLandmarker seka 468 veido taškus 30 kadrų per sekundę dažniu. Mirksėjimo pradžia aptinkama, kai eyeBlinkLeft + eyeBlinkRight blendshape balai viršija tavo asmeninę bazinę liniją.',
+    'method_02_limit': '<strong>Apribojimas:</strong> Jei nemirksi per 600ms po stimulo, pranešame "neaptinkamas atsakas". Nesugalvojame.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Mikroišraiškos asimetrija',
+    'What leaks before masking': 'Kas nutrūksta prieš maskuojant',
+    'method_03_p1': 'Veidą valdo du pusrutuliai. Tikros emocinės reakcijos pasirodo asimetriškai (viena pusė pirma) per 200–500ms. Valingos išraiškos yra simetrinės.',
+    'method_03_method': '<strong>Metodas:</strong> Skirtumas tarp mouthSmileLeft / mouthSmileRight, browInnerUp ir jawForward blendshape balų, mėginiai 60ms intervalais po stimulo.',
+    'method_03_limit': '<strong>Apribojimas:</strong> Barzdos, makiažas ir akiniai mažina jautrumą. Pranešame tai kaip Asimetrijos indeksą.',
+    '— 04 / Trial Design': '— 04 / Bandymo dizainas',
+    'Five flashes, not one': 'Penki blyksniai, ne vienas',
+    'method_04_p1': 'Vienas blyksnis nieko neįrodo. Rodome kiekvieną parinktį du kartus ir neutralų kontrolinį žodį vieną kartą, atsitiktine tvarka su 2 sekundžių pauzėmis. Tavo A atsakymai lyginami su B atsakymais, kontrolė kaip bazinė linija.',
+    'method_04_method': '<strong>Metodas:</strong> Kiekvienas bandymas matuoja mirksėjimo vėlavimą, asimetrijos deltą ir BPM pagreitį. Patikimumo balas apskaičiuojamas iš bandymų nuoseklumo.',
+    'method_04_limit': '<strong>Apribojimas:</strong> Žemiau 60% patikimumo pranešame rezultatą kaip neaiškų. Virš 75% kaip reikšmingą.',
+    '— What we do NOT do': '— Ko mes NEDAROME',
+    'method_not_do': 'Mes neskaitome minčių. Mes nediagnozuojame. Mes neišsaugome tavo vaizdo įrašo ir nieks niekur jo nesiunčiame. Matuojame tik aktyvavimą — o aktyvavimas gali reikšti atmetimą, nuostabą, trauką, baimę ar atpažinimą. Kūnas kalba garsiai, bet viena kalba: <em>tai svarbiau už tai</em>.'
   },
 
   ru: {
@@ -2224,7 +2692,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'При серьёзных решениях обратись к лицензированному специалисту.',
     '— Deeper reading': '— Более глубокое измерение',
     'What does this actually mean?': 'Что это на самом деле значит?',
-    'One-time — analysis of this reading': 'Разовое — анализ этого измерения'
+    'One-time — analysis of this reading': 'Разовое — анализ этого измерения',
+
+    'intro_p1': 'Loits — биометрический инструмент. Камера твоего телефона мониторит твоё лицо — пульс, рефлексы моргания, микровыражения — пока мы показываем тебе две опции вспышками. Твоя автономная нервная система реагирует за миллисекунды, прежде чем сознательная мысль успевает вмешаться. Мы измеряем эти реакции и раскрываем, какой путь распознаёт твоё тело.',
+    'intro_p2': 'Ничего не загружается. Все измерения происходят на твоём устройстве. Мы измеряем только измеримое. Если условия неподходящие, мы говорим об этом. Мы не угадываем.',
+    'intro_features': '<span>● Биометрический мониторинг лица</span><span>● Пульс через цвет кожи (rPPG)</span><span>● Отслеживание лица в 468 точках</span><span>● Анализ автономного ответа</span>',
+    '— Methodology': '— Методология',
+    'What we measure.': 'Что мы измеряем.',
+    'method_intro': 'Мы используем камеру твоего телефона и передовые модели компьютерного зрения, чтобы считать четыре сигнала с твоего лица. Всё происходит на твоём устройстве. Ничего не загружается.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Пульс (rPPG)',
+    'Pulse from skin color': 'Пульс по цвету кожи',
+    'method_01_p1': 'С каждым ударом сердца кровь на мгновение заполняет лицевые капилляры, микроскопически меняя цвет кожи. Камера это улавливает.',
+    'method_01_method': '<strong>Метод:</strong> Анализ зелёного канала на лбу и обеих щеках, сэмплирование 30 кадров в секунду, удаление тренда, полосовая фильтрация в диапазоне сердечной частоты (0,7–2,5 Гц). Три независимых региона сравниваются.',
+    'method_01_limit': '<strong>Ограничение:</strong> Требует хорошего освещения и неподвижности. Мы сообщаем твой BPM, изменение после стимула и достоверность сигнала.',
+    '— 02 / Blink Response': '— 02 / Реакция моргания',
+    'The eye reflex': 'Глазной рефлекс',
+    'method_02_p1': 'Ориентировочный рефлекс закрывает веки быстрее, когда ты видишь то, что автономная система хочет отвергнуть. Естественное моргание занимает 100–150мс; рефлекторное происходит через 200–400мс после стимула.',
+    'method_02_method': '<strong>Метод:</strong> Google MediaPipe FaceLandmarker отслеживает 468 точек лица со скоростью 30 кадров в секунду. Начало моргания обнаруживается, когда показатели blendshape eyeBlinkLeft + eyeBlinkRight пересекают твою личную базовую линию.',
+    'method_02_limit': '<strong>Ограничение:</strong> Если не моргнёшь в течение 600мс после стимула, сообщаем "ответ не обнаружен". Мы не выдумываем.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Асимметрия микровыражений',
+    'What leaks before masking': 'Что просачивается до маскирования',
+    'method_03_p1': 'Лицо контролируется двумя полушариями. Подлинные эмоциональные реакции появляются асимметрично (одна сторона раньше) в течение 200–500мс. Произвольные выражения симметричны.',
+    'method_03_method': '<strong>Метод:</strong> Разница между показателями blendshape mouthSmileLeft / mouthSmileRight, browInnerUp и jawForward, сэмплирование с интервалом 60мс после стимула.',
+    'method_03_limit': '<strong>Ограничение:</strong> Борода, макияж и очки снижают чувствительность. Мы сообщаем это как Индекс Асимметрии.',
+    '— 04 / Trial Design': '— 04 / Дизайн испытания',
+    'Five flashes, not one': 'Пять вспышек, не одна',
+    'method_04_p1': 'Одна вспышка ничего не доказывает. Мы показываем каждую опцию дважды и нейтральное контрольное слово один раз, в случайном порядке с паузами в 2 секунды. Твои A-ответы сравниваются с B-ответами, контроль — базовая линия.',
+    'method_04_method': '<strong>Метод:</strong> Каждое испытание измеряет латентность моргания, дельту асимметрии и ускорение BPM. Показатель достоверности вычисляется из согласованности между испытаниями.',
+    'method_04_limit': '<strong>Ограничение:</strong> Ниже 60% достоверности сообщаем результат как неопределённый. Выше 75% — как значимый.',
+    '— What we do NOT do': '— Что мы НЕ делаем',
+    'method_not_do': 'Мы не читаем мысли. Мы не диагностируем. Мы не сохраняем твоё видео и никуда его не отправляем. Мы измеряем только активацию — а активация может означать отвержение, удивление, влечение, страх или узнавание. Тело говорит громко, но на одном языке: <em>это важнее того</em>.'
   },
 
   uk: {
@@ -2281,7 +2778,36 @@ const I18N = {
     'Consult a licensed professional for serious choices.': 'При серйозних рішеннях звернися до ліцензованого спеціаліста.',
     '— Deeper reading': '— Глибше вимірювання',
     'What does this actually mean?': 'Що це насправді означає?',
-    'One-time — analysis of this reading': 'Разове — аналіз цього вимірювання'
+    'One-time — analysis of this reading': 'Разове — аналіз цього вимірювання',
+
+    'intro_p1': 'Loits — біометричний інструмент. Камера твого телефону моніторить твоє обличчя — пульс, рефлекси кліпання, мікровирази — поки ми показуємо тобі два варіанти спалахами. Твоя автономна нервова система реагує за мілісекунди, перш ніж свідома думка встигає втрутитися. Ми вимірюємо ці реакції та розкриваємо, який шлях розпізнає твоє тіло.',
+    'intro_p2': 'Нічого не завантажується. Усі вимірювання відбуваються на твоєму пристрої. Ми вимірюємо лише вимірне. Якщо умови не підходять, ми кажемо про це. Ми не вгадуємо.',
+    'intro_features': '<span>● Біометричний моніторинг обличчя</span><span>● Пульс через колір шкіри (rPPG)</span><span>● Відстеження обличчя у 468 точках</span><span>● Аналіз автономної відповіді</span>',
+    '— Methodology': '— Методологія',
+    'What we measure.': 'Що ми вимірюємо.',
+    'method_intro': 'Ми використовуємо камеру твого телефону та передові моделі комп\'ютерного зору, щоб зчитати чотири сигнали з твого обличчя. Усе відбувається на твоєму пристрої. Нічого не завантажується.',
+    '— 01 / Heart Rate (rPPG)': '— 01 / Пульс (rPPG)',
+    'Pulse from skin color': 'Пульс за кольором шкіри',
+    'method_01_p1': 'З кожним ударом серця кров на мить заповнює лицеві капіляри, мікроскопічно змінюючи колір шкіри. Камера це вловлює.',
+    'method_01_method': '<strong>Метод:</strong> Аналіз зеленого каналу на лобі та обох щоках, семплування 30 кадрів на секунду, видалення тренду, смугова фільтрація в діапазоні серцевої частоти (0,7–2,5 Гц). Три незалежні регіони порівнюються.',
+    'method_01_limit': '<strong>Обмеження:</strong> Потребує доброго освітлення та нерухомості. Ми повідомляємо твій BPM, зміну після стимулу та достовірність сигналу.',
+    '— 02 / Blink Response': '— 02 / Реакція кліпання',
+    'The eye reflex': 'Очний рефлекс',
+    'method_02_p1': 'Орієнтувальний рефлекс закриває повіки швидше, коли ти бачиш щось, що автономна система хоче відкинути. Природне кліпання займає 100–150мс; рефлекторне відбувається за 200–400мс після стимулу.',
+    'method_02_method': '<strong>Метод:</strong> Google MediaPipe FaceLandmarker відстежує 468 точок обличчя зі швидкістю 30 кадрів на секунду. Початок кліпання виявляється, коли показники blendshape eyeBlinkLeft + eyeBlinkRight перетинають твою особисту базову лінію.',
+    'method_02_limit': '<strong>Обмеження:</strong> Якщо не кліпнеш протягом 600мс після стимулу, повідомляємо "відповідь не виявлено". Ми не вигадуємо.',
+    '— 03 / Micro-Expression Asymmetry': '— 03 / Асиметрія мікровиразів',
+    'What leaks before masking': 'Що просочується до маскування',
+    'method_03_p1': 'Обличчя контролюється двома півкулями. Справжні емоційні реакції з\'являються асиметрично (одна сторона раніше) протягом 200–500мс. Довільні вирази симетричні.',
+    'method_03_method': '<strong>Метод:</strong> Різниця між показниками blendshape mouthSmileLeft / mouthSmileRight, browInnerUp та jawForward, семплування з інтервалом 60мс після стимулу.',
+    'method_03_limit': '<strong>Обмеження:</strong> Борода, макіяж та окуляри знижують чутливість. Ми повідомляємо це як Індекс Асиметрії.',
+    '— 04 / Trial Design': '— 04 / Дизайн випробування',
+    'Five flashes, not one': 'П\'ять спалахів, не один',
+    'method_04_p1': 'Один спалах нічого не доводить. Ми показуємо кожен варіант двічі та нейтральне контрольне слово один раз, у випадковому порядку з паузами в 2 секунди. Твої А-відповіді порівнюються з Б-відповідями, контроль — базова лінія.',
+    'method_04_method': '<strong>Метод:</strong> Кожне випробування вимірює латентність кліпання, дельту асиметрії та прискорення BPM. Показник достовірності обчислюється з узгодженості між випробуваннями.',
+    'method_04_limit': '<strong>Обмеження:</strong> Нижче 60% достовірності повідомляємо результат як невизначений. Вище 75% — як значущий.',
+    '— What we do NOT do': '— Що ми НЕ робимо',
+    'method_not_do': 'Ми не читаємо думки. Ми не діагностуємо. Ми не зберігаємо твоє відео й нікуди його не відправляємо. Ми вимірюємо лише активацію — а активація може означати відторгнення, здивування, тяжіння, страх чи впізнавання. Тіло говорить голосно, але однією мовою: <em>це важливіше за те</em>.'
   }
 };
 
