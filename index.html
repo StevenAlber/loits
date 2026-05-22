@@ -2750,15 +2750,93 @@ function resetApp() {
   }, 100);
 })();
 
+// Build the paywall modal once
+function showPaywallModal() {
+  // Remove any existing modal
+  const existing = document.getElementById('paywall-modal');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'paywall-modal';
+  overlay.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    z-index: 9999; display: flex; align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+  `;
+
+  overlay.innerHTML = `
+    <div style="max-width:440px; width:100%; background:#0a0a0a; border:1px solid rgba(255,41,41,0.3); padding:32px 24px; max-height:90vh; overflow-y:auto;">
+      <div style="font-size:9px; letter-spacing:0.4em; color:#ff2929; text-transform:uppercase; margin-bottom:8px;">— Free reading used</div>
+      <h2 style="font-family:'EB Garamond',serif; font-size:24px; font-weight:400; color:#fff; margin:0 0 20px 0; line-height:1.3;">Choose your path forward</h2>
+
+      <button data-tier="premium_oneshot" style="display:block; width:100%; background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.4); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+        <div style="font-size:9px; letter-spacing:0.3em; color:#a78bfa; text-transform:uppercase; margin-bottom:6px;">— Most popular</div>
+        <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">Unlock this analysis · €9.99</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.5;">One premium reading with personalized AI interpretation of your biometric signal.</div>
+      </button>
+
+      <button data-tier="basic5" style="display:block; width:100%; background:rgba(255,41,41,0.05); border:1px solid rgba(255,41,41,0.3); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+        <div style="font-size:9px; letter-spacing:0.3em; color:#ff2929; text-transform:uppercase; margin-bottom:6px;">— Five more readings</div>
+        <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">5 readings · €4.99</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.5;">Five biometric readings without AI analysis. The verdict only.</div>
+      </button>
+
+      <button data-tier="monthly" style="display:block; width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+        <div style="font-size:9px; letter-spacing:0.3em; color:#888; text-transform:uppercase; margin-bottom:6px;">— For those who ask often</div>
+        <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">Unlimited monthly · €49/mo</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.5;">Unlimited readings with AI analysis. Cancel anytime.</div>
+      </button>
+
+      <button data-tier="annual" style="display:block; width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:18px 16px; margin-bottom:20px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+        <div style="font-size:9px; letter-spacing:0.3em; color:#888; text-transform:uppercase; margin-bottom:6px;">— Best value · save 49%</div>
+        <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">Unlimited annual · €299/yr</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.5;">Same as monthly, half the price. Cancel anytime.</div>
+      </button>
+
+      <button id="paywall-close" style="display:block; width:100%; background:transparent; border:none; color:#666; padding:12px; cursor:pointer; font-family:inherit; font-size:11px; letter-spacing:0.2em; text-transform:uppercase;">
+        Close
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Wire up tier buttons
+  overlay.querySelectorAll('button[data-tier]').forEach(btn => {
+    btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-2px)'; });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translateY(0)'; });
+    btn.addEventListener('click', () => {
+      const tier = btn.getAttribute('data-tier');
+      let url;
+      switch (tier) {
+        case 'basic5': url = STRIPE_LINKS.basic5; break;
+        case 'premium_oneshot': url = STRIPE_LINKS.premium_oneshot; break;
+        case 'monthly': url = STRIPE_LINKS.monthly; break;
+        case 'annual': url = STRIPE_LINKS.annual; break;
+      }
+      if (url) window.location.href = url;
+    });
+  });
+
+  // Close button
+  overlay.querySelector('#paywall-close').addEventListener('click', () => {
+    overlay.remove();
+  });
+
+  // Click outside to close
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
 // Wrap startScan to check credits
 const _originalStartScan = startScan;
 startScan = async function() {
   if (!canStartReading()) {
-    // Show paywall-style alert before scan
     const u = getUserState();
     if (u.freeReadingsUsed >= 1 && getEffectiveTier() === TIER.FREE) {
-      alert('You have used your free reading. Choose a package to continue:\n\n€4.99 — 5 readings\n€9.99 — 1 premium reading with AI\n€49/month — unlimited + AI\n€299/year — unlimited + AI');
-      // Could redirect to a dedicated paywall screen here
+      showPaywallModal();
       return;
     }
   }
@@ -2773,6 +2851,64 @@ showVerdictScreen = function() {
     consumeReadingCredit();
   }
   _originalShowVerdictScreen.apply(this, arguments);
+
+  // After verdict is shown, if user is on FREE tier with no more readings, append paywall UI
+  setTimeout(() => {
+    const u = getUserState();
+    const tier = getEffectiveTier();
+    if (tier === TIER.FREE && u.freeReadingsUsed >= 1) {
+      const verdictScreen = document.getElementById('screen-verdict');
+      if (verdictScreen && !verdictScreen.querySelector('.verdict-paywall')) {
+        const paywallDiv = document.createElement('div');
+        paywallDiv.className = 'verdict-paywall';
+        paywallDiv.style.cssText = 'margin-top:40px; padding-top:30px; border-top:1px solid rgba(255,255,255,0.1);';
+        paywallDiv.innerHTML = `
+          <div style="font-size:9px; letter-spacing:0.4em; color:#ff2929; text-transform:uppercase; margin-bottom:14px;">— Continue</div>
+          <div style="font-family:'EB Garamond',serif; font-size:20px; color:#fff; margin-bottom:24px; line-height:1.4;">Your body answered. Want to know what it means?</div>
+
+          <button data-pw-tier="premium_oneshot" class="pw-btn" style="display:block; width:100%; background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.4); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+            <div style="font-size:9px; letter-spacing:0.3em; color:#a78bfa; text-transform:uppercase; margin-bottom:6px;">— Unlock this analysis</div>
+            <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">AI interpretation · €9.99</div>
+            <div style="font-size:12px; color:#aaa; line-height:1.5;">Personalized AI reading of this verdict, written for your dilemma.</div>
+          </button>
+
+          <button data-pw-tier="basic5" class="pw-btn" style="display:block; width:100%; background:rgba(255,41,41,0.05); border:1px solid rgba(255,41,41,0.3); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+            <div style="font-size:9px; letter-spacing:0.3em; color:#ff2929; text-transform:uppercase; margin-bottom:6px;">— Five more readings</div>
+            <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">5 readings · €4.99</div>
+            <div style="font-size:12px; color:#aaa; line-height:1.5;">Five biometric readings. The verdict only, no AI.</div>
+          </button>
+
+          <button data-pw-tier="monthly" class="pw-btn" style="display:block; width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+            <div style="font-size:9px; letter-spacing:0.3em; color:#888; text-transform:uppercase; margin-bottom:6px;">— Unlimited monthly</div>
+            <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">€49 / month</div>
+            <div style="font-size:12px; color:#aaa; line-height:1.5;">Unlimited readings with AI. Cancel anytime.</div>
+          </button>
+
+          <button data-pw-tier="annual" class="pw-btn" style="display:block; width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:18px 16px; margin-bottom:12px; text-align:left; cursor:pointer; font-family:inherit; transition:all 0.2s;">
+            <div style="font-size:9px; letter-spacing:0.3em; color:#888; text-transform:uppercase; margin-bottom:6px;">— Annual · save 49%</div>
+            <div style="font-size:18px; font-weight:500; color:#fff; margin-bottom:4px;">€299 / year</div>
+            <div style="font-size:12px; color:#aaa; line-height:1.5;">Same as monthly, half the price.</div>
+          </button>
+        `;
+        verdictScreen.appendChild(paywallDiv);
+
+        // Wire up buttons
+        paywallDiv.querySelectorAll('button[data-pw-tier]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const t = btn.getAttribute('data-pw-tier');
+            let url;
+            switch (t) {
+              case 'basic5': url = STRIPE_LINKS.basic5; break;
+              case 'premium_oneshot': url = STRIPE_LINKS.premium_oneshot; break;
+              case 'monthly': url = STRIPE_LINKS.monthly; break;
+              case 'annual': url = STRIPE_LINKS.annual; break;
+            }
+            if (url) window.location.href = url;
+          });
+        });
+      }
+    }
+  }, 200);
 };
 
 </script>
