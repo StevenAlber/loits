@@ -143,8 +143,9 @@
   .option-block {
     margin-bottom: 28px;
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 14px;
+    flex-wrap: wrap;
   }
   .option-prefix {
     font-size: 11px;
@@ -152,20 +153,27 @@
     letter-spacing: 0.25em;
     font-weight: 700;
     flex-shrink: 0;
+    padding-top: 14px;
   }
   .option-input {
     flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
     border-bottom: 1px solid var(--accent);
     color: var(--fg);
     font-family: var(--mono);
     font-size: 15px;
+    line-height: 1.5;
     padding: 12px 0;
     transition: border-color 0.2s;
     -webkit-user-select: text;
     user-select: text;
     border-radius: 0;
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   .option-input:focus {
     outline: none;
@@ -173,6 +181,18 @@
     border-bottom-width: 2px;
   }
   .option-input::placeholder { color: var(--dim2); }
+  .option-counter {
+    width: 100%;
+    padding-left: 38px;
+    margin-top: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .option-counter.near-limit { color: var(--accent); }
 
   .btn-main {
     width: 100%;
@@ -418,14 +438,22 @@
   #flashOverlay.active { display: flex; }
   #flashText {
     font-family: var(--mono);
-    font-size: clamp(48px, 14vw, 110px);
+    font-size: clamp(28px, 11vw, 88px);
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     color: var(--fg);
     text-transform: uppercase;
     text-align: center;
-    line-height: 0.95;
+    line-height: 1.0;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
+  /* Auto-shrink classes applied via JS based on text length */
+  #flashText.len-md { font-size: clamp(22px, 8vw, 56px); line-height: 1.1; }
+  #flashText.len-lg { font-size: clamp(18px, 6vw, 38px); line-height: 1.2; text-transform: none; letter-spacing: 0; font-weight: 600; }
+  #flashText.len-xl { font-size: clamp(15px, 4.5vw, 26px); line-height: 1.35; text-transform: none; letter-spacing: 0; font-weight: 500; }
 
   /* VERDICT */
   #verdictScreen {
@@ -1037,11 +1065,13 @@
 
     <div class="option-block">
       <span class="option-prefix">A —</span>
-      <input id="optionA" class="option-input" type="text" placeholder="e.g. text him back" maxlength="40" autocomplete="off" />
+      <textarea id="optionA" class="option-input" placeholder="e.g. text him back, or describe in two sentences what option A really means to you" maxlength="200" rows="2" autocomplete="off"></textarea>
+      <div class="option-counter" id="counterA">0 / 200</div>
     </div>
     <div class="option-block">
       <span class="option-prefix">B —</span>
-      <input id="optionB" class="option-input" type="text" placeholder="e.g. let it die" maxlength="40" autocomplete="off" />
+      <textarea id="optionB" class="option-input" placeholder="e.g. let it die, or describe the other path in your own words" maxlength="200" rows="2" autocomplete="off"></textarea>
+      <div class="option-counter" id="counterB">0 / 200</div>
     </div>
 
     <button class="btn-main" onclick="startScan()">Read My Body →</button>
@@ -1305,8 +1335,50 @@ function goTo(id) {
 
 function goToInput() {
   goTo('screen-input');
-  setTimeout(() => document.getElementById('optionA').focus(), 200);
+  setTimeout(() => {
+    const ta = document.getElementById('optionA');
+    if (ta) ta.focus();
+    // Re-sync counters in case there is existing text
+    updateOptionCounter('optionA', 'counterA');
+    updateOptionCounter('optionB', 'counterB');
+    autoResizeTextarea(document.getElementById('optionA'));
+    autoResizeTextarea(document.getElementById('optionB'));
+  }, 200);
 }
+
+// Auto-resize textarea as user types (no scrollbars)
+function autoResizeTextarea(ta) {
+  if (!ta) return;
+  ta.style.height = 'auto';
+  ta.style.height = Math.max(48, ta.scrollHeight) + 'px';
+}
+
+// Live character counter
+function updateOptionCounter(taId, counterId) {
+  const ta = document.getElementById(taId);
+  const c = document.getElementById(counterId);
+  if (!ta || !c) return;
+  const len = ta.value.length;
+  c.textContent = `${len} / 200`;
+  c.classList.toggle('near-limit', len > 180);
+}
+
+// Bind once on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  ['optionA', 'optionB'].forEach((id, idx) => {
+    const ta = document.getElementById(id);
+    const counterId = idx === 0 ? 'counterA' : 'counterB';
+    if (!ta) return;
+    const handler = () => {
+      autoResizeTextarea(ta);
+      updateOptionCounter(id, counterId);
+    };
+    ta.addEventListener('input', handler);
+    ta.addEventListener('change', handler);
+    // Initial sync
+    handler();
+  });
+});
 
 function goToMethod() {
   goTo('screen-method');
@@ -1486,8 +1558,17 @@ async function runTrialSequence() {
     }
 
     // FLASH — no pre-flash white pulse (it would saturate the blink response)
-    const flashLabel = trial.type === 'NEUTRAL' ? 'WAIT' : trial.label.toUpperCase();
-    document.getElementById('flashText').textContent = flashLabel;
+    // For short labels keep uppercase punch; for longer ones use Sentence case to read better.
+    const isLong = trial.type !== 'NEUTRAL' && trial.label.length > 24;
+    const flashLabel = trial.type === 'NEUTRAL' ? 'WAIT' : (isLong ? trial.label : trial.label.toUpperCase());
+    const flashEl = document.getElementById('flashText');
+    flashEl.textContent = flashLabel;
+    // Pick size class by character length so long sentences still fit on screen
+    flashEl.classList.remove('len-md', 'len-lg', 'len-xl');
+    const charLen = flashLabel.length;
+    if (charLen > 80) flashEl.classList.add('len-xl');
+    else if (charLen > 40) flashEl.classList.add('len-lg');
+    else if (charLen > 16) flashEl.classList.add('len-md');
     document.getElementById('flashOverlay').classList.add('active');
 
     // Capture timestamp AFTER render commits
@@ -2754,6 +2835,13 @@ function backToInput() {
   goTo('screen-input');
   document.getElementById('optionA').value = state.optionA;
   document.getElementById('optionB').value = state.optionB;
+  // Resync textarea sizes + counters
+  setTimeout(() => {
+    autoResizeTextarea(document.getElementById('optionA'));
+    autoResizeTextarea(document.getElementById('optionB'));
+    updateOptionCounter('optionA', 'counterA');
+    updateOptionCounter('optionB', 'counterB');
+  }, 50);
 }
 
 function resetApp() {
@@ -2769,6 +2857,12 @@ function resetApp() {
   document.getElementById('verdictScreen').classList.remove('active');
   document.querySelector('.topbar').style.display = 'flex';
   goTo('screen-intro');
+  setTimeout(() => {
+    autoResizeTextarea(document.getElementById('optionA'));
+    autoResizeTextarea(document.getElementById('optionB'));
+    updateOptionCounter('optionA', 'counterA');
+    updateOptionCounter('optionB', 'counterB');
+  }, 50);
 }
 
 // ============================================
