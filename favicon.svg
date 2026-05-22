@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0a0a0a"/>
+  <!-- Red corner brackets -->
+  <path d="M 6 6 L 14 6 M 6 6 L 6 14" stroke="#ff2929" stroke-width="2" fill="none"/>
+  <path d="M 58 6 L 50 6 M 58 6 L 58 14" stroke="#ff2929" stroke-width="2" fill="none"/>
+  <path d="M 6 58 L 14 58 M 6 58 L 6 50" stroke="#ff2929" stroke-width="2" fill="none"/>
+  <path d="M 58 58 L 50 58 M 58 58 L 58 50" stroke="#ff2929" stroke-width="2" fill="none"/>
+  <!-- L letter — serif style -->
+  <text x="32" y="44" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="bold" fill="#ffffff">L</text>
+</svg>
