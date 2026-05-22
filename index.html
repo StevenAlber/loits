@@ -1131,6 +1131,22 @@ const STRIPE_LINKS = {
   annual: 'https://buy.stripe.com/00w9ATdS5b9H8Dm1lKasg0p'
 };
 
+// Global safety net — intercept any alert() that contains paywall/credit language
+// and route to the visual modal instead. Catches legacy code paths we may have missed.
+(function installAlertSafetyNet() {
+  const _origAlert = window.alert.bind(window);
+  window.alert = function(msg) {
+    const text = String(msg || '');
+    const isPaywallText = /free reading|choose a package|setup needed|stripe payment link|€\d|readings.*remaining|no readings/i.test(text);
+    if (isPaywallText && typeof showPaywallModal === 'function') {
+      console.log('[loits] alert intercepted → modal:', text);
+      showPaywallModal();
+      return;
+    }
+    _origAlert(msg);
+  };
+})();
+
 // Cloudflare Worker proxy URL for Claude API — deploy this Worker separately
 const AI_WORKER_URL = 'https://loits-ai.YOUR_SUBDOMAIN.workers.dev';
 
@@ -2119,8 +2135,9 @@ function handlePurchase(type) {
     default: return;
   }
 
-  if (url.includes('REPLACE_')) {
-    alert('Setup needed: Replace Stripe Payment Link URLs in code. See README.');
+  if (!url || url.includes('REPLACE_')) {
+    console.warn('Stripe link not configured for tier:', type);
+    showPaywallModal();
     return;
   }
 
@@ -2690,10 +2707,10 @@ function cleanupAll() {
 }
 
 function handlePayment() {
-  alert('Connect Stripe Payment Link here. Replace alert with: window.location = STRIPE_5_PACK_URL');
+  showPaywallModal();
 }
 function handleLifetime() {
-  alert('Connect Stripe Payment Link here. Replace alert with: window.location = STRIPE_LIFETIME_URL');
+  showPaywallModal();
 }
 
 function backToInput() {
@@ -2802,10 +2819,11 @@ function showPaywallModal() {
 
   document.body.appendChild(overlay);
 
-  // Wire up tier buttons
+  // Touch-friendly press feedback (works on both mobile and desktop)
   overlay.querySelectorAll('button[data-tier]').forEach(btn => {
-    btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-2px)'; });
-    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translateY(0)'; });
+    btn.addEventListener('pointerdown', () => { btn.style.transform = 'translateY(1px)'; btn.style.opacity = '0.85'; });
+    btn.addEventListener('pointerup', () => { btn.style.transform = 'translateY(0)'; btn.style.opacity = '1'; });
+    btn.addEventListener('pointerleave', () => { btn.style.transform = 'translateY(0)'; btn.style.opacity = '1'; });
     btn.addEventListener('click', () => {
       const tier = btn.getAttribute('data-tier');
       let url;
@@ -2830,15 +2848,12 @@ function showPaywallModal() {
   });
 }
 
-// Wrap startScan to check credits
+// Wrap startScan to check credits — always show modal when no credits left
 const _originalStartScan = startScan;
 startScan = async function() {
   if (!canStartReading()) {
-    const u = getUserState();
-    if (u.freeReadingsUsed >= 1 && getEffectiveTier() === TIER.FREE) {
-      showPaywallModal();
-      return;
-    }
+    showPaywallModal();
+    return;
   }
   await _originalStartScan.apply(this, arguments);
 };
