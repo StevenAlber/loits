@@ -647,6 +647,29 @@
     font-weight: 700;
   }
 
+  .verdict-explainer {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--dim2);
+    font-size: 13px;
+    color: var(--fg);
+    line-height: 1.6;
+  }
+  .verdict-explainer .explainer-label {
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 9px;
+    margin-bottom: 10px;
+  }
+  .verdict-explainer p {
+    margin: 0 0 10px 0;
+  }
+  .verdict-explainer strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
   .paywall {
     border: 1px solid var(--dim2);
     padding: 22px;
@@ -1997,6 +2020,18 @@ function renderVerdict(v) {
         : v.metricAgreement.majority
           ? `<br>${Math.max(v.metricAgreement.votesA, v.metricAgreement.votesB)} of ${v.metricAgreement.totalMetrics} measurements agreed.`
           : '';
+
+      // Free explainer — 3-4 lines so users actually understand what just happened
+      const freeExplainer = !readingIncludesAI() ? `
+        <div class="verdict-explainer">
+          <div class="explainer-label">— WHAT THIS MEANS</div>
+          <p>Before your mind decides, your body reacts. When you saw option <strong>"${esc(rejectedLabel)}"</strong>, your autonomic system fired more strongly — faster blinks, micro-tension, heart-rate shift.</p>
+          <p>This usually signals <strong>avoidance</strong>, not desire. The body is flagging something costly, dangerous, or unwanted about that path.</p>
+          <p>Differential <strong>${v.differential}%</strong> means the gap between the two responses. Higher = clearer body signal. Confidence <strong>${confLevel}</strong> reflects how many measurements agreed.</p>
+          <p style="color: var(--dim); font-size: 11px; margin-top: 10px;">This is the body's first reaction — not a verdict on truth. For the full interpretation specific to your dilemma, see deeper reading below.</p>
+        </div>
+      ` : '';
+
       html += `
         <div class="verdict-box">
           <div class="verdict-label">— VERDICT (${confLevel.toUpperCase()} CONFIDENCE)</div>
@@ -2010,6 +2045,7 @@ function renderVerdict(v) {
             A response score: ${v.aScore} • B response score: ${v.bScore}<br>
             Confidence: <strong>${confLevel}</strong> (based on ${v.totalValid}/5 valid trials)${agreementNote}
           </div>
+          ${freeExplainer}
         </div>
       `;
     }
@@ -2124,8 +2160,15 @@ function renderPaywallSection(v) {
   return html;
 }
 
-// Handle purchase clicks — redirect to Stripe
+// Handle tier button clicks — opens a detailed explanation modal first,
+// NOT a direct Stripe redirect. Stripe only triggers after user reads the details
+// and presses "Continue to payment" inside the modal.
 function handlePurchase(type) {
+  showTierDetailModal(type);
+}
+
+// Actual Stripe redirect — called only from inside the detail modal
+function proceedToStripe(type) {
   let url;
   switch(type) {
     case 'basic5': url = STRIPE_LINKS.basic5; break;
@@ -2134,24 +2177,11 @@ function handlePurchase(type) {
     case 'annual': url = STRIPE_LINKS.annual; break;
     default: return;
   }
-
   if (!url || url.includes('REPLACE_')) {
     console.warn('Stripe link not configured for tier:', type);
-    showPaywallModal();
     return;
   }
-
-  // Add success_url parameter so Stripe redirects back here with paid=TYPE
-  const successParam = {
-    'basic5': 'BASIC5',
-    'premium_oneshot': 'PREMIUM1',
-    'monthly': 'MONTHLY',
-    'annual': 'ANNUAL'
-  }[type];
-
-  // Stripe Payment Links can have ?prefilled_email=... but success URL is set in dashboard
-  // The success URL in Stripe dashboard should be: https://loits.app?paid=BASIC5 (etc)
-  window.location = url;
+  window.location.href = url;
 }
 
 // ============================================
@@ -2767,6 +2797,202 @@ function resetApp() {
   }, 100);
 })();
 
+// ============================================
+// TIER DETAIL MODAL — shown BEFORE Stripe redirect
+// Explains what the user gets, shows a sample AI analysis,
+// and only then offers "Continue to payment".
+// ============================================
+
+const TIER_DETAILS = {
+  premium_oneshot: {
+    accent: '#a78bfa',
+    accentBg: 'rgba(139,92,246,0.08)',
+    accentBorder: 'rgba(139,92,246,0.4)',
+    label: '— PREMIUM ONE-SHOT',
+    title: 'A personalized AI analysis of this reading',
+    price: '€9.99',
+    priceSub: 'One-time payment · this reading only',
+    bullets: [
+      'A 200-word personal interpretation of <strong>your specific dilemma</strong>, written for the two options you typed.',
+      'AI reads <strong>all your biometric signals</strong> — blink latency, facial asymmetry, heart-rate shift — and explains what the body was likely doing.',
+      'Distinguishes <strong>desire</strong> from <strong>fear</strong>, <strong>approach</strong> from <strong>avoidance</strong>, where the data allows.',
+      'Ends with a <strong>question, not a command</strong>. The decision stays yours.',
+      'Delivered in seconds. No account needed. No data stored.'
+    ],
+    sample: true,
+    cta: 'Continue to payment · €9.99'
+  },
+  basic5: {
+    accent: '#ff2929',
+    accentBg: 'rgba(255,41,41,0.06)',
+    accentBorder: 'rgba(255,41,41,0.35)',
+    label: '— FIVE READINGS PACK',
+    title: 'Five biometric readings — without AI interpretation',
+    price: '€4.99',
+    priceSub: 'One-time payment · 5 readings',
+    bullets: [
+      'Five complete biometric scans. Each scan flashes both options five times and measures your body\'s response.',
+      'You receive the <strong>verdict</strong>, the <strong>differential percentage</strong>, and the <strong>full metric table</strong> (blink latency, asymmetry, BPM) for each reading.',
+      '<strong>No AI interpretation</strong> — just the numbers. For users who already understand the framework.',
+      'Use them whenever you want. They never expire.',
+      'If you later want the deep AI reading for one of them, you can upgrade per-reading at €9.99.'
+    ],
+    sample: false,
+    cta: 'Continue to payment · €4.99'
+  },
+  monthly: {
+    accent: '#ffffff',
+    accentBg: 'rgba(255,255,255,0.04)',
+    accentBorder: 'rgba(255,255,255,0.2)',
+    label: '— UNLIMITED MONTHLY',
+    title: 'Unlimited readings · AI analysis on every one',
+    price: '€49',
+    priceSub: 'Per month · cancel anytime',
+    bullets: [
+      '<strong>Unlimited</strong> biometric readings. Use Loits as often as decisions arise.',
+      'Full <strong>AI interpretation</strong> on every single reading — same depth as the €9.99 premium.',
+      'For people in <strong>active transition</strong>: career shifts, relationship questions, recurring dilemmas, ongoing therapy work.',
+      'Cancel any time. No commitment. Stripe handles billing.',
+      'If you do <strong>more than 5 readings per month</strong>, monthly is already cheaper than buying individually.'
+    ],
+    sample: true,
+    cta: 'Continue to payment · €49/month'
+  },
+  annual: {
+    accent: '#ff2929',
+    accentBg: 'rgba(255,41,41,0.06)',
+    accentBorder: 'rgba(255,41,41,0.4)',
+    label: '— UNLIMITED ANNUAL',
+    title: 'Same as monthly · half the price',
+    price: '€299',
+    priceSub: 'Per year · save €289 vs monthly',
+    bullets: [
+      '<strong>Unlimited readings</strong> for a full year, with AI analysis on every one.',
+      'Costs <strong>€24.92 per month</strong> equivalent — roughly half the monthly tier.',
+      'For people who already know Loits is part of how they think.',
+      'Best value if you do <strong>10+ readings across the year</strong>.',
+      'Cancel any time. Refunds within 14 days if you change your mind.'
+    ],
+    sample: true,
+    cta: 'Continue to payment · €299/year'
+  }
+};
+
+const SAMPLE_ANALYSIS = `Your body reacted more strongly to <em>"accept the consulting offer"</em>, and the signal was clean — a 19% differential with both blink latency and asymmetry agreeing.
+
+This usually means <strong>avoidance, not desire</strong>. Something about that path is being flagged as costly by your autonomic system before your conscious mind weighs the pros and cons. It might be the loss of autonomy, the people involved, or simply the closing of other doors. The body doesn't tell us which — only that it noticed.
+
+The other path — <em>"keep the studio independent"</em> — produced a quieter response. Quieter is not the same as preferred. It can mean: less threatening, more familiar, already integrated. Or it can mean: not yet imagined vividly enough to provoke anything.
+
+What's interesting in your reading is the BPM stayed flat for both. Pure avoidance usually shows a small heart-rate climb. Its absence suggests the aversion is <strong>cognitive-emotional</strong> rather than fear-based — more like reluctance than dread.
+
+The question this leaves you with isn't <em>which path</em>. It's: <strong>what specifically does your body recognize about the consulting offer that your mind hasn't put into words yet?</strong> Sit with that for a day before deciding.`;
+
+function showTierDetailModal(type) {
+  // Remove any existing modals (including the summary paywall)
+  ['paywall-modal', 'tier-detail-modal'].forEach(id => {
+    const e = document.getElementById(id);
+    if (e) e.remove();
+  });
+
+  const d = TIER_DETAILS[type];
+  if (!d) { console.warn('Unknown tier:', type); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'tier-detail-modal';
+  overlay.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+    z-index: 10000; display: flex; align-items: flex-start; justify-content: center;
+    padding: 0; overflow-y: auto;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+  `;
+
+  const bulletsHTML = d.bullets.map(b => `
+    <li style="position:relative; padding-left:18px; margin-bottom:14px; color:#ddd; font-size:14px; line-height:1.55;">
+      <span style="position:absolute; left:0; top:0; color:${d.accent};">—</span> ${b}
+    </li>
+  `).join('');
+
+  const sampleHTML = d.sample ? `
+    <div style="margin:28px 0 24px; padding:20px 18px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-left:2px solid ${d.accent};">
+      <div style="font-size:9px; letter-spacing:0.4em; color:${d.accent}; text-transform:uppercase; margin-bottom:12px;">— Sample · what an analysis looks like</div>
+      <div style="font-family:'EB Garamond', Georgia, serif; font-size:15px; line-height:1.65; color:#ccc; font-style:normal;">
+        ${SAMPLE_ANALYSIS.split('\n\n').map(p => `<p style="margin:0 0 12px 0;">${p}</p>`).join('')}
+      </div>
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); font-size:10px; letter-spacing:0.2em; color:#666; text-transform:uppercase;">Anonymous example. Yours will be written for your specific dilemma.</div>
+    </div>
+  ` : '';
+
+  overlay.innerHTML = `
+    <div style="max-width:540px; width:100%; min-height:100vh; background:#0a0a0a; padding:24px 22px 40px;">
+
+      <!-- Header bar -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding-top:8px;">
+        <button id="td-back" style="background:transparent; border:1px solid rgba(255,255,255,0.15); color:#aaa; padding:8px 14px; cursor:pointer; font-family:inherit; font-size:10px; letter-spacing:0.2em; text-transform:uppercase;">← Back</button>
+        <div style="font-size:10px; letter-spacing:0.3em; color:#666; text-transform:uppercase;">Loits</div>
+        <div style="width:60px;"></div>
+      </div>
+
+      <!-- Tier label -->
+      <div style="font-size:10px; letter-spacing:0.4em; color:${d.accent}; text-transform:uppercase; margin-bottom:12px;">${d.label}</div>
+
+      <!-- Title -->
+      <h2 style="font-family:'EB Garamond', Georgia, serif; font-size:28px; font-weight:400; color:#fff; margin:0 0 8px 0; line-height:1.25;">${d.title}</h2>
+
+      <!-- Price -->
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:24px;">
+        <div style="font-size:36px; font-weight:500; color:${d.accent}; font-family:'EB Garamond', Georgia, serif;">${d.price}</div>
+        <div style="font-size:11px; color:#888; letter-spacing:0.1em;">${d.priceSub}</div>
+      </div>
+
+      <!-- What you get -->
+      <div style="font-size:9px; letter-spacing:0.4em; color:#888; text-transform:uppercase; margin-bottom:14px;">— What you get</div>
+      <ul style="list-style:none; padding:0; margin:0 0 8px 0;">
+        ${bulletsHTML}
+      </ul>
+
+      ${sampleHTML}
+
+      <!-- CTA -->
+      <button id="td-pay" style="display:block; width:100%; background:${d.accent}; border:none; color:${d.accent === '#ffffff' ? '#0a0a0a' : '#fff'}; padding:20px 16px; margin-top:24px; cursor:pointer; font-family:inherit; font-size:13px; letter-spacing:0.25em; text-transform:uppercase; font-weight:600; transition:all 0.2s;">
+        ${d.cta} →
+      </button>
+
+      <!-- Secure note -->
+      <div style="text-align:center; margin-top:14px; font-size:10px; letter-spacing:0.15em; color:#555;">
+        Secure payment via Stripe · Cancel anytime
+      </div>
+
+      <!-- Trust footer -->
+      <div style="margin-top:32px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.06); font-size:11px; color:#666; line-height:1.6; text-align:center;">
+        No account required. No data sold or shared.<br>
+        Body signals indicate physiological activation, not validated truth.
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden'; // lock scroll
+
+  // Wire up CTA button — actual Stripe redirect
+  const payBtn = overlay.querySelector('#td-pay');
+  payBtn.addEventListener('pointerdown', () => { payBtn.style.opacity = '0.85'; payBtn.style.transform = 'translateY(1px)'; });
+  payBtn.addEventListener('pointerup', () => { payBtn.style.opacity = '1'; payBtn.style.transform = 'translateY(0)'; });
+  payBtn.addEventListener('pointerleave', () => { payBtn.style.opacity = '1'; payBtn.style.transform = 'translateY(0)'; });
+  payBtn.addEventListener('click', () => {
+    proceedToStripe(type);
+  });
+
+  // Back button → return to summary modal
+  overlay.querySelector('#td-back').addEventListener('click', () => {
+    overlay.remove();
+    document.body.style.overflow = '';
+    showPaywallModal();
+  });
+}
+
 // Build the paywall modal once
 function showPaywallModal() {
   // Remove any existing modal
@@ -2826,14 +3052,8 @@ function showPaywallModal() {
     btn.addEventListener('pointerleave', () => { btn.style.transform = 'translateY(0)'; btn.style.opacity = '1'; });
     btn.addEventListener('click', () => {
       const tier = btn.getAttribute('data-tier');
-      let url;
-      switch (tier) {
-        case 'basic5': url = STRIPE_LINKS.basic5; break;
-        case 'premium_oneshot': url = STRIPE_LINKS.premium_oneshot; break;
-        case 'monthly': url = STRIPE_LINKS.monthly; break;
-        case 'annual': url = STRIPE_LINKS.annual; break;
-      }
-      if (url) window.location.href = url;
+      overlay.remove(); // close summary modal
+      showTierDetailModal(tier); // open detail screen
     });
   });
 
@@ -2911,14 +3131,7 @@ showVerdictScreen = function() {
         paywallDiv.querySelectorAll('button[data-pw-tier]').forEach(btn => {
           btn.addEventListener('click', () => {
             const t = btn.getAttribute('data-pw-tier');
-            let url;
-            switch (t) {
-              case 'basic5': url = STRIPE_LINKS.basic5; break;
-              case 'premium_oneshot': url = STRIPE_LINKS.premium_oneshot; break;
-              case 'monthly': url = STRIPE_LINKS.monthly; break;
-              case 'annual': url = STRIPE_LINKS.annual; break;
-            }
-            if (url) window.location.href = url;
+            showTierDetailModal(t);
           });
         });
       }
